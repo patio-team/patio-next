@@ -42,7 +42,10 @@ export default async function Home() {
     return (
       <div
         className={`${merriweather.variable} ${lato.variable} min-h-screen bg-white`}>
-        <PageHeader user={session.user} />
+        <PageHeader
+          user={session.user}
+          userTeams={userTeams}
+        />
         <NoTeams />
       </div>
     );
@@ -51,7 +54,10 @@ export default async function Home() {
   return (
     <div
       className={`${merriweather.variable} ${lato.variable} min-h-screen bg-white`}>
-      <PageHeader user={session.user} />
+      <PageHeader
+        user={session.user}
+        userTeams={userTeams}
+      />
 
       {/* Main Content */}
       <div className="px-4 md:px-16 py-8">

@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
 
 :root {
   --radius: 0.65rem;
@@ -77,4 +78,13 @@
 
   --font-merriweather: var(--font-merriweather-next);
   --font-lato: var(--font-lato-next);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

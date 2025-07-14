@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!session?.user?.id) {
-      return createErrorResponse('No autorizado', 401);
+      return createErrorResponse('No authorized', 401);
     }
 
     const userId = session.user.id;
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!session?.user?.id) {
-      return createErrorResponse('No autorizado', 401);
+      return createErrorResponse('No authorized', 401);
     }
 
     const userId = session.user.id;
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     const { name, description } = body;
 
     if (!name) {
-      return createErrorResponse('El nombre del equipo es requerido', 400);
+      return createErrorResponse('Team name required', 400);
     }
 
     // Create team

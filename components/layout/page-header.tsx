@@ -2,15 +2,18 @@
 
 import { Session } from '@/lib/auth';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { signOut } from '@/lib/auth-client';
+import { ChevronDown } from 'lucide-react';
+import { signOut as authSignOut } from '@/lib/auth-client';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from '@radix-ui/react-dropdown-menu';
+} from '../ui/dropdown-menu';
 import { User, LogOut } from 'lucide-react';
-import { Button } from '../ui/button';
+import { TeamMemberWithTeam } from '@/db/schema';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 export interface User {
   id: string;
@@ -21,9 +24,15 @@ export interface User {
 
 export interface PageHeaderProps {
   user: Session['user'];
+  userTeams: TeamMemberWithTeam[];
 }
 
-export default function PageHeader({ user }: PageHeaderProps) {
+export default function PageHeader({ user, userTeams }: PageHeaderProps) {
+  const signOut = () => {
+    authSignOut();
+    redirect('/login');
+  };
+
   return (
     <header className="w-full h-20 bg-white shadow-sm border-b border-gray-100 flex items-center justify-between px-4 md:px-16">
       {/* Logo */}
@@ -65,28 +74,38 @@ export default function PageHeader({ user }: PageHeaderProps) {
         </svg>
       </div>
 
-      <div>
+      <div className="flex items-center gap-4">
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-2">
+            Open <ChevronDown />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {userTeams.map((userTeam) => (
+              <DropdownMenuItem key={userTeam.teamId}>
+                <Link
+                  href={`/teams/${userTeam.teamId}`}
+                  className="flex items-center">
+                  <span className="truncate">{userTeam.team.name}</span>
+                </Link>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button
-              aria-label="User menu"
-              variant="ghost"
-              className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src={user?.image || ''}
-                  alt={user?.name || ''}
-                />
-                <AvatarFallback>
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-            </Button>
+            <Avatar className="w-12 h-12">
+              <AvatarImage
+                sizes="(140px, 140px)"
+                src={user?.image || ''}
+                alt={user?.name || ''}
+              />
+              <AvatarFallback>
+                <User className="h-4 w-16" />
+              </AvatarFallback>
+            </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-56"
-            align="end"
-            forceMount>
+          <DropdownMenuContent align="end">
             <DropdownMenuItem className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">{user?.name}</p>
@@ -95,7 +114,9 @@ export default function PageHeader({ user }: PageHeaderProps) {
                 </p>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => signOut()}>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => signOut()}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

@@ -6,201 +6,201 @@ import {
   boolean,
   json,
   pgEnum,
-} from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+} from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
-export const moodRatingEnum = pgEnum("mood_rating", ["1", "2", "3", "4", "5"]);
-export const dayOfWeekEnum = pgEnum("day_of_week", [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
+export const moodRatingEnum = pgEnum('mood_rating', ['1', '2', '3', '4', '5']);
+export const dayOfWeekEnum = pgEnum('day_of_week', [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
 ]);
-export const userRoleEnum = pgEnum("user_role", ["member", "admin"]);
-export const notificationTypeEnum = pgEnum("notification_type", [
-  "mention",
-  "team_invite",
-  "team_update",
+export const userRoleEnum = pgEnum('user_role', ['member', 'admin']);
+export const notificationTypeEnum = pgEnum('notification_type', [
+  'mention',
+  'team_invite',
+  'team_update',
 ]);
 
-export const user = pgTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  emailVerified: boolean("email_verified")
+export const user = pgTable('user', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  emailVerified: boolean('email_verified')
     .$defaultFn(() => false)
     .notNull(),
-  image: text("image"),
-  createdAt: timestamp("created_at")
+  image: text('image'),
+  createdAt: timestamp('created_at')
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
-  updatedAt: timestamp("updated_at")
+  updatedAt: timestamp('updated_at')
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
 
-export const session = pgTable("session", {
-  id: text("id").primaryKey(),
-  expiresAt: timestamp("expires_at").notNull(),
-  token: text("token").notNull().unique(),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
-  ipAddress: text("ip_address"),
-  userAgent: text("user_agent"),
-  userId: text("user_id")
+export const session = pgTable('session', {
+  id: text('id').primaryKey(),
+  expiresAt: timestamp('expires_at').notNull(),
+  token: text('token').notNull().unique(),
+  createdAt: timestamp('created_at').notNull(),
+  updatedAt: timestamp('updated_at').notNull(),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
+    .references(() => user.id, { onDelete: 'cascade' }),
 });
 
-export const account = pgTable("account", {
-  id: text("id").primaryKey(),
-  accountId: text("account_id").notNull(),
-  providerId: text("provider_id").notNull(),
-  userId: text("user_id")
+export const account = pgTable('account', {
+  id: text('id').primaryKey(),
+  accountId: text('account_id').notNull(),
+  providerId: text('provider_id').notNull(),
+  userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  accessToken: text("access_token"),
-  refreshToken: text("refresh_token"),
-  idToken: text("id_token"),
-  accessTokenExpiresAt: timestamp("access_token_expires_at"),
-  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
-  scope: text("scope"),
-  password: text("password"),
-  createdAt: timestamp("created_at").notNull(),
-  updatedAt: timestamp("updated_at").notNull(),
+    .references(() => user.id, { onDelete: 'cascade' }),
+  accessToken: text('access_token'),
+  refreshToken: text('refresh_token'),
+  idToken: text('id_token'),
+  accessTokenExpiresAt: timestamp('access_token_expires_at'),
+  refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
+  scope: text('scope'),
+  password: text('password'),
+  createdAt: timestamp('created_at').notNull(),
+  updatedAt: timestamp('updated_at').notNull(),
 });
 
-export const verification = pgTable("verification", {
-  id: text("id").primaryKey(),
-  identifier: text("identifier").notNull(),
-  value: text("value").notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").$defaultFn(
-    () => /* @__PURE__ */ new Date()
+export const verification = pgTable('verification', {
+  id: text('id').primaryKey(),
+  identifier: text('identifier').notNull(),
+  value: text('value').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').$defaultFn(
+    () => /* @__PURE__ */ new Date(),
   ),
-  updatedAt: timestamp("updated_at").$defaultFn(
-    () => /* @__PURE__ */ new Date()
+  updatedAt: timestamp('updated_at').$defaultFn(
+    () => /* @__PURE__ */ new Date(),
   ),
 });
 
 // Teams table
-export const teams = pgTable("teams", {
-  id: text("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  description: text("description"),
-  inviteCode: varchar("invite_code", { length: 50 }).unique().notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+export const teams = pgTable('teams', {
+  id: text('id').primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+  description: text('description'),
+  inviteCode: varchar('invite_code', { length: 50 }).unique().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 // Team members (junction table for users and teams)
-export const teamMembers = pgTable("team_members", {
-  id: text("id").primaryKey(),
-  userId: text("user_id")
+export const teamMembers = pgTable('team_members', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  teamId: text("team_id")
+    .references(() => user.id, { onDelete: 'cascade' }),
+  teamId: text('team_id')
     .notNull()
-    .references(() => teams.id, { onDelete: "cascade" }),
-  role: userRoleEnum("role").default("member").notNull(),
-  joinedAt: timestamp("joined_at").defaultNow().notNull(),
+    .references(() => teams.id, { onDelete: 'cascade' }),
+  role: userRoleEnum('role').default('member').notNull(),
+  joinedAt: timestamp('joined_at').defaultNow().notNull(),
 });
 
 // Mood entries table
-export const moodEntries = pgTable("mood_entries", {
-  id: text("id").primaryKey(),
-  userId: text("user_id")
+export const moodEntries = pgTable('mood_entries', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  teamId: text("team_id")
+    .references(() => user.id, { onDelete: 'cascade' }),
+  teamId: text('team_id')
     .notNull()
-    .references(() => teams.id, { onDelete: "cascade" }),
-  rating: moodRatingEnum("rating").notNull(),
-  comment: json("comment"), // WYSIWYG content stored as JSON
-  isAnonymous: boolean("is_anonymous").default(false).notNull(),
-  allowContact: boolean("allow_contact").default(true).notNull(),
-  dayOfWeek: dayOfWeekEnum("day_of_week").notNull(),
-  entryDate: timestamp("entry_date").notNull(), // The actual date of the entry
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+    .references(() => teams.id, { onDelete: 'cascade' }),
+  rating: moodRatingEnum('rating').notNull(),
+  comment: json('comment'), // WYSIWYG content stored as JSON
+  isAnonymous: boolean('is_anonymous').default(false).notNull(),
+  allowContact: boolean('allow_contact').default(true).notNull(),
+  dayOfWeek: dayOfWeekEnum('day_of_week').notNull(),
+  entryDate: timestamp('entry_date').notNull(), // The actual date of the entry
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 // Team invitations table
-export const teamInvitations = pgTable("team_invitations", {
-  id: text("id").primaryKey(),
-  teamId: text("team_id")
+export const teamInvitations = pgTable('team_invitations', {
+  id: text('id').primaryKey(),
+  teamId: text('team_id')
     .notNull()
-    .references(() => teams.id, { onDelete: "cascade" }),
-  invitedBy: text("invited_by")
+    .references(() => teams.id, { onDelete: 'cascade' }),
+  invitedBy: text('invited_by')
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  email: varchar("email", { length: 255 }).notNull(),
-  token: varchar("token", { length: 255 }).unique().notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  acceptedAt: timestamp("accepted_at"),
-  rejectedAt: timestamp("rejected_at"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+    .references(() => user.id, { onDelete: 'cascade' }),
+  email: varchar('email', { length: 255 }).notNull(),
+  token: varchar('token', { length: 255 }).unique().notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  acceptedAt: timestamp('accepted_at'),
+  rejectedAt: timestamp('rejected_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
 // Notifications table
-export const notifications = pgTable("notifications", {
-  id: text("id").primaryKey(),
-  userId: text("user_id")
+export const notifications = pgTable('notifications', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  type: notificationTypeEnum("type").notNull(),
-  title: varchar("title", { length: 255 }).notNull(),
-  message: text("message").notNull(),
-  metadata: json("metadata"), // Additional data for the notification
-  isRead: boolean("is_read").default(false).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+    .references(() => user.id, { onDelete: 'cascade' }),
+  type: notificationTypeEnum('type').notNull(),
+  title: varchar('title', { length: 255 }).notNull(),
+  message: text('message').notNull(),
+  metadata: json('metadata'), // Additional data for the notification
+  isRead: boolean('is_read').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
 // Mentions table (for user mentions in mood entries)
-export const mentions = pgTable("mentions", {
-  id: text("id").primaryKey(),
-  moodEntryId: text("mood_entry_id")
+export const mentions = pgTable('mentions', {
+  id: text('id').primaryKey(),
+  moodEntryId: text('mood_entry_id')
     .notNull()
-    .references(() => moodEntries.id, { onDelete: "cascade" }),
-  mentionedUserId: text("mentioned_user_id")
+    .references(() => moodEntries.id, { onDelete: 'cascade' }),
+  mentionedUserId: text('mentioned_user_id')
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  mentionedByUserId: text("mentioned_by_user_id")
+    .references(() => user.id, { onDelete: 'cascade' }),
+  mentionedByUserId: text('mentioned_by_user_id')
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+    .references(() => user.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
 // User settings table
-export const userSettings = pgTable("user_settings", {
-  id: text("id").primaryKey(),
-  userId: text("user_id")
+export const userSettings = pgTable('user_settings', {
+  id: text('id').primaryKey(),
+  userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: "cascade" })
+    .references(() => user.id, { onDelete: 'cascade' })
     .unique(),
-  allowedDays: json("allowed_days")
-    .default(["monday", "tuesday", "wednesday", "thursday", "friday"])
+  allowedDays: json('allowed_days')
+    .default(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'])
     .notNull(), // Days user wants to submit mood
-  timezone: varchar("timezone", { length: 100 }).default("UTC").notNull(),
-  emailNotifications: boolean("email_notifications").default(true).notNull(),
-  mentionNotifications: boolean("mention_notifications")
+  timezone: varchar('timezone', { length: 100 }).default('UTC').notNull(),
+  emailNotifications: boolean('email_notifications').default(true).notNull(),
+  mentionNotifications: boolean('mention_notifications')
     .default(true)
     .notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 // Relations
 export const usersRelations = relations(user, ({ many, one }) => ({
   teamMembers: many(teamMembers),
   moodEntries: many(moodEntries),
-  sentInvitations: many(teamInvitations, { relationName: "invitedBy" }),
+  sentInvitations: many(teamInvitations, { relationName: 'invitedBy' }),
   notifications: many(notifications),
-  mentionsSent: many(mentions, { relationName: "mentionedBy" }),
-  mentionsReceived: many(mentions, { relationName: "mentionedUser" }),
+  mentionsSent: many(mentions, { relationName: 'mentionedBy' }),
+  mentionsReceived: many(mentions, { relationName: 'mentionedUser' }),
   settings: one(userSettings),
   accounts: many(account),
   sessions: many(session),
@@ -260,7 +260,7 @@ export const teamInvitationsRelations = relations(
       fields: [teamInvitations.invitedBy],
       references: [user.id],
     }),
-  })
+  }),
 );
 
 export const notificationsRelations = relations(notifications, ({ one }) => ({
@@ -278,12 +278,12 @@ export const mentionsRelations = relations(mentions, ({ one }) => ({
   mentionedUser: one(user, {
     fields: [mentions.mentionedUserId],
     references: [user.id],
-    relationName: "mentionedUser",
+    relationName: 'mentionedUser',
   }),
   mentionedByUser: one(user, {
     fields: [mentions.mentionedByUserId],
     references: [user.id],
-    relationName: "mentionedBy",
+    relationName: 'mentionedBy',
   }),
 }));
 
@@ -304,6 +304,9 @@ export type NewSession = typeof session.$inferInsert;
 export type Team = typeof teams.$inferSelect;
 export type NewTeam = typeof teams.$inferInsert;
 export type TeamMember = typeof teamMembers.$inferSelect;
+export type TeamMemberWithTeam = TeamMember & {
+  team: Team;
+};
 export type NewTeamMember = typeof teamMembers.$inferInsert;
 export type MoodEntry = typeof moodEntries.$inferSelect;
 export type NewMoodEntry = typeof moodEntries.$inferInsert;
