@@ -92,13 +92,14 @@ export default function NewTeamPage() {
     }
 
     try {
-      await createTeamMutation.mutateAsync({
+      const response = await createTeamMutation.mutateAsync({
         name: formData.name,
         description: formData.description || undefined,
       });
 
-      // Redirect to home or teams page on success
-      router.push('/');
+      const team = response.data;
+
+      router.push(`/team/${team.id}`);
     } catch (error) {
       console.error('Error creating team:', error);
       setErrors({ submit: 'Failed to create team. Please try again.' });
@@ -173,7 +174,7 @@ export default function NewTeamPage() {
               On what day do you want polls?
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-6">
+            <div className="flex gap-8 flex-wrap">
               <Checkbox
                 checked={formData.pollDays.weekday}
                 label="Weekday"

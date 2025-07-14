@@ -9,11 +9,13 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
 } from '../ui/dropdown-menu';
-import { User, LogOut } from 'lucide-react';
+import { User, LogOut, CirclePlus } from 'lucide-react';
 import { TeamMemberWithTeam } from '@/db/schema';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { Button } from '../ui/button';
 
 export interface User {
   id: string;
@@ -76,7 +78,7 @@ export default function PageHeader({ user, userTeams }: PageHeaderProps) {
 
       <div className="flex items-center gap-4">
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2">
+          <DropdownMenuTrigger className="cursor-pointer flex items-center gap-2">
             Open <ChevronDown />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -89,11 +91,23 @@ export default function PageHeader({ user, userTeams }: PageHeaderProps) {
                 </Link>
               </DropdownMenuItem>
             ))}
+
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Link
+                href="/new-team"
+                className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CirclePlus />
+                Create New Team
+              </Link>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger
+            asChild
+            className="cursor-pointer">
             <Avatar className="w-12 h-12">
               <AvatarImage
                 sizes="(140px, 140px)"

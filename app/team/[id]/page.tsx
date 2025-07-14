@@ -5,9 +5,8 @@ import PageHeader from '@/components/layout/page-header';
 import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { NoTeams } from '@/components/no-teams';
 
-export default async function Home() {
+export default async function Home({ params }: { params: { id: string } }) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -23,18 +22,10 @@ export default async function Home() {
     },
   });
 
-  console.log(userTeams);
+  const userTeam = userTeams.find((tm) => tm.team.id === params.id);
 
-  if (!userTeams.length) {
-    return (
-      <div className={`min-h-screen bg-white`}>
-        <PageHeader
-          user={session.user}
-          userTeams={userTeams}
-        />
-        <NoTeams />
-      </div>
-    );
+  if (!userTeam) {
+    redirect('/');
   }
 
   return (
@@ -52,8 +43,8 @@ export default async function Home() {
             {/* Title and Settings */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
               <div>
-                <h1 className="font-merriweather text-[#34314C] text-2xl md:text-3xl font-normal">
-                  Kaleidos con nombre largo
+                <h1 className="font-merriweather text-primary text-2xl md:text-3xl font-normal">
+                  {userTeam.team.name}
                 </h1>
                 <p className="text-[#948FB7] text-sm mt-1">
                   Tracks on weekdays from 14:00 pm to 12:00 am
@@ -67,7 +58,7 @@ export default async function Home() {
                   </button>
                 </div>
               </div>
-              <button className="flex items-center gap-2 text-[#34314C] text-sm">
+              <button className="flex items-center gap-2 text-primary text-sm">
                 <svg
                   width="16"
                   height="16"
@@ -133,7 +124,7 @@ export default async function Home() {
                   />
 
                   {/* Y-axis labels */}
-                  <g className="text-xs fill-[#34314C]">
+                  <g className="text-xs fill-primary">
                     <text
                       x="20"
                       y="60"
@@ -259,7 +250,7 @@ export default async function Home() {
             {/* Last Poll Result */}
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex justify-between items-start mb-6">
-                <h3 className="font-merriweather text-[#34314C] text-xl">
+                <h3 className="font-merriweather text-primary text-xl">
                   Last poll result
                 </h3>
                 <span className="text-[#948FB7] text-sm">
@@ -272,13 +263,13 @@ export default async function Home() {
                 <div className="relative">
                   <div className="w-20 h-20 bg-[#98DDAB] rounded-full"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-[#34314C] text-4xl font-light">
+                    <span className="text-primary text-4xl font-light">
                       3,7
                     </span>
                   </div>
                 </div>
                 <div>
-                  <div className="text-[#34314C] text-2xl font-light">9/20</div>
+                  <div className="text-primary text-2xl font-light">9/20</div>
                   <div className="font-merriweather text-[#948FB7] text-sm">
                     Participation
                   </div>
@@ -326,10 +317,10 @@ export default async function Home() {
 
             {/* Call to Action */}
             <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-              <p className="text-[#34314C] text-sm mb-4">
+              <p className="text-primary text-sm mb-4">
                 You haven't participated yet.
               </p>
-              <button className="w-full bg-[#34314C] text-white font-bold px-6 py-4 rounded-tl-xl rounded-br-xl shadow-lg">
+              <button className="w-full bg-primary text-white font-bold px-6 py-4 rounded-tl-xl rounded-br-xl shadow-lg">
                 Share your mood
               </button>
             </div>
@@ -402,11 +393,11 @@ export default async function Home() {
                 {/* User Avatar */}
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 rounded-full border-4 border-[#948FB7] border-opacity-10 bg-[#948FB7] bg-opacity-10 flex items-center justify-center">
-                    <span className="text-[#34314C] text-lg">
+                    <span className="text-primary text-lg">
                       {member.initials}
                     </span>
                   </div>
-                  <span className="font-merriweather text-[#34314C] text-sm">
+                  <span className="font-merriweather text-primary text-sm">
                     {member.name}
                   </span>
                 </div>
@@ -417,7 +408,7 @@ export default async function Home() {
                     className="w-20 h-20 rounded-full flex items-center justify-center"
                     style={{ backgroundColor: member.color }}>
                     {member.mood === 'happy' && (
-                      <div className="text-[#34314C]">
+                      <div className="text-primary">
                         <svg
                           width="40"
                           height="40"
@@ -439,7 +430,7 @@ export default async function Home() {
                       </div>
                     )}
                     {member.mood === 'neutral' && (
-                      <div className="text-[#34314C]">
+                      <div className="text-primary">
                         <svg
                           width="40"
                           height="40"
@@ -461,7 +452,7 @@ export default async function Home() {
                       </div>
                     )}
                     {member.mood === 'sad' && (
-                      <div className="text-[#34314C]">
+                      <div className="text-primary">
                         <svg
                           width="40"
                           height="40"
