@@ -10,6 +10,6 @@ export const merriweatherFont = Merriweather({
 export const latoFont = Lato({
   subsets: ['latin'],
   weight: ['300', '400', '700'],
-  variable: '--font-lato',
+  variable: '--font-lato-next',
   display: 'swap',
 });

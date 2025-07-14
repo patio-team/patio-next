@@ -1,22 +1,28 @@
-import { NextRequest } from "next/server";
-import { db } from "@/db";
-import { teams, teamMembers } from "@/db/schema";
+import { NextRequest } from 'next/server';
+import { auth } from '@/lib/auth';
+import { db } from '@/db';
+import { teams, teamMembers } from '@/db/schema';
 import {
   createResponse,
   createErrorResponse,
   getRequestBody,
   generateInviteCode,
-} from "@/lib/utils";
-import { eq } from "drizzle-orm";
+  generateId,
+} from '@/lib/utils';
+import { eq } from 'drizzle-orm';
 
 // GET /api/teams - Get user's teams
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.headers.get("x-user-id");
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
 
-    if (!userId) {
-      return createErrorResponse("No autorizado", 401);
+    if (!session?.user?.id) {
+      return createErrorResponse('No autorizado', 401);
     }
+
+    const userId = session.user.id;
 
     const userTeams = await db.query.teamMembers.findMany({
       where: eq(teamMembers.userId, userId),
@@ -33,31 +39,35 @@ export async function GET(request: NextRequest) {
 
     return createResponse(teamsData);
   } catch (error) {
-    console.error("Error fetching teams:", error);
-    return createErrorResponse("Error interno del servidor", 500);
+    console.error('Error fetching teams:', error);
+    return createErrorResponse('Error interno del servidor', 500);
   }
 }
 
 // POST /api/teams - Create new team
 export async function POST(request: NextRequest) {
   try {
-    const userId = request.headers.get("x-user-id");
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
 
-    if (!userId) {
-      return createErrorResponse("No autorizado", 401);
+    if (!session?.user?.id) {
+      return createErrorResponse('No autorizado', 401);
     }
 
+    const userId = session.user.id;
     const body = await getRequestBody(request);
     const { name, description } = body;
 
     if (!name) {
-      return createErrorResponse("El nombre del equipo es requerido", 400);
+      return createErrorResponse('El nombre del equipo es requerido', 400);
     }
 
     // Create team
     const [newTeam] = await db
       .insert(teams)
       .values({
+        id: generateId(),
         name,
         description,
         inviteCode: generateInviteCode(),
@@ -66,14 +76,15 @@ export async function POST(request: NextRequest) {
 
     // Add creator as admin
     await db.insert(teamMembers).values({
+      id: generateId(),
       userId,
       teamId: newTeam.id,
-      role: "admin",
+      role: 'admin',
     });
 
     return createResponse(newTeam, 201);
   } catch (error) {
-    console.error("Error creating team:", error);
-    return createErrorResponse("Error interno del servidor", 500);
+    console.error('Error creating team:', error);
+    return createErrorResponse('Error interno del servidor', 500);
   }
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { latoFont, merriweatherFont } from '@/lib/fonts';
+import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
   title: 'Patio',
@@ -17,7 +18,9 @@ export default function RootLayout({
       lang="en"
       className={`${latoFont.className} ${latoFont.variable} ${merriweatherFont.variable}`}
       suppressHydrationWarning>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
