@@ -1,5 +1,5 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
 export async function getCurrentUser() {
   try {
@@ -9,7 +9,7 @@ export async function getCurrentUser() {
     });
     return session?.user || null;
   } catch (error) {
-    console.error("Error getting current user:", error);
+    console.error('Error getting current user:', error);
     return null;
   }
 }
@@ -17,7 +17,7 @@ export async function getCurrentUser() {
 export async function requireAuth() {
   const user = await getCurrentUser();
   if (!user) {
-    throw new Error("Authentication required");
+    throw new Error('Authentication required');
   }
   return user;
 }

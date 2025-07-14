@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useAuth } from "@/lib/hooks/use-auth";
-import { signOut } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useAuth } from '@/lib/hooks/use-auth';
+import { signOut } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 export function AuthNav() {
   const { user, isAuthenticated } = useAuth();
@@ -13,12 +13,12 @@ export function AuthNav() {
       await signOut({
         fetchOptions: {
           onSuccess: () => {
-            router.push("/login");
+            router.push('/login');
           },
         },
       });
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error('Error signing out:', error);
     }
   };
 
@@ -26,9 +26,7 @@ export function AuthNav() {
 
   return (
     <div className="flex items-center gap-4">
-      <span className="text-sm text-gray-600">
-        Welcome, {user.name}
-      </span>
+      <span className="text-sm text-gray-600">Welcome, {user.name}</span>
       {user.image && (
         <img
           src={user.image}
@@ -38,8 +36,7 @@ export function AuthNav() {
       )}
       <button
         onClick={handleSignOut}
-        className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
-      >
+        className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
         Sign Out
       </button>
     </div>

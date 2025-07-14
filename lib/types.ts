@@ -2,7 +2,7 @@
 
 // WYSIWYG content type
 export interface WysiwygContent {
-  type: "doc";
+  type: 'doc';
   content: Array<{
     type: string;
     content?: Array<{
@@ -23,7 +23,7 @@ export interface TeamWithMembers {
   updatedAt: Date;
   members: Array<{
     id: string;
-    role: "member" | "admin";
+    role: 'member' | 'admin';
     joinedAt: Date;
     user: {
       id: string;
@@ -36,7 +36,7 @@ export interface TeamWithMembers {
 
 export interface MoodEntryWithDetails {
   id: string;
-  rating: "1" | "2" | "3" | "4" | "5";
+  rating: '1' | '2' | '3' | '4' | '5';
   comment: WysiwygContent | string | null; // WYSIWYG content, plain text, or null
   isAnonymous: boolean;
   allowContact: boolean;
@@ -59,7 +59,7 @@ export interface MoodEntryWithDetails {
 
 export interface NotificationWithMetadata {
   id: string;
-  type: "mention" | "team_invite" | "team_update";
+  type: 'mention' | 'team_invite' | 'team_update';
   title: string;
   message: string;
   metadata: Record<string, string | number | boolean | null>;
@@ -69,25 +69,25 @@ export interface NotificationWithMetadata {
 
 // Utility functions for mood ratings
 export const MOOD_RATINGS = {
-  "1": { label: "Muy mal", color: "#EF4444", emoji: "😞" },
-  "2": { label: "Mal", color: "#F97316", emoji: "😔" },
-  "3": { label: "Regular", color: "#EAB308", emoji: "😐" },
-  "4": { label: "Bien", color: "#22C55E", emoji: "😊" },
-  "5": { label: "Excelente", color: "#10B981", emoji: "😄" },
+  '1': { label: 'Muy mal', color: '#EF4444', emoji: '😞' },
+  '2': { label: 'Mal', color: '#F97316', emoji: '😔' },
+  '3': { label: 'Regular', color: '#EAB308', emoji: '😐' },
+  '4': { label: 'Bien', color: '#22C55E', emoji: '😊' },
+  '5': { label: 'Excelente', color: '#10B981', emoji: '😄' },
 } as const;
 
 export const DAYS_OF_WEEK = {
-  monday: "Lunes",
-  tuesday: "Martes",
-  wednesday: "Miércoles",
-  thursday: "Jueves",
-  friday: "Viernes",
-  saturday: "Sábado",
-  sunday: "Domingo",
+  monday: 'Lunes',
+  tuesday: 'Martes',
+  wednesday: 'Miércoles',
+  thursday: 'Jueves',
+  friday: 'Viernes',
+  saturday: 'Sábado',
+  sunday: 'Domingo',
 } as const;
 
 // Helper functions
-export function getMoodRatingInfo(rating: "1" | "2" | "3" | "4" | "5") {
+export function getMoodRatingInfo(rating: '1' | '2' | '3' | '4' | '5') {
   return MOOD_RATINGS[rating];
 }
 
@@ -96,24 +96,24 @@ export function getDayName(day: keyof typeof DAYS_OF_WEEK) {
 }
 
 export function formatMoodDate(date: Date): string {
-  return new Intl.DateTimeFormat("es-ES", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  return new Intl.DateTimeFormat('es-ES', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   }).format(date);
 }
 
 export function canUserPostToday(allowedDays: string[]): boolean {
   const today = new Date();
   const dayNames = [
-    "sunday",
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
   ];
   const todayName = dayNames[today.getDay()];
   return allowedDays.includes(todayName);
@@ -122,7 +122,7 @@ export function canUserPostToday(allowedDays: string[]): boolean {
 // Validation schemas (you might want to use Zod for more robust validation)
 export interface CreateMoodEntryRequest {
   teamId: string;
-  rating: "1" | "2" | "3" | "4" | "5";
+  rating: '1' | '2' | '3' | '4' | '5';
   comment?: WysiwygContent | string;
   isAnonymous?: boolean;
   allowContact?: boolean;

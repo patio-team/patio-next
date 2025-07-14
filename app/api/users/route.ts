@@ -1,14 +1,19 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/db';
 import { users, userSettings } from '@/db/schema';
-import { createResponse, createErrorResponse, getRequestBody, isValidEmail } from '@/lib/utils';
+import {
+  createResponse,
+  createErrorResponse,
+  getRequestBody,
+  isValidEmail,
+} from '@/lib/utils';
 import { eq } from 'drizzle-orm';
 
 // GET /api/users - Get current user profile
 export async function GET(request: NextRequest) {
   try {
     const userId = request.headers.get('x-user-id'); // Assuming auth middleware sets this
-    
+
     if (!userId) {
       return createErrorResponse('No autorizado', 401);
     }
@@ -60,12 +65,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Create user
-    const [newUser] = await db.insert(users).values({
-      email,
-      name,
-      avatar,
-      emailVerified: false,
-    }).returning();
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        email,
+        name,
+        avatar,
+        emailVerified: false,
+      })
+      .returning();
 
     // Create default user settings
     await db.insert(userSettings).values({
@@ -87,7 +95,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const userId = request.headers.get('x-user-id');
-    
+
     if (!userId) {
       return createErrorResponse('No autorizado', 401);
     }
@@ -95,7 +103,8 @@ export async function PUT(request: NextRequest) {
     const body = await getRequestBody(request);
     const { name, avatar } = body;
 
-    const [updatedUser] = await db.update(users)
+    const [updatedUser] = await db
+      .update(users)
       .set({
         name,
         avatar,

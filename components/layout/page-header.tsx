@@ -83,7 +83,7 @@ export default function PageHeader({ user, userTeams }: PageHeaderProps) {
             {userTeams.map((userTeam) => (
               <DropdownMenuItem key={userTeam.teamId}>
                 <Link
-                  href={`/teams/${userTeam.teamId}`}
+                  href={`/team/${userTeam.teamId}`}
                   className="flex items-center">
                   <span className="truncate">{userTeam.team.name}</span>
                 </Link>

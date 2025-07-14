@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useSession as useBetterAuthSession } from "@/lib/auth-client";
+import { useSession as useBetterAuthSession } from '@/lib/auth-client';
 
 export function useAuth() {
   const { data: session, error, isPending } = useBetterAuthSession();

@@ -1,5 +1,5 @@
-import { NextRequest } from "next/server";
-import { db } from "@/db";
+import { NextRequest } from 'next/server';
+import { db } from '@/db';
 import {
   moodEntries,
   teamMembers,
@@ -7,43 +7,43 @@ import {
   users,
   notifications,
   teams,
-} from "@/db/schema";
+} from '@/db/schema';
 import {
   createResponse,
   createErrorResponse,
   getRequestBody,
   getDayOfWeek,
-} from "@/lib/utils";
-import { sendMentionNotificationEmail } from "@/lib/email";
-import { eq, and, desc } from "drizzle-orm";
+} from '@/lib/utils';
+import { sendMentionNotificationEmail } from '@/lib/email';
+import { eq, and, desc } from 'drizzle-orm';
 
 // GET /api/mood-entries - Get mood entries for a team
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.headers.get("x-user-id");
+    const userId = request.headers.get('x-user-id');
     const { searchParams } = new URL(request.url);
-    const teamId = searchParams.get("teamId");
-    const limit = parseInt(searchParams.get("limit") || "50");
-    const offset = parseInt(searchParams.get("offset") || "0");
+    const teamId = searchParams.get('teamId');
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const offset = parseInt(searchParams.get('offset') || '0');
 
     if (!userId) {
-      return createErrorResponse("No autorizado", 401);
+      return createErrorResponse('No autorizado', 401);
     }
 
     if (!teamId) {
-      return createErrorResponse("ID del equipo es requerido", 400);
+      return createErrorResponse('ID del equipo es requerido', 400);
     }
 
     // Check if user is member of the team
     const membership = await db.query.teamMembers.findFirst({
       where: and(
         eq(teamMembers.userId, userId),
-        eq(teamMembers.teamId, teamId)
+        eq(teamMembers.teamId, teamId),
       ),
     });
 
     if (!membership) {
-      return createErrorResponse("No tienes acceso a este equipo", 403);
+      return createErrorResponse('No tienes acceso a este equipo', 403);
     }
 
     const entries = await db.query.moodEntries.findMany({
@@ -69,18 +69,18 @@ export async function GET(request: NextRequest) {
 
     return createResponse(processedEntries);
   } catch (error) {
-    console.error("Error fetching mood entries:", error);
-    return createErrorResponse("Error interno del servidor", 500);
+    console.error('Error fetching mood entries:', error);
+    return createErrorResponse('Error interno del servidor', 500);
   }
 }
 
 // POST /api/mood-entries - Create new mood entry
 export async function POST(request: NextRequest) {
   try {
-    const userId = request.headers.get("x-user-id");
+    const userId = request.headers.get('x-user-id');
 
     if (!userId) {
-      return createErrorResponse("No autorizado", 401);
+      return createErrorResponse('No autorizado', 401);
     }
 
     const body = await getRequestBody(request);
@@ -95,25 +95,25 @@ export async function POST(request: NextRequest) {
 
     if (!teamId || !rating) {
       return createErrorResponse(
-        "ID del equipo y calificación son requeridos",
-        400
+        'ID del equipo y calificación son requeridos',
+        400,
       );
     }
 
-    if (!["1", "2", "3", "4", "5"].includes(rating)) {
-      return createErrorResponse("Calificación debe ser entre 1 y 5", 400);
+    if (!['1', '2', '3', '4', '5'].includes(rating)) {
+      return createErrorResponse('Calificación debe ser entre 1 y 5', 400);
     }
 
     // Check if user is member of the team
     const membership = await db.query.teamMembers.findFirst({
       where: and(
         eq(teamMembers.userId, userId),
-        eq(teamMembers.teamId, teamId)
+        eq(teamMembers.teamId, teamId),
       ),
     });
 
     if (!membership) {
-      return createErrorResponse("No eres miembro de este equipo", 403);
+      return createErrorResponse('No eres miembro de este equipo', 403);
     }
 
     const today = new Date();
@@ -130,13 +130,13 @@ export async function POST(request: NextRequest) {
         isAnonymous,
         allowContact,
         dayOfWeek: dayOfWeek as
-          | "monday"
-          | "tuesday"
-          | "wednesday"
-          | "thursday"
-          | "friday"
-          | "saturday"
-          | "sunday",
+          | 'monday'
+          | 'tuesday'
+          | 'wednesday'
+          | 'thursday'
+          | 'friday'
+          | 'saturday'
+          | 'sunday',
         entryDate: today,
       })
       .returning();
@@ -146,14 +146,14 @@ export async function POST(request: NextRequest) {
       // Verify mentioned users are team members
       const teamMemberIds = await db.query.teamMembers.findMany({
         where: and(
-          eq(teamMembers.teamId, teamId)
+          eq(teamMembers.teamId, teamId),
           // We would need an 'in' operator here for proper validation
         ),
       });
 
       const validMemberIds = teamMemberIds.map((tm) => tm.userId);
       const validMentions = mentionedUserIds.filter((id: string) =>
-        validMemberIds.includes(id)
+        validMemberIds.includes(id),
       );
 
       // Create mentions
@@ -169,10 +169,10 @@ export async function POST(request: NextRequest) {
           // Create notification
           await db.insert(notifications).values({
             userId: mentionedUserId,
-            type: "mention",
-            title: "Te han mencionado",
+            type: 'mention',
+            title: 'Te han mencionado',
             message: isAnonymous
-              ? "Alguien te ha mencionado en un comentario anónimo"
+              ? 'Alguien te ha mencionado en un comentario anónimo'
               : `Te han mencionado en un comentario`,
             metadata: {
               moodEntryId: newEntry.id,
@@ -202,13 +202,13 @@ export async function POST(request: NextRequest) {
             if (currentUser && team) {
               await sendMentionNotificationEmail(
                 mentionedUser.email,
-                isAnonymous ? "Usuario anónimo" : currentUser.name,
+                isAnonymous ? 'Usuario anónimo' : currentUser.name,
                 team.name,
-                typeof comment === "string" ? comment : JSON.stringify(comment)
+                typeof comment === 'string' ? comment : JSON.stringify(comment),
               );
             }
           }
-        }
+        },
       );
 
       await Promise.all(mentionPromises);
@@ -216,7 +216,7 @@ export async function POST(request: NextRequest) {
 
     return createResponse(newEntry, 201);
   } catch (error) {
-    console.error("Error creating mood entry:", error);
-    return createErrorResponse("Error interno del servidor", 500);
+    console.error('Error creating mood entry:', error);
+    return createErrorResponse('Error interno del servidor', 500);
   }
 }

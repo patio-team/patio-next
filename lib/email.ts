@@ -1,9 +1,9 @@
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransporter({
   host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: process.env.SMTP_SECURE === "true",
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: process.env.SMTP_SECURE === 'true',
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -14,7 +14,7 @@ export async function sendTeamInvitationEmail(
   email: string,
   teamName: string,
   inviterName: string,
-  inviteToken: string
+  inviteToken: string,
 ) {
   const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/invitations/accept?token=${inviteToken}`;
 
@@ -39,7 +39,7 @@ export async function sendMentionNotificationEmail(
   email: string,
   mentionerName: string,
   teamName: string,
-  comment: string
+  comment: string,
 ) {
   const mailOptions = {
     from: process.env.FROM_EMAIL,

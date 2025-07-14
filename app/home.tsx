@@ -1,5 +1,5 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
 export default async function HomePage() {
   // Check if user is authenticated
@@ -10,12 +10,12 @@ export default async function HomePage() {
 
     if (session?.user) {
       // User is authenticated, redirect to dashboard
-      redirect("/manage-group");
+      redirect('/manage-group');
     }
   } catch {
     // User is not authenticated, continue to show landing page
   }
 
   // If not authenticated, redirect to login
-  redirect("/login");
+  redirect('/login');
 }
