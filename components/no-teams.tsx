@@ -1,4 +1,5 @@
 import { merriweatherFont } from '@/lib/fonts';
+import { PatioLink } from './ui/Link';
 
 export function NoTeams() {
   return (
@@ -294,6 +295,13 @@ export function NoTeams() {
           />
         </svg>
       </div>
+
+      {/* TODO: use as child */}
+      <PatioLink
+        href="/new-team"
+        className="text-center px-16">
+        Let's start
+      </PatioLink>
     </div>
   );
 }

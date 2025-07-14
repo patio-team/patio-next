@@ -1,18 +1,19 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Merriweather, Lato } from "next/font/google";
+import { useState } from 'react';
+import { Merriweather, Lato } from 'next/font/google';
+import { Button } from '@/components/ui/button';
 
 const merriweather = Merriweather({
-  subsets: ["latin"],
-  variable: "--font-merriweather",
-  weight: ["400"],
+  subsets: ['latin'],
+  variable: '--font-merriweather',
+  weight: ['400'],
 });
 
 const lato = Lato({
-  subsets: ["latin"],
-  variable: "--font-lato",
-  weight: ["300", "400", "700"],
+  subsets: ['latin'],
+  variable: '--font-lato',
+  weight: ['300', '400', '700'],
 });
 
 interface DaySelection {
@@ -28,7 +29,7 @@ interface DaySelection {
 }
 
 export default function NewTeamPage() {
-  const [teamName, setTeamName] = useState("");
+  const [teamName, setTeamName] = useState('');
   const [selectedDays, setSelectedDays] = useState<DaySelection>({
     weekday: true,
     weekend: false,
@@ -40,8 +41,8 @@ export default function NewTeamPage() {
     saturday: false,
     sunday: false,
   });
-  const [startTime] = useState("12:00 pm");
-  const [duration] = useState("24 hr");
+  const [startTime] = useState('12:00 pm');
+  const [duration] = useState('24 hr');
 
   const handleDayToggle = (day: keyof DaySelection) => {
     setSelectedDays((prev) => ({
@@ -56,8 +57,7 @@ export default function NewTeamPage() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+      xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -79,8 +79,7 @@ export default function NewTeamPage() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+      xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -96,8 +95,7 @@ export default function NewTeamPage() {
       height="24"
       viewBox="0 0 24 24"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+      xmlns="http://www.w3.org/2000/svg">
       <path
         d="M6 9L12 15L18 9"
         stroke="#25282B"
@@ -114,8 +112,7 @@ export default function NewTeamPage() {
       height="36"
       viewBox="0 0 36 36"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+      xmlns="http://www.w3.org/2000/svg">
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -143,8 +140,7 @@ export default function NewTeamPage() {
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-6 cursor-pointer group"
-    >
+      className="flex items-center gap-6 cursor-pointer group">
       <div className="flex-shrink-0">
         {checked ? <CheckIcon /> : <EmptyCheckIcon />}
       </div>
@@ -158,8 +154,7 @@ export default function NewTeamPage() {
     <div className="relative">
       <button
         type="button"
-        className="w-44 h-[42px] flex items-center justify-between px-4 py-2 border border-[#DBDAE7] rounded-lg bg-white"
-      >
+        className="w-44 h-[42px] flex items-center justify-between px-4 py-2 border border-[#DBDAE7] rounded-lg bg-white">
         <span className="font-lato text-[#948FB7] text-base leading-[18px] tracking-[0.1px]">
           {value}
         </span>
@@ -170,14 +165,12 @@ export default function NewTeamPage() {
 
   return (
     <div
-      className={`${merriweather.variable} ${lato.variable} min-h-screen bg-white relative`}
-    >
+      className={`${merriweather.variable} ${lato.variable} min-h-screen bg-white relative`}>
       {/* Close button */}
       <button
         type="button"
         className="absolute top-14 right-16 z-10 hover:opacity-75 transition-opacity"
-        onClick={() => window.history.back()}
-      >
+        onClick={() => window.history.back()}>
         <CloseIcon />
       </button>
 
@@ -213,47 +206,47 @@ export default function NewTeamPage() {
               <Checkbox
                 checked={selectedDays.weekday}
                 label="Weekday"
-                onClick={() => handleDayToggle("weekday")}
+                onClick={() => handleDayToggle('weekday')}
               />
               <Checkbox
                 checked={selectedDays.weekend}
                 label="Weekend"
-                onClick={() => handleDayToggle("weekend")}
+                onClick={() => handleDayToggle('weekend')}
               />
               <Checkbox
                 checked={selectedDays.monday}
                 label="Monday"
-                onClick={() => handleDayToggle("monday")}
+                onClick={() => handleDayToggle('monday')}
               />
               <Checkbox
                 checked={selectedDays.tuesday}
                 label="Tuesday"
-                onClick={() => handleDayToggle("tuesday")}
+                onClick={() => handleDayToggle('tuesday')}
               />
               <Checkbox
                 checked={selectedDays.wednesday}
                 label="Wednesday"
-                onClick={() => handleDayToggle("wednesday")}
+                onClick={() => handleDayToggle('wednesday')}
               />
               <Checkbox
                 checked={selectedDays.thursday}
                 label="Thursday"
-                onClick={() => handleDayToggle("thursday")}
+                onClick={() => handleDayToggle('thursday')}
               />
               <Checkbox
                 checked={selectedDays.friday}
                 label="Friday"
-                onClick={() => handleDayToggle("friday")}
+                onClick={() => handleDayToggle('friday')}
               />
               <Checkbox
                 checked={selectedDays.saturday}
                 label="Saturday"
-                onClick={() => handleDayToggle("saturday")}
+                onClick={() => handleDayToggle('saturday')}
               />
               <Checkbox
                 checked={selectedDays.sunday}
                 label="Sunday"
-                onClick={() => handleDayToggle("sunday")}
+                onClick={() => handleDayToggle('sunday')}
               />
             </div>
           </div>
@@ -280,17 +273,19 @@ export default function NewTeamPage() {
           <div className="flex flex-col sm:flex-row gap-6 pt-8">
             <button
               type="button"
-              className="w-60 h-15 px-5 py-4 border-2 border-[#C3C1D7] bg-white rounded-tl-[20px] rounded-br-[20px] shadow-[4px_4px_10px_0px_rgba(195,193,215,0.10)] hover:bg-gray-50 transition-colors"
-            >
+              className="w-60 h-15 px-5 py-4 border-2 border-[#C3C1D7] bg-white rounded-tl-[20px] rounded-br-[20px] shadow-[4px_4px_10px_0px_rgba(195,193,215,0.10)] hover:bg-gray-50 transition-colors">
               <span className="font-lato text-[#34314C] text-base font-bold">
                 Cancel
               </span>
             </button>
+
+            <Button>Create team</Button>
+            <Button variant="secondary">Create team</Button>
+
             <button
               type="button"
               disabled={!teamName.trim()}
-              className="w-60 h-15 px-5 py-4 bg-[#C3C1D7] rounded-tl-[20px] rounded-br-[20px] disabled:bg-[#C3C1D7] enabled:bg-[#34314C] enabled:hover:bg-[#2a2742] transition-colors"
-            >
+              className="w-60 h-15 px-5 py-4 bg-[#C3C1D7] rounded-tl-[20px] rounded-br-[20px] disabled:bg-[#C3C1D7] enabled:bg-[#34314C] enabled:hover:bg-[#2a2742] transition-colors">
               <span className="font-lato text-white text-base font-bold">
                 Create team
               </span>
@@ -307,8 +302,7 @@ export default function NewTeamPage() {
           height="269"
           viewBox="0 0 908 153"
           fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+          xmlns="http://www.w3.org/2000/svg">
           <circle
             opacity="0.25"
             cx="494.5"
@@ -316,7 +310,13 @@ export default function NewTeamPage() {
             r="100.5"
             fill="#FFC952"
           />
-          <circle opacity="0.25" cx="671.5" cy="48.5" r="48.5" fill="#98DDAB" />
+          <circle
+            opacity="0.25"
+            cx="671.5"
+            cy="48.5"
+            r="48.5"
+            fill="#98DDAB"
+          />
           <circle
             opacity="0.25"
             cx="850.5"
@@ -331,7 +331,13 @@ export default function NewTeamPage() {
             r="65.5"
             fill="#FF7473"
           />
-          <circle opacity="0.25" cx="50" cy="138" r="50" fill="#FE346E" />
+          <circle
+            opacity="0.25"
+            cx="50"
+            cy="138"
+            r="50"
+            fill="#FE346E"
+          />
         </svg>
       </div>
     </div>
