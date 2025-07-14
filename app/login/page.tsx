@@ -1,11 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { signIn } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setIsLoading(true);
+
+      await signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+
+      // The redirect will happen automatically
+    } catch (error) {
+      console.error("Error signing in:", error);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row relative overflow-hidden">
@@ -168,7 +185,11 @@ export default function LoginPage() {
           </h1>
 
           {/* Google Sign In Button */}
-          <button className="w-full max-w-[322px] mx-auto h-[39px] border border-[#C4C4C4] rounded bg-white flex items-center justify-center mb-6 hover:bg-gray-50 transition-colors relative">
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={isLoading}
+            className="w-full max-w-[322px] mx-auto h-[39px] border border-[#C4C4C4] rounded bg-white flex items-center justify-center mb-6 hover:bg-gray-50 transition-colors relative disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <svg
               className="absolute left-4 w-[18px] h-[18px]"
               viewBox="0 0 18 18"
@@ -200,7 +221,7 @@ export default function LoginPage() {
               />
             </svg>
             <span className="font-roboto text-[15px] text-[#333]">
-              Sign up with Google
+              {isLoading ? "Signing in..." : "Sign up with Google"}
             </span>
           </button>
         </div>

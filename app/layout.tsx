@@ -1,22 +1,10 @@
-import type { Metadata } from "next";
-import { Merriweather, Lato } from "next/font/google";
-import "./globals.css";
-
-const merriweather = Merriweather({
-  variable: "--font-merriweather",
-  subsets: ["latin"],
-  weight: ["400"],
-});
-
-const lato = Lato({
-  variable: "--font-lato",
-  subsets: ["latin"],
-  weight: ["300", "400", "700"],
-});
+import type { Metadata } from 'next';
+import './globals.css';
+import { latoFont } from '@/lib/fonts';
 
 export const metadata: Metadata = {
-  title: "Patio",
-  description: "Team mood tracking dashboard",
+  title: 'Patio',
+  description: 'Team mood tracking dashboard',
 };
 
 export default function RootLayout({
@@ -25,7 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${merriweather.variable} ${lato.variable}`}>
+    <html
+      lang="en"
+      className={`${latoFont.className}`}
+      suppressHydrationWarning>
       <body className="antialiased">{children}</body>
     </html>
   );

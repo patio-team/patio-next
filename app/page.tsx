@@ -1,91 +1,57 @@
-import { Merriweather, Lato } from "next/font/google";
+import { Merriweather, Lato } from 'next/font/google';
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
+import PageHeader from '@/components/layout/page-header';
+import { db } from '@/db';
+import { teamMembers } from '@/db/schema';
+import { eq } from 'drizzle-orm';
+import { NoTeams } from '@/components/no-teams';
 
 const merriweather = Merriweather({
-  subsets: ["latin"],
-  variable: "--font-merriweather",
-  weight: ["400"],
+  subsets: ['latin'],
+  variable: '--font-merriweather',
+  weight: ['400'],
 });
 
 const lato = Lato({
-  subsets: ["latin"],
-  variable: "--font-lato",
-  weight: ["300", "400", "700"],
+  subsets: ['latin'],
+  variable: '--font-lato',
+  weight: ['300', '400', '700'],
 });
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  const userTeams = await db.query.teamMembers.findMany({
+    where: eq(teamMembers.userId, session.user.id),
+    with: {
+      team: true,
+    },
+  });
+
+  console.log(userTeams);
+
+  if (!userTeams.length) {
+    return (
+      <div
+        className={`${merriweather.variable} ${lato.variable} min-h-screen bg-white`}>
+        <PageHeader user={session.user} />
+        <NoTeams />
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`${merriweather.variable} ${lato.variable} min-h-screen bg-white`}
-    >
-      {/* Header */}
-      <header className="w-full h-20 bg-white shadow-sm border-b border-gray-100 flex items-center justify-between px-4 md:px-16">
-        {/* Logo */}
-        <div className="flex items-center">
-          <svg
-            width="108"
-            height="42"
-            viewBox="0 0 108 42"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M108 20.2189C108 22.6139 107.457 24.7694 106.37 26.6854C105.283 28.5715 103.788 30.0384 101.886 31.0862C100.014 32.134 97.9461 32.6579 95.6817 32.6579C93.3871 32.6579 91.3039 32.134 89.432 31.0862C87.5601 30.0384 86.0807 28.5715 84.9938 26.6854C83.9068 24.7694 83.3634 22.6139 83.3634 20.2189C83.3634 17.8238 83.9068 15.6833 84.9938 13.7972C86.0807 11.8812 87.5601 10.3993 89.432 9.3515C91.3039 8.27374 93.3871 7.73486 95.6817 7.73486C97.9461 7.73486 100.014 8.27374 101.886 9.3515C103.788 10.3993 105.283 11.8812 106.37 13.7972C107.457 15.6833 108 17.8238 108 20.2189ZM102.565 20.2189C102.565 18.7519 102.248 17.4496 101.614 16.312C101.011 15.1444 100.18 14.2463 99.1236 13.6176C98.0971 12.9889 96.9498 12.6746 95.6817 12.6746C94.4136 12.6746 93.2513 12.9889 92.1945 13.6176C91.168 14.2463 90.3377 15.1444 89.7037 16.312C89.0999 17.4496 88.7979 18.7519 88.7979 20.2189C88.7979 21.6858 89.0999 22.9881 89.7037 24.1257C90.3377 25.2633 91.168 26.1465 92.1945 26.7752C93.2513 27.4039 94.4136 27.7182 95.6817 27.7182C96.9498 27.7182 98.0971 27.4039 99.1236 26.7752C100.18 26.1465 101.011 25.2633 101.614 24.1257C102.248 22.9881 102.565 21.6858 102.565 20.2189Z"
-              fill="#3FE3D2"
-            />
-            <path
-              d="M79.35 29.6288C79.35 30.4081 79.0931 31.0675 78.5793 31.607C78.0655 32.1166 77.4157 32.3714 76.6299 32.3714C75.8441 32.3714 75.1943 32.1166 74.6805 31.607C74.1667 31.0675 73.9098 30.4081 73.9098 29.6288V10.4607C73.9098 9.68143 74.1667 9.037 74.6805 8.52745C75.1943 7.98793 75.8441 7.71817 76.6299 7.71817C77.4157 7.71817 78.0655 7.98793 78.5793 8.52745C79.0931 9.037 79.35 9.68143 79.35 10.4607V29.6288Z"
-              fill="#98DDAB"
-            />
-            <path
-              d="M73.9125 2.69761C73.9125 1.20776 75.1304 0 76.6326 0C78.1349 0 79.3528 1.20776 79.3528 2.69761V3.59682C79.3528 5.08667 78.1349 6.29443 76.6326 6.29443C75.1304 6.29443 73.9125 5.08667 73.9125 3.59682V2.69761Z"
-              fill="#98DDAB"
-            />
-            <path
-              d="M64.4054 31.6088C64.9185 31.0705 65.175 30.4126 65.175 29.6351V2.73624C65.175 1.95873 64.9185 1.31579 64.4054 0.807415C63.8923 0.269138 63.2434 0 62.4587 0C61.6739 0 61.025 0.269138 60.5119 0.807415C59.9988 1.31579 59.7423 1.95873 59.7423 2.73624V29.6351C59.7423 30.4126 59.9988 31.0705 60.5119 31.6088C61.025 32.1172 61.6739 32.3714 62.4587 32.3714C63.2434 32.3714 63.8923 32.1172 64.4054 31.6088Z"
-              fill="#FFC952"
-            />
-            <path
-              d="M53.8568 10.4665C53.8568 8.98008 55.073 7.77511 56.5732 7.77511H68.0423C69.5425 7.77511 70.7587 8.98008 70.7587 10.4665C70.7587 11.9529 69.5425 13.1579 68.0423 13.1579H56.5732C55.073 13.1579 53.8568 11.9529 53.8568 10.4665Z"
-              fill="#FFC952"
-            />
-            <path
-              d="M47.4378 7.73486C48.2163 7.73486 48.8601 7.98933 49.3691 8.49827C49.8782 9.00721 50.1327 9.66584 50.1327 10.4742V29.4696C50.1327 30.248 49.8782 30.9066 49.3691 31.4455C48.8601 31.9544 48.2163 32.2089 47.4378 32.2089C46.6592 32.2089 46.0154 31.9544 45.5064 31.4455C45.0273 30.9365 44.7728 30.2929 44.7428 29.5145C43.9943 30.3827 42.9762 31.1311 41.6886 31.7598C40.431 32.3586 39.0985 32.6579 37.6911 32.6579C35.625 32.6579 33.7536 32.134 32.0767 31.0862C30.3999 30.0085 29.0674 28.5266 28.0793 26.6405C27.1211 24.7544 26.642 22.6139 26.642 20.2189C26.642 17.8238 27.1211 15.6833 28.0793 13.7972C29.0375 11.8812 30.34 10.3993 31.9869 9.3515C33.6637 8.27374 35.5053 7.73486 37.5115 7.73486C38.9488 7.73486 40.2962 8.0043 41.5539 8.54318C42.8115 9.05212 43.8745 9.71075 44.7428 10.5191V10.4742C44.7428 9.69578 44.9974 9.05212 45.5064 8.54318C46.0154 8.0043 46.6592 7.73486 47.4378 7.73486ZM38.3649 27.7182C40.3112 27.7182 41.8982 27.0147 43.1259 25.6076C44.3536 24.1706 44.9674 22.3744 44.9674 20.2189C44.9674 18.0633 44.3536 16.2671 43.1259 14.8301C41.8982 13.3931 40.3112 12.6746 38.3649 12.6746C36.4485 12.6746 34.8764 13.3931 33.6488 14.8301C32.4211 16.2671 31.8072 18.0633 31.8072 20.2189C31.8072 22.3744 32.4061 24.1706 33.6038 25.6076C34.8315 27.0147 36.4185 27.7182 38.3649 27.7182Z"
-              fill="#FF7473"
-            />
-            <path
-              d="M12.4416 7.73486C14.5077 7.73486 16.3791 8.27474 18.056 9.35449C19.7328 10.4042 21.0503 11.8739 22.0085 13.7635C22.9967 15.653 23.4907 17.7975 23.4907 20.197C23.4907 22.5964 23.0116 24.7559 22.0534 26.6755C21.0952 28.565 19.7777 30.0497 18.1009 31.1295C16.454 32.1792 14.6274 32.7041 12.6212 32.7041C11.1839 32.7041 9.82149 32.4192 8.53392 31.8493C7.27629 31.2494 6.22826 30.5296 5.38984 29.6898V38.5078C5.38984 39.2876 5.13532 39.9324 4.62628 40.4423C4.11724 40.9822 3.47345 41.2521 2.69492 41.2521C1.91639 41.2521 1.2726 40.9972 0.76356 40.4873C0.25452 39.9774 0 39.3176 0 38.5078V10.9291C0 10.1493 0.25452 9.50445 0.76356 8.99457C0.25452 8.4547 1.91639 8.18476 2.69492 8.18476C3.47345 8.18476 4.11724 8.4547 4.62628 8.99457C5.13532 9.50445 5.38984 10.1493 5.38984 10.9291V11.1091C6.10849 10.2093 7.1116 9.42947 8.39917 8.76962C9.68674 8.07978 11.0342 7.73486 12.4416 7.73486ZM11.7678 27.7552C13.6842 27.7552 15.2562 27.0354 16.4839 25.5957C17.7116 24.1561 18.3255 22.3565 18.3255 20.197C18.3255 18.0375 17.7116 16.2529 16.4839 14.8432C15.2862 13.4036 13.7142 12.6837 11.7678 12.6837C9.82149 12.6837 8.23448 13.4036 7.00679 14.8432C5.77911 16.2529 5.16526 18.0375 5.16526 20.197C5.16526 22.3565 5.77911 24.1561 7.00679 25.5957C8.23448 27.0354 9.82149 27.7552 11.7678 27.7552Z"
-              fill="#FE346E"
-            />
-          </svg>
-        </div>
-
-        {/* User Dropdown and Profile */}
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-lg">
-            <span className="font-lato text-[#34314C] text-sm">Kaleidos</span>
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M6 9L12 15L18 9"
-                stroke="#25282B"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <div className="w-12 h-12 rounded-full border-4 border-[#948FB7] border-opacity-15 bg-[#948FB7] bg-opacity-15 flex items-center justify-center">
-            <span className="font-lato text-[#34314C] text-lg font-normal">
-              MM
-            </span>
-          </div>
-        </div>
-      </header>
+      className={`${merriweather.variable} ${lato.variable} min-h-screen bg-white`}>
+      <PageHeader user={session.user} />
 
       {/* Main Content */}
       <div className="px-4 md:px-16 py-8">
@@ -116,8 +82,7 @@ export default function Home() {
                   height="16"
                   viewBox="0 0 16 16"
                   fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+                  xmlns="http://www.w3.org/2000/svg">
                   <path
                     fillRule="evenodd"
                     clipRule="evenodd"
@@ -156,16 +121,14 @@ export default function Home() {
                 <svg
                   className="w-full h-full"
                   viewBox="0 0 1000 300"
-                  preserveAspectRatio="xMidYMid meet"
-                >
+                  preserveAspectRatio="xMidYMid meet">
                   {/* Grid Lines */}
                   <defs>
                     <pattern
                       id="grid"
                       width="100"
                       height="60"
-                      patternUnits="userSpaceOnUse"
-                    >
+                      patternUnits="userSpaceOnUse">
                       <path
                         d="M 100 0 L 0 0 0 60"
                         fill="none"
@@ -174,23 +137,42 @@ export default function Home() {
                       />
                     </pattern>
                   </defs>
-                  <rect width="100%" height="100%" fill="url(#grid)" />
+                  <rect
+                    width="100%"
+                    height="100%"
+                    fill="url(#grid)"
+                  />
 
                   {/* Y-axis labels */}
                   <g className="font-lato text-xs fill-[#34314C]">
-                    <text x="20" y="60" textAnchor="middle">
+                    <text
+                      x="20"
+                      y="60"
+                      textAnchor="middle">
                       5
                     </text>
-                    <text x="20" y="120" textAnchor="middle">
+                    <text
+                      x="20"
+                      y="120"
+                      textAnchor="middle">
                       4
                     </text>
-                    <text x="20" y="180" textAnchor="middle">
+                    <text
+                      x="20"
+                      y="180"
+                      textAnchor="middle">
                       3
                     </text>
-                    <text x="20" y="240" textAnchor="middle">
+                    <text
+                      x="20"
+                      y="240"
+                      textAnchor="middle">
                       2
                     </text>
-                    <text x="20" y="280" textAnchor="middle">
+                    <text
+                      x="20"
+                      y="280"
+                      textAnchor="middle">
                       1
                     </text>
                   </g>
@@ -211,12 +193,23 @@ export default function Home() {
                       x1="0%"
                       y1="0%"
                       x2="100%"
-                      y2="0%"
-                    >
-                      <stop offset="0%" stopColor="#3FE3D2" />
-                      <stop offset="40%" stopColor="#98DDAB" />
-                      <stop offset="70%" stopColor="#FFC952" />
-                      <stop offset="100%" stopColor="#FF7473" />
+                      y2="0%">
+                      <stop
+                        offset="0%"
+                        stopColor="#3FE3D2"
+                      />
+                      <stop
+                        offset="40%"
+                        stopColor="#98DDAB"
+                      />
+                      <stop
+                        offset="70%"
+                        stopColor="#FFC952"
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="#FF7473"
+                      />
                     </linearGradient>
                   </defs>
 
@@ -232,11 +225,41 @@ export default function Home() {
                   />
 
                   {/* Mood indicators on y-axis */}
-                  <circle cx="8" cy="60" r="8" fill="#3FE3D2" opacity="0.5" />
-                  <circle cx="8" cy="120" r="8" fill="#98DDAB" opacity="0.5" />
-                  <circle cx="8" cy="180" r="8" fill="#FFC952" opacity="0.5" />
-                  <circle cx="8" cy="240" r="8" fill="#FF7473" opacity="0.5" />
-                  <circle cx="8" cy="280" r="8" fill="#FE346E" opacity="0.5" />
+                  <circle
+                    cx="8"
+                    cy="60"
+                    r="8"
+                    fill="#3FE3D2"
+                    opacity="0.5"
+                  />
+                  <circle
+                    cx="8"
+                    cy="120"
+                    r="8"
+                    fill="#98DDAB"
+                    opacity="0.5"
+                  />
+                  <circle
+                    cx="8"
+                    cy="180"
+                    r="8"
+                    fill="#FFC952"
+                    opacity="0.5"
+                  />
+                  <circle
+                    cx="8"
+                    cy="240"
+                    r="8"
+                    fill="#FF7473"
+                    opacity="0.5"
+                  />
+                  <circle
+                    cx="8"
+                    cy="280"
+                    r="8"
+                    fill="#FE346E"
+                    opacity="0.5"
+                  />
                 </svg>
               </div>
             </div>
@@ -332,61 +355,63 @@ export default function Home() {
             {/* Sample Team Member Cards */}
             {[
               {
-                name: "Miryam Moreno",
-                initials: "MM",
-                mood: "neutral",
-                color: "#FFC952",
+                name: 'Miryam Moreno',
+                initials: 'MM',
+                mood: 'neutral',
+                color: '#FFC952',
               },
               {
-                name: "Susana Riegp",
-                initials: "SR",
-                mood: "happy",
-                color: "#3FE3D2",
-                quote: "De 10",
+                name: 'Susana Riegp',
+                initials: 'SR',
+                mood: 'happy',
+                color: '#3FE3D2',
+                quote: 'De 10',
               },
               {
-                name: "Joanna Marinari",
-                initials: "SM",
-                mood: "happy",
-                color: "#98DDAB",
-                quote: "¡Viernes!",
+                name: 'Joanna Marinari',
+                initials: 'SM',
+                mood: 'happy',
+                color: '#98DDAB',
+                quote: '¡Viernes!',
               },
               {
-                name: "Aythami Moreno",
-                initials: "AM",
-                mood: "sad",
-                color: "#FF7473",
-                quote: "Un caos",
+                name: 'Aythami Moreno',
+                initials: 'AM',
+                mood: 'sad',
+                color: '#FF7473',
+                quote: 'Un caos',
               },
               {
-                name: "Aythami Moreno",
-                initials: "AY",
-                mood: "neutral",
-                color: "#FFC952",
+                name: 'Aythami Moreno',
+                initials: 'AY',
+                mood: 'neutral',
+                color: '#FFC952',
               },
               {
-                name: "Susana Riegp",
-                initials: "SR",
-                mood: "happy",
-                color: "#3FE3D2",
-                quote: "De 10",
+                name: 'Susana Riegp',
+                initials: 'SR',
+                mood: 'happy',
+                color: '#3FE3D2',
+                quote: 'De 10',
               },
               {
-                name: "Joanna Marinari",
-                initials: "SM",
-                mood: "happy",
-                color: "#98DDAB",
-                quote: "¡Viernes!",
+                name: 'Joanna Marinari',
+                initials: 'SM',
+                mood: 'happy',
+                color: '#98DDAB',
+                quote: '¡Viernes!',
               },
               {
-                name: "Aythami Moreno",
-                initials: "AM",
-                mood: "sad",
-                color: "#FF7473",
-                quote: "Un caos",
+                name: 'Aythami Moreno',
+                initials: 'AM',
+                mood: 'sad',
+                color: '#FF7473',
+                quote: 'Un caos',
               },
             ].map((member, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-lg p-6">
+              <div
+                key={index}
+                className="bg-white rounded-xl shadow-lg p-6">
                 {/* User Avatar */}
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 rounded-full border-4 border-[#948FB7] border-opacity-10 bg-[#948FB7] bg-opacity-10 flex items-center justify-center">
@@ -403,16 +428,14 @@ export default function Home() {
                 <div className="flex justify-center mb-4">
                   <div
                     className="w-20 h-20 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: member.color }}
-                  >
-                    {member.mood === "happy" && (
+                    style={{ backgroundColor: member.color }}>
+                    {member.mood === 'happy' && (
                       <div className="text-[#34314C]">
                         <svg
                           width="40"
                           height="40"
                           viewBox="0 0 80 80"
-                          fill="none"
-                        >
+                          fill="none">
                           <path
                             d="M33.361 45.9471C33.361 46.5555 33.744 47.0961 34.3235 47.2814C36.4284 47.9543 41.5412 49.4577 45.1505 49.4395C48.6194 49.4221 53.5226 47.9502 55.5666 47.284C56.1411 47.0968 56.5189 46.5594 56.5189 45.9551C56.5189 44.9779 55.5596 44.2792 54.6213 44.5524C52.2561 45.2411 48.1589 46.2926 45.1505 46.3065C42.0005 46.3211 37.6955 45.2378 35.2544 44.5401C34.3163 44.272 33.361 44.9714 33.361 45.9471Z"
                             fill="#34314C"
@@ -428,14 +451,13 @@ export default function Home() {
                         </svg>
                       </div>
                     )}
-                    {member.mood === "neutral" && (
+                    {member.mood === 'neutral' && (
                       <div className="text-[#34314C]">
                         <svg
                           width="40"
                           height="40"
                           viewBox="0 0 80 80"
-                          fill="none"
-                        >
+                          fill="none">
                           <path
                             d="M33.361 46.703C33.361 45.8891 34.0208 45.2293 34.8347 45.2293H55.0452C55.8591 45.2293 56.5189 45.8891 56.5189 46.703C56.5189 47.5168 55.8591 48.1766 55.0452 48.1766H34.8347C34.0208 48.1766 33.361 47.5168 33.361 46.703Z"
                             fill="#34314C"
@@ -451,14 +473,13 @@ export default function Home() {
                         </svg>
                       </div>
                     )}
-                    {member.mood === "sad" && (
+                    {member.mood === 'sad' && (
                       <div className="text-[#34314C]">
                         <svg
                           width="40"
                           height="40"
                           viewBox="0 0 80 80"
-                          fill="none"
-                        >
+                          fill="none">
                           <path
                             d="M33.4397 47.4587C33.4397 46.8503 33.8227 46.3097 34.4022 46.1245C36.5071 45.4516 41.6199 43.9481 45.2292 43.9663C48.6981 43.9837 53.6014 45.4556 55.6453 46.1218C56.2198 46.309 56.5976 46.8464 56.5976 47.4507C56.5976 48.4279 55.6383 49.1266 54.7 48.8534C52.3348 48.1647 48.2376 47.1132 45.2292 47.0993C42.0792 47.0847 37.7742 48.1681 35.3331 48.8657C34.395 49.1338 33.4397 48.4344 33.4397 47.4587Z"
                             fill="#34314C"
@@ -480,7 +501,11 @@ export default function Home() {
                 {/* Quote */}
                 {member.quote && (
                   <div className="flex items-center gap-2">
-                    <svg width="11" height="12" viewBox="0 0 11 12" fill="none">
+                    <svg
+                      width="11"
+                      height="12"
+                      viewBox="0 0 11 12"
+                      fill="none">
                       <path
                         d="M1.33781 11.358C0.761806 10.41 0.371806 9.42 0.167806 8.388C-0.0361935 7.356 -0.0541935 6.342 0.113806 5.346C0.281806 4.35 0.629806 3.396 1.15781 2.484C1.69781 1.56 2.41781 0.732 3.31781 0L4.70381 0.845999C4.94381 1.002 5.05181 1.194 5.02781 1.422C5.00381 1.65 4.92581 1.83 4.79381 1.962C4.54181 2.262 4.30181 2.658 4.07381 3.15C3.84581 3.642 3.68381 4.194 3.58781 4.806C3.50381 5.418 3.51581 6.072 3.62381 6.768C3.73181 7.464 4.00181 8.16 4.43381 8.856C4.64981 9.204 4.70981 9.51 4.61381 9.774C4.51781 10.026 4.31981 10.206 4.01981 10.314L1.33781 11.358ZM7.31381 11.358C6.73781 10.41 6.34781 9.42 6.14381 8.388C5.93981 7.356 5.92181 6.342 6.08981 5.346C6.25781 4.35 6.60581 3.396 7.13381 2.484C7.67381 1.56 8.39381 0.732 9.29381 0L10.6798 0.845999C10.9198 1.002 11.0278 1.194 11.0038 1.422C10.9798 1.65 10.9018 1.83 10.7698 1.962C10.5178 2.262 10.2778 2.658 10.0498 3.15C9.82181 3.642 9.65981 4.194 9.56381 4.806C9.47981 5.418 9.49181 6.072 9.59981 6.768C9.70781 7.464 9.97781 8.16 10.4098 8.856C10.6258 9.204 10.6858 9.51 10.5898 9.774C10.4938 10.026 10.2958 10.206 9.99581 10.314L7.31381 11.358Z"
                         fill="#948FB7"

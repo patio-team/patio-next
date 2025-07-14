@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Merriweather, Lato } from "next/font/google";
+import { AuthNav } from "@/components/auth-nav";
 
 const merriweather = Merriweather({
   subsets: ["latin"],
@@ -158,10 +159,16 @@ export default function ManageGroupPage() {
     <div
       className={`${merriweather.variable} ${lato.variable} min-h-screen bg-white relative`}
     >
+      {/* Header with auth navigation */}
+      <header className="w-full h-16 bg-white shadow-sm border-b border-gray-100 flex items-center justify-between px-6 sm:px-16">
+        <h1 className="font-merriweather text-lg text-[#34314C]">Patio</h1>
+        <AuthNav />
+      </header>
+
       {/* Close button */}
       <button
         type="button"
-        className="absolute top-14 right-16 z-10 hover:opacity-75 transition-opacity"
+        className="absolute top-20 right-16 z-10 hover:opacity-75 transition-opacity"
         onClick={() => window.history.back()}
       >
         <CloseIcon />
