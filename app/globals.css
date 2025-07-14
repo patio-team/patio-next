@@ -74,4 +74,6 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-cyan: #3fe3d2;
   --color-gray-200: #c3c1d7;
+
+  --font-merriweather: var(--font-merriweather-next);
 }

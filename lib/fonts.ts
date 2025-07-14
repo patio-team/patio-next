@@ -3,7 +3,7 @@ import { Merriweather, Lato } from 'next/font/google';
 export const merriweatherFont = Merriweather({
   subsets: ['latin'],
   weight: ['400', '700'],
-  variable: '--font-merriweather',
+  variable: '--font-merriweather-next',
   display: 'swap',
 });
 

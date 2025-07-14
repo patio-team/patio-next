@@ -64,19 +64,19 @@ export default async function Home() {
                 <h1 className="font-merriweather text-[#34314C] text-2xl md:text-3xl font-normal">
                   Kaleidos con nombre largo
                 </h1>
-                <p className="font-lato text-[#948FB7] text-sm mt-1">
+                <p className="text-[#948FB7] text-sm mt-1">
                   Tracks on weekdays from 14:00 pm to 12:00 am
                 </p>
                 <div className="flex gap-6 mt-4">
-                  <button className="font-lato text-[#3FA2F7] text-sm font-medium">
+                  <button className="text-[#3FA2F7] text-sm font-medium">
                     See members
                   </button>
-                  <button className="font-lato text-[#3FA2F7] text-sm font-medium">
+                  <button className="text-[#3FA2F7] text-sm font-medium">
                     Leave team
                   </button>
                 </div>
               </div>
-              <button className="flex items-center gap-2 text-[#34314C] font-lato text-sm">
+              <button className="flex items-center gap-2 text-[#34314C] text-sm">
                 <svg
                   width="16"
                   height="16"
@@ -106,13 +106,11 @@ export default async function Home() {
               <div className="flex justify-end gap-8 mb-6">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-0.5 bg-[#948FB7]"></div>
-                  <span className="font-lato text-[#948FB7] text-sm">
-                    Results
-                  </span>
+                  <span className="text-[#948FB7] text-sm">Results</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-0.5 bg-[#948FB7] opacity-50"></div>
-                  <span className="font-lato text-[#948FB7] text-sm">Avg.</span>
+                  <span className="text-[#948FB7] text-sm">Avg.</span>
                 </div>
               </div>
 
@@ -144,7 +142,7 @@ export default async function Home() {
                   />
 
                   {/* Y-axis labels */}
-                  <g className="font-lato text-xs fill-[#34314C]">
+                  <g className="text-xs fill-[#34314C]">
                     <text
                       x="20"
                       y="60"
@@ -273,7 +271,7 @@ export default async function Home() {
                 <h3 className="font-merriweather text-[#34314C] text-xl">
                   Last poll result
                 </h3>
-                <span className="font-lato text-[#948FB7] text-sm">
+                <span className="text-[#948FB7] text-sm">
                   Monday, July 9th, 2020
                 </span>
               </div>
@@ -283,19 +281,17 @@ export default async function Home() {
                 <div className="relative">
                   <div className="w-20 h-20 bg-[#98DDAB] rounded-full"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="font-lato text-[#34314C] text-4xl font-light">
+                    <span className="text-[#34314C] text-4xl font-light">
                       3,7
                     </span>
                   </div>
                 </div>
                 <div>
-                  <div className="font-lato text-[#34314C] text-2xl font-light">
-                    9/20
-                  </div>
+                  <div className="text-[#34314C] text-2xl font-light">9/20</div>
                   <div className="font-merriweather text-[#948FB7] text-sm">
                     Participation
                   </div>
-                  <div className="font-lato text-[#948FB7] text-sm">
+                  <div className="text-[#948FB7] text-sm">
                     Usually 12 people participate
                   </div>
                 </div>
@@ -309,28 +305,28 @@ export default async function Home() {
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full border-4 border-[#3FE3D2] flex items-center justify-center">
-                    <span className="font-lato text-black text-lg">70</span>
+                    <span className="text-black text-lg">70</span>
                   </div>
                   <div className="flex-1 bg-[#3FE3D2] opacity-50 h-4 rounded-r-full"></div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full border-4 border-[#98DDAB] flex items-center justify-center">
-                    <span className="font-lato text-black text-lg">12</span>
+                    <span className="text-black text-lg">12</span>
                   </div>
                   <div className="w-24 bg-[#98DDAB] opacity-50 h-4 rounded-r-full"></div>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full border-4 border-[#FFC952] flex items-center justify-center">
-                    <span className="font-lato text-black text-lg">5</span>
+                    <span className="text-black text-lg">5</span>
                   </div>
                   <div className="w-8 bg-[#FFC952] opacity-50 h-4 rounded-r-full"></div>
                 </div>
                 <div className="w-12 h-12 rounded-full border-4 border-[#FF7473] border-dashed flex items-center justify-center">
-                  <span className="font-lato text-black text-lg"></span>
+                  <span className="text-black text-lg"></span>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full border-4 border-[#FE346E] flex items-center justify-center">
-                    <span className="font-lato text-black text-lg">42</span>
+                    <span className="text-black text-lg">42</span>
                   </div>
                   <div className="w-64 bg-[#FE346E] opacity-50 h-4 rounded-r-full"></div>
                 </div>
@@ -339,10 +335,10 @@ export default async function Home() {
 
             {/* Call to Action */}
             <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-              <p className="font-lato text-[#34314C] text-sm mb-4">
+              <p className="text-[#34314C] text-sm mb-4">
                 You haven't participated yet.
               </p>
-              <button className="w-full bg-[#34314C] text-white font-lato font-bold px-6 py-4 rounded-tl-xl rounded-br-xl shadow-lg">
+              <button className="w-full bg-[#34314C] text-white font-bold px-6 py-4 rounded-tl-xl rounded-br-xl shadow-lg">
                 Share your mood
               </button>
             </div>
@@ -415,7 +411,7 @@ export default async function Home() {
                 {/* User Avatar */}
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 rounded-full border-4 border-[#948FB7] border-opacity-10 bg-[#948FB7] bg-opacity-10 flex items-center justify-center">
-                    <span className="font-lato text-[#34314C] text-lg">
+                    <span className="text-[#34314C] text-lg">
                       {member.initials}
                     </span>
                   </div>
@@ -511,7 +507,7 @@ export default async function Home() {
                         fill="#948FB7"
                       />
                     </svg>
-                    <span className="font-lato text-[#948FB7] text-sm">
+                    <span className="text-[#948FB7] text-sm">
                       {member.quote}
                     </span>
                   </div>

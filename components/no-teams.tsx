@@ -1,5 +1,6 @@
 import { merriweatherFont } from '@/lib/fonts';
-import { PatioLink } from './ui/Link';
+import Link from 'next/link';
+import { Button } from './ui/button';
 
 export function NoTeams() {
   return (
@@ -283,7 +284,7 @@ export function NoTeams() {
           <path
             d="M169.831 115.089C168.883 113.667 174.582 72.4132 158.75 75.7462C149.744 77.6423 156.898 104.221 168.591 115.44C167.169 106.907 152.588 75.7462 147.374 82.8564C141.119 91.386 161.594 103.081 171.548 114.615C168.455 105.451 187.183 79.2119 177.236 78.5903C169.652 78.1163 163.197 104.916 171.479 114.396M171.479 114.396C165.475 100.334 145.952 87.1226 142.634 92.8107C138.695 99.5635 156.854 102.607 168.704 115.563L171.479 114.396Z"
             stroke="#B0F8C5"
-            stroke-width="0.577083"
+            strokeWidth="0.577083"
           />
           <path
             d="M173.845 112.528C174.358 113.863 172.971 115.275 170.738 116.132C168.506 116.989 166.3 116.708 165.787 115.372C165.274 114.036 166.649 112.152 168.881 111.295C171.114 110.437 173.332 111.192 173.845 112.528Z"
@@ -296,12 +297,11 @@ export function NoTeams() {
         </svg>
       </div>
 
-      {/* TODO: use as child */}
-      <PatioLink
-        href="/new-team"
+      <Button
+        asChild
         className="text-center px-16">
-        Let's start
-      </PatioLink>
+        <Link href="/new-team">Let's start</Link>
+      </Button>
     </div>
   );
 }
