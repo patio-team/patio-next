@@ -26,6 +26,8 @@ export const notificationTypeEnum = pgEnum('notification_type', [
   'team_update',
 ]);
 
+export const visibilityEnum = pgEnum('visibility', ['public', 'private']);
+
 export const users = pgTable('user', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
@@ -139,8 +141,7 @@ export const moodEntries = pgTable('mood_entries', {
     .references(() => teams.id, { onDelete: 'cascade' }),
   rating: moodRatingEnum('rating').notNull(),
   comment: text('comment'),
-  // TODO: Only admins
-  isAnonymous: boolean('is_anonymous').default(false).notNull(),
+  visibility: visibilityEnum('visibility').default('public').notNull(),
   allowContact: boolean('allow_contact').default(true).notNull(),
   entryDate: timestamp('entry_date').notNull(), // The actual date of the entry
   createdAt: timestamp('created_at').defaultNow().notNull(),

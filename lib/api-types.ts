@@ -77,7 +77,7 @@ export interface MoodEntry {
   teamId: string;
   rating: '1' | '2' | '3' | '4' | '5';
   comment?: string;
-  isAnonymous: boolean;
+  visibility: 'public' | 'private';
   allowContact: boolean;
   entryDate: string; // ISO date string
   createdAt: string;
@@ -126,7 +126,7 @@ export interface CreateMoodEntryRequest {
   teamId: string;
   rating: '1' | '2' | '3' | '4' | '5';
   comment?: string;
-  isAnonymous?: boolean;
+  visibility?: 'public' | 'private';
   allowContact?: boolean;
   mentionedUserIds?: string[];
   entryDate?: string; // Optional ISO date string (YYYY-MM-DD)
@@ -136,7 +136,7 @@ export interface UpdateMoodEntryRequest {
   entryId: string;
   rating?: '1' | '2' | '3' | '4' | '5';
   comment?: string;
-  isAnonymous?: boolean;
+  visibility?: 'public' | 'private';
   allowContact?: boolean;
   mentionedUserIds?: string[];
 }
@@ -146,7 +146,7 @@ export const createMoodEntrySchema = z.object({
   teamId: z.string().min(1, 'Team ID is required'),
   rating: z.enum(['1', '2', '3', '4', '5']),
   comment: z.string().optional(),
-  isAnonymous: z.boolean().default(false),
+  visibility: z.enum(['public', 'private']).default('private'),
   allowContact: z.boolean().default(true),
   mentionedUserIds: z.array(z.string()).default([]),
   entryDate: z.string().optional(), // ISO date string validation
@@ -156,7 +156,7 @@ export const updateMoodEntrySchema = z.object({
   entryId: z.string().min(1, 'Entry ID is required'),
   rating: z.enum(['1', '2', '3', '4', '5']).optional(),
   comment: z.string().optional(),
-  isAnonymous: z.boolean().optional(),
+  visibility: z.enum(['public', 'private']).optional(),
   allowContact: z.boolean().optional(),
   mentionedUserIds: z.array(z.string()).optional(),
 });

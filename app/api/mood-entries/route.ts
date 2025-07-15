@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       teamId,
       rating,
       comment,
-      isAnonymous = false,
+      visibility = 'public',
       allowContact = true,
       mentionedUserIds = [],
       entryDate, // Optional: if not provided, defaults to today
@@ -96,83 +96,11 @@ export async function POST(request: NextRequest) {
         teamId,
         rating,
         comment,
-        isAnonymous,
+        visibility,
         allowContact,
         entryDate: entryDateForDB,
       })
       .returning();
-
-    // Handle mentions
-    if (mentionedUserIds.length > 0) {
-      // Verify mentioned users are team members
-      const teamMemberIds = await db.query.teamMembers.findMany({
-        where: eq(teamMembers.teamId, teamId),
-      });
-
-      const validMemberIds = teamMemberIds.map((tm) => tm.userId);
-      const validMentions = mentionedUserIds.filter((id: string) =>
-        validMemberIds.includes(id),
-      );
-
-      // Create mentions
-      const mentionPromises = validMentions.map(
-        async (mentionedUserId: string) => {
-          // Create mention record
-          await db.insert(mentions).values({
-            id: generateId(),
-            moodEntryId: newEntry.id,
-            mentionedUserId,
-            mentionedByUserId: userId,
-          });
-
-          // Create notification
-          await db.insert(notifications).values({
-            id: generateId(),
-            userId: mentionedUserId,
-            type: 'mention',
-            title: 'You have been mentioned',
-            message: isAnonymous
-              ? 'Someone mentioned you in an anonymous comment'
-              : 'You have been mentioned in a comment',
-            metadata: {
-              moodEntryId: newEntry.id,
-              teamId,
-              mentionedBy: userId,
-            },
-          });
-
-          // Send email notification if user has them enabled
-          const mentionedUser = await db.query.users.findFirst({
-            where: eq(users.id, mentionedUserId),
-            with: { settings: true },
-          });
-
-          if (
-            mentionedUser?.settings?.emailNotifications &&
-            mentionedUser?.settings?.mentionNotifications
-          ) {
-            const currentUser = await db.query.users.findFirst({
-              where: eq(users.id, userId),
-            });
-
-            const team = await db.query.teams.findFirst({
-              where: eq(teams.id, teamId),
-            });
-
-            if (currentUser && team) {
-              await sendMentionNotificationEmail(
-                mentionedUser.email,
-                isAnonymous ? 'Anonymous User' : currentUser.name,
-                team.name,
-                typeof comment === 'string' ? comment : JSON.stringify(comment),
-              );
-            }
-          }
-        },
-      );
-
-      await Promise.all(mentionPromises);
-    }
 
     return createResponse(newEntry, 201);
   } catch (error) {
@@ -194,14 +122,7 @@ export async function PUT(request: NextRequest) {
 
     const userId = session.user.id;
     const body = await getRequestBody(request);
-    const {
-      entryId,
-      rating,
-      comment,
-      isAnonymous,
-      allowContact,
-      mentionedUserIds = [],
-    } = body;
+    const { entryId, rating, comment, visibility, allowContact } = body;
 
     if (!entryId) {
       return createErrorResponse('Entry ID is required', 400);
@@ -236,12 +157,12 @@ export async function PUT(request: NextRequest) {
     const updateData: Partial<{
       rating: '1' | '2' | '3' | '4' | '5';
       comment: string;
-      isAnonymous: boolean;
+      visibility: 'public' | 'private';
       allowContact: boolean;
     }> = {};
     if (rating !== undefined) updateData.rating = rating;
     if (comment !== undefined) updateData.comment = comment;
-    if (isAnonymous !== undefined) updateData.isAnonymous = isAnonymous;
+    if (visibility !== undefined) updateData.visibility = visibility;
     if (allowContact !== undefined) updateData.allowContact = allowContact;
 
     const [updatedEntry] = await db
@@ -249,53 +170,6 @@ export async function PUT(request: NextRequest) {
       .set(updateData)
       .where(eq(moodEntries.id, entryId))
       .returning();
-
-    // Handle mention updates (simplified - remove old mentions and add new ones)
-    if (mentionedUserIds.length >= 0) {
-      // Remove existing mentions
-      await db.delete(mentions).where(eq(mentions.moodEntryId, entryId));
-
-      // Add new mentions (similar to POST logic)
-      if (mentionedUserIds.length > 0) {
-        const teamMemberIds = await db.query.teamMembers.findMany({
-          where: eq(teamMembers.teamId, existingEntry.teamId),
-        });
-
-        const validMemberIds = teamMemberIds.map((tm) => tm.userId);
-        const validMentions = mentionedUserIds.filter((id: string) =>
-          validMemberIds.includes(id),
-        );
-
-        const mentionPromises = validMentions.map(
-          async (mentionedUserId: string) => {
-            await db.insert(mentions).values({
-              id: generateId(),
-              moodEntryId: entryId,
-              mentionedUserId,
-              mentionedByUserId: userId,
-            });
-
-            // Create notification for the update
-            await db.insert(notifications).values({
-              id: generateId(),
-              userId: mentionedUserId,
-              type: 'mention',
-              title: 'You have been mentioned',
-              message: isAnonymous
-                ? 'Someone mentioned you in an updated anonymous comment'
-                : 'You have been mentioned in an updated comment',
-              metadata: {
-                moodEntryId: entryId,
-                teamId: existingEntry.teamId,
-                mentionedBy: userId,
-              },
-            });
-          },
-        );
-
-        await Promise.all(mentionPromises);
-      }
-    }
 
     return createResponse(updatedEntry);
   } catch (error) {

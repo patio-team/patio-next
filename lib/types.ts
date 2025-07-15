@@ -37,7 +37,7 @@ export interface MoodEntryWithDetails {
   id: string;
   rating: '1' | '2' | '3' | '4' | '5';
   comment: WysiwygContent | string | null; // WYSIWYG content, plain text, or null
-  isAnonymous: boolean;
+  visibility: 'public' | 'private';
   allowContact: boolean;
   dayOfWeek: string;
   entryDate: Date;

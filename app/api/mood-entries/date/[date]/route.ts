@@ -88,7 +88,7 @@ export async function GET(
     // Hide user info for anonymous entries
     const processedEntries = entries.map((entry) => ({
       ...entry,
-      user: entry.isAnonymous ? null : entry.user,
+      user: entry.visibility === 'private' ? null : entry.user,
     }));
 
     // Get participation stats
