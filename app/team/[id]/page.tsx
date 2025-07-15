@@ -7,6 +7,7 @@ import { teamMembers } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import Link from 'next/link';
 import { getPollDaysString } from '@/lib/utils';
+import { Smile } from '@/components/smile';
 
 export default async function Home({
   params,

@@ -77,6 +77,11 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-cyan: #3fe3d2;
   --color-gray-200: #c3c1d7;
+  --color-mood5: #3fe3d2;
+  --color-mood4: #98ddab;
+  --color-mood3: #ffc952;
+  --color-mood2: #ff7473;
+  --color-mood1: #fe346e;
 
   --font-merriweather: var(--font-merriweather-next);
   --font-lato: var(--font-lato-next);
