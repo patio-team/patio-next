@@ -1,27 +1,13 @@
 import { getMoodEntries } from '@/db/mood-entries';
-import { DateTime } from 'luxon';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { User } from 'lucide-react';
 import { Mood, Smile } from './smile';
 
 export async function DayResult({
-  date,
-  teamId,
-  role,
+  entries,
 }: {
-  date: string;
-  teamId: string;
-  role: 'admin' | 'member';
+  entries: Awaited<ReturnType<typeof getMoodEntries>>;
 }) {
-  const entries = await getMoodEntries(
-    DateTime.fromISO(date),
-    DateTime.fromISO(date).plus({ days: 1 }),
-    teamId,
-    role === 'admin' ? undefined : 'public',
-  );
-
-  console.log(entries);
-
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {entries.map((entry, index) => (

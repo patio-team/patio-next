@@ -109,3 +109,7 @@ export function formatDateForDB(date: DateTime): Date {
 export function todayDate(): string {
   return DateTime.now().toFormat('yyyy-MM-dd');
 }
+
+export async function awaitTimeout(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

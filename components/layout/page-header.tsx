@@ -26,13 +26,20 @@ export interface User {
 export interface PageHeaderProps {
   user: Session['user'];
   userTeams: TeamMemberWithTeam[];
+  currentTeamId?: string;
 }
 
-export default function PageHeader({ user, userTeams }: PageHeaderProps) {
+export default function PageHeader({
+  user,
+  userTeams,
+  currentTeamId,
+}: PageHeaderProps) {
   const signOut = () => {
     authSignOut();
     redirect('/login');
   };
+
+  const currentTeam = userTeams.find((team) => team.teamId === currentTeamId);
 
   return (
     <header className="flex h-20 w-full items-center justify-between border-b border-gray-100 bg-white px-4 shadow-sm md:px-16">
@@ -76,32 +83,34 @@ export default function PageHeader({ user, userTeams }: PageHeaderProps) {
       </div>
 
       <div className="flex items-center gap-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2">
-            Open <ChevronDown />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {userTeams.map((userTeam) => (
-              <DropdownMenuItem key={userTeam.teamId}>
+        {currentTeam && (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2">
+              {currentTeam.team.name} <ChevronDown />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {userTeams.map((userTeam) => (
+                <DropdownMenuItem key={userTeam.teamId}>
+                  <Link
+                    href={`/team/${userTeam.teamId}`}
+                    className="flex w-full items-center">
+                    <span className="truncate">{userTeam.team.name}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
                 <Link
-                  href={`/team/${userTeam.teamId}`}
-                  className="flex items-center">
-                  <span className="truncate">{userTeam.team.name}</span>
+                  href="/new-team"
+                  className="text-muted-foreground flex items-center gap-2 text-sm">
+                  <CirclePlus />
+                  Create New Team
                 </Link>
               </DropdownMenuItem>
-            ))}
-
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Link
-                href="/new-team"
-                className="text-muted-foreground flex items-center gap-2 text-sm">
-                <CirclePlus />
-                Create New Team
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger
