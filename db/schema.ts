@@ -138,10 +138,9 @@ export const moodEntries = pgTable('mood_entries', {
     .notNull()
     .references(() => teams.id, { onDelete: 'cascade' }),
   rating: moodRatingEnum('rating').notNull(),
-  comment: json('comment'), // WYSIWYG content stored as JSON
+  comment: text('comment'),
   isAnonymous: boolean('is_anonymous').default(false).notNull(),
   allowContact: boolean('allow_contact').default(true).notNull(),
-  dayOfWeek: dayOfWeekEnum('day_of_week').notNull(),
   entryDate: timestamp('entry_date').notNull(), // The actual date of the entry
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

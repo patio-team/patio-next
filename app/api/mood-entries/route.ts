@@ -12,7 +12,6 @@ import {
   createResponse,
   createErrorResponse,
   getRequestBody,
-  generateId,
 } from '@/lib/utils';
 import { sendMentionNotificationEmail } from '@/lib/email';
 import { eq, and, desc } from 'drizzle-orm';
@@ -31,13 +30,13 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     if (!session) {
-      return createErrorResponse('No autorizado', 401);
+      return createErrorResponse('Not authorized', 401);
     }
 
     const userId = session.user.id;
 
     if (!teamId) {
-      return createErrorResponse('ID del equipo es requerido', 400);
+      return createErrorResponse('Team ID is required', 400);
     }
 
     // Check if user is member of the team
@@ -49,7 +48,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!membership) {
-      return createErrorResponse('No tienes acceso a este equipo', 403);
+      return createErrorResponse('You do not have access to this team', 403);
     }
 
     const entries = await db.query.moodEntries.findMany({
@@ -76,7 +75,7 @@ export async function GET(request: NextRequest) {
     return createResponse(processedEntries);
   } catch (error) {
     console.error('Error fetching mood entries:', error);
-    return createErrorResponse('Error interno del servidor', 500);
+    return createErrorResponse('Internal server error', 500);
   }
 }
 
@@ -88,7 +87,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!session) {
-      return createErrorResponse('No autorizado', 401);
+      return createErrorResponse('Not authorized', 401);
     }
 
     const userId = session.user.id;
@@ -104,14 +103,11 @@ export async function POST(request: NextRequest) {
     } = body;
 
     if (!teamId || !rating) {
-      return createErrorResponse(
-        'ID del equipo y calificación son requeridos',
-        400,
-      );
+      return createErrorResponse('Team ID and rating are required', 400);
     }
 
     if (!['1', '2', '3', '4', '5'].includes(rating)) {
-      return createErrorResponse('Calificación debe ser entre 1 y 5', 400);
+      return createErrorResponse('Rating must be between 1 and 5', 400);
     }
 
     // Check if user is member of the team
