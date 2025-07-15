@@ -6,7 +6,11 @@ import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
-export default async function Home({ params }: { params: { id: string } }) {
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -21,8 +25,9 @@ export default async function Home({ params }: { params: { id: string } }) {
       team: true,
     },
   });
+  const id = await params.id;
 
-  const userTeam = userTeams.find((tm) => tm.team.id === params.id);
+  const userTeam = userTeams.find((tm) => tm.team.id === id);
 
   if (!userTeam) {
     redirect('/');

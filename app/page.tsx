@@ -1,4 +1,3 @@
-import { Merriweather, Lato } from 'next/font/google';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
@@ -7,18 +6,6 @@ import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { NoTeams } from '@/components/no-teams';
-
-const merriweather = Merriweather({
-  subsets: ['latin'],
-  variable: '--font-merriweather',
-  weight: ['400'],
-});
-
-const lato = Lato({
-  subsets: ['latin'],
-  variable: '--font-lato',
-  weight: ['300', '400', '700'],
-});
 
 export default async function Home() {
   const session = await auth.api.getSession({
@@ -38,8 +25,7 @@ export default async function Home() {
 
   if (!userTeams.length) {
     return (
-      <div
-        className={`${merriweather.variable} ${lato.variable} min-h-screen bg-white`}>
+      <div className={`min-h-screen bg-white`}>
         <PageHeader
           user={session.user}
           userTeams={userTeams}
