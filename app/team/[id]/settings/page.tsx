@@ -57,8 +57,6 @@ export default function ManageGroupPage({
   const teamData = teamResponse?.data;
   const updateTeamMutation = useUpdateTeam();
 
-  console.log(teamData);
-
   const handleUpdateTeam = async (data: {
     name: string;
     description?: string;
