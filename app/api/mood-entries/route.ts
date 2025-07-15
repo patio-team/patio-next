@@ -1,13 +1,6 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/db';
-import {
-  moodEntries,
-  teamMembers,
-  mentions,
-  users,
-  notifications,
-  teams,
-} from '@/db/schema';
+import { moodEntries, teamMembers } from '@/db/schema';
 import {
   createResponse,
   createErrorResponse,
@@ -18,7 +11,6 @@ import {
   formatDateForDB,
   generateId,
 } from '@/lib/utils';
-import { sendMentionNotificationEmail } from '@/lib/email';
 import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
@@ -43,7 +35,6 @@ export async function POST(request: NextRequest) {
       comment,
       visibility = 'public',
       allowContact = true,
-      mentionedUserIds = [],
       entryDate, // Optional: if not provided, defaults to today
     } = body;
 
