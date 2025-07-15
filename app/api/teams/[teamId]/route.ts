@@ -94,13 +94,14 @@ export async function PUT(request: NextRequest, { params }: Context) {
     }
 
     const body = await getRequestBody(request);
-    const { name, description } = body;
+    const { name, description, pollDays } = body;
 
     const [updatedTeam] = await db
       .update(teams)
       .set({
         name,
         description,
+        pollDays,
         updatedAt: new Date(),
       })
       .where(eq(teams.id, teamId))

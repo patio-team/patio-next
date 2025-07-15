@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
-import { CreateTeamFormData } from '@/lib/api-types';
+import { CreateTeamFormData, DaySelection } from '@/lib/api-types';
 
 // Query keys
 export const teamKeys = {
@@ -55,6 +55,32 @@ export function useSendInvitations() {
       queryClient.invalidateQueries({
         queryKey: teamKeys.detail(variables.teamId),
       });
+    },
+  });
+}
+
+// Update team mutation
+export function useUpdateTeam() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: {
+      teamId: string;
+      name: string;
+      description?: string;
+      pollDays: DaySelection;
+    }) =>
+      apiClient.updateTeam(data.teamId, {
+        name: data.name,
+        description: data.description,
+        pollDays: data.pollDays,
+      }),
+    onSuccess: (_, variables) => {
+      // Invalidate team details and teams list to refresh data
+      queryClient.invalidateQueries({
+        queryKey: teamKeys.detail(variables.teamId),
+      });
+      queryClient.invalidateQueries({ queryKey: teamKeys.all });
     },
   });
 }

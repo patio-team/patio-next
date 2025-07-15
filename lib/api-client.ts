@@ -1,4 +1,4 @@
-import { ApiResponse, Team } from './api-types';
+import { ApiResponse, Team, DaySelection } from './api-types';
 
 class ApiClient {
   private baseUrl = '/api';
@@ -45,7 +45,7 @@ class ApiClient {
   async createTeam(data: {
     name: string;
     description?: string;
-    pollDays: Record<string, boolean>;
+    pollDays: DaySelection;
   }) {
     return this.request<ApiResponse<Team>>('/teams', {
       method: 'POST',
@@ -59,6 +59,20 @@ class ApiClient {
 
   async getTeam(teamId: string) {
     return this.request<ApiResponse<Team>>(`/teams/${teamId}`);
+  }
+
+  async updateTeam(
+    teamId: string,
+    data: {
+      name: string;
+      description?: string;
+      pollDays: DaySelection;
+    },
+  ) {
+    return this.request<ApiResponse<Team>>(`/teams/${teamId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
   }
 
   // Invitations API methods

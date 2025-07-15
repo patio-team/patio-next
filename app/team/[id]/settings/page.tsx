@@ -7,7 +7,13 @@ import { Input } from '@/components/ui/input';
 import { useSession } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { use, useEffect, useState } from 'react';
-import { useTeam, useSendInvitations } from '@/lib/hooks/use-teams';
+import {
+  useTeam,
+  useSendInvitations,
+  useUpdateTeam,
+} from '@/lib/hooks/use-teams';
+import { DaySelection } from '@/lib/api-types';
+import TeamForm from '@/components/team-form';
 import { X } from 'lucide-react';
 import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -49,8 +55,22 @@ export default function ManageGroupPage({
   const members = teamResponse?.data?.members || [];
   const invitations = teamResponse?.data?.invitations || [];
   const teamData = teamResponse?.data;
+  const updateTeamMutation = useUpdateTeam();
 
   console.log(teamData);
+
+  const handleUpdateTeam = async (data: {
+    name: string;
+    description?: string;
+    pollDays: DaySelection;
+  }) => {
+    await updateTeamMutation.mutateAsync({
+      teamId,
+      name: data.name,
+      description: data.description,
+      pollDays: data.pollDays,
+    });
+  };
 
   const handleSendInvites = async () => {
     if (!emailInput.trim() || !isAdmin) return;
@@ -131,7 +151,19 @@ export default function ManageGroupPage({
           </TabsList>
           <TabsContent value="general">
             <div className="flex flex-col xl:flex-row gap-8 xl:gap-16 w-full py-4">
-              Add edit team form here
+              <div className="flex-1 max-w-2xl">
+                <h2 className="font-merriweather text-primary text-2xl leading-[30px] font-normal mb-6">
+                  Team Settings
+                </h2>
+                <TeamForm
+                  mode="edit"
+                  initialData={teamData}
+                  onSubmit={handleUpdateTeam}
+                  isLoading={updateTeamMutation.isPending}
+                  submitLabel="Update team"
+                  loadingLabel="Updating..."
+                />
+              </div>
             </div>
           </TabsContent>
           <TabsContent value="members">

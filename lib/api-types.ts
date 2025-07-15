@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+export interface DaySelection {
+  monday: boolean;
+  tuesday: boolean;
+  wednesday: boolean;
+  thursday: boolean;
+  friday: boolean;
+  saturday: boolean;
+  sunday: boolean;
+}
+
 // Form validation schema
 export const createTeamSchema = z.object({
   name: z
@@ -18,14 +28,17 @@ export const createTeamSchema = z.object({
   }),
 });
 
+export const updateTeamSchema = createTeamSchema;
+
 export type CreateTeamFormData = z.infer<typeof createTeamSchema>;
+export type UpdateTeamFormData = z.infer<typeof updateTeamSchema>;
 
 // API Response types
 export interface Team {
   id: string;
   name: string;
   description?: string;
-  pollDays: CreateTeamFormData['pollDays'];
+  pollDays: DaySelection;
   createdAt: string;
   updatedAt: string;
   members?: TeamMember[];
