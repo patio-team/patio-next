@@ -77,6 +77,22 @@ export async function POST(request: NextRequest) {
       targetDate = getTodayInTimezone();
     }
 
+    // Check if the user already has an entry for today
+    const existingEntry = await db.query.moodEntries.findFirst({
+      where: and(
+        eq(moodEntries.userId, userId),
+        eq(moodEntries.teamId, teamId),
+        eq(moodEntries.entryDate, formatDateForDB(targetDate)),
+      ),
+    });
+
+    if (existingEntry) {
+      return createErrorResponse(
+        'You have already submitted your mood for today',
+        400,
+      );
+    }
+
     const entryDateForDB = formatDateForDB(targetDate);
 
     // Create mood entry

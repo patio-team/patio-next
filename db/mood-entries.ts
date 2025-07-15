@@ -1,7 +1,7 @@
 import { formatDateForDB } from '@/lib/utils';
 import { db } from '.';
 import { DateTime } from 'luxon/src/luxon';
-import { and, avg, count, desc, eq, gte, lte } from 'drizzle-orm';
+import { and, desc, eq, gte, lte } from 'drizzle-orm';
 import { moodEntries } from './schema';
 
 export async function getMoodEntries(
@@ -14,10 +14,7 @@ export async function getMoodEntries(
   const endDateForDB = formatDateForDB(endDate);
 
   const result = await db
-    .select({
-      averageRating: avg(moodEntries.rating),
-      totalEntries: count(moodEntries.id),
-    })
+    .select()
     .from(moodEntries)
     .where(
       and(

@@ -82,12 +82,6 @@ export interface MoodEntry {
   entryDate: string; // ISO date string
   createdAt: string;
   updatedAt: string;
-  user?: {
-    id: string;
-    name: string;
-    email: string;
-    image?: string;
-  };
   mentions?: MoodEntryMention[];
 }
 
@@ -121,12 +115,6 @@ export interface ParticipationAnalyticsResponse {
   averageParticipationRate: number;
   totalDays: number;
   dailyParticipationCounts: number[];
-}
-
-export interface MoodEntriesResponse {
-  date: string; // ISO date string (YYYY-MM-DD)
-  entries: MoodEntry[];
-  stats: ParticipationStats;
 }
 
 // Request types

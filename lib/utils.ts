@@ -105,3 +105,7 @@ export function canPostOnDate(date: DateTime): boolean {
 export function formatDateForDB(date: DateTime): Date {
   return date.toJSDate();
 }
+
+export function todayDate(): string {
+  return DateTime.now().toFormat('yyyy-MM-dd');
+}

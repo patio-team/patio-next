@@ -107,13 +107,13 @@ class ApiClient {
 
   // Mood Entries API methods
   async getTodayMoodEntries(teamId: string) {
-    return this.request<ApiResponse<MoodEntriesResponse>>(
+    return this.request<ApiResponse<MoodEntry[]>>(
       `/mood-entries/today?teamId=${teamId}`,
     );
   }
 
   async getMoodEntriesByDate(teamId: string, date: string) {
-    return this.request<ApiResponse<MoodEntriesResponse>>(
+    return this.request<ApiResponse<MoodEntry[]>>(
       `/mood-entries/date/${date}?teamId=${teamId}`,
     );
   }

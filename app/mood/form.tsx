@@ -52,8 +52,8 @@ export default function MoodForm({
         : null,
   });
 
-  const existingEntry = existingEntries?.data?.entries?.find(
-    (entry) => entry.user?.id === user?.id,
+  const existingEntry = existingEntries?.data?.find(
+    (entry) => entry.userId === user?.id,
   );
 
   // Initialize form with existing entry data
@@ -84,7 +84,6 @@ export default function MoodForm({
       entryDate: string;
     }) => apiClient.createMoodEntry(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mood-entries'] });
       setError(null);
       router.push(`/team/${selectedTeam}`);
     },
@@ -104,7 +103,6 @@ export default function MoodForm({
       allowContact?: boolean;
     }) => apiClient.updateMoodEntry(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mood-entries'] });
       setError(null);
       router.push(`/team/${selectedTeam}`);
     },

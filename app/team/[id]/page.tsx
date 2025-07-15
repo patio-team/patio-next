@@ -6,7 +6,8 @@ import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import Link from 'next/link';
-import { getPollDaysString } from '@/lib/utils';
+import { getPollDaysString, todayDate } from '@/lib/utils';
+import { DayResult } from '@/components/day-result';
 
 export default async function Home({
   params,
@@ -333,7 +334,7 @@ export default async function Home({
                 You haven&apos;t participated yet.
               </p>
               <Link
-                href={`/mood?team=${userTeam.team.id}&date=${new Date().toISOString().split('T')[0]}`}
+                href={`/mood?team=${userTeam.team.id}&date=${todayDate()}`}
                 className="block w-full bg-primary text-white font-bold px-6 py-4 rounded-tl-xl rounded-br-xl shadow-lg hover:bg-cyan hover:text-primary transition-colors duration-200">
                 Share your mood
               </Link>
@@ -343,6 +344,7 @@ export default async function Home({
 
         {/* Team Member Cards Grid */}
         <div className="mt-12">
+          <DayResult date={todayDate()} />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {/* Sample Team Member Cards */}
             {[
