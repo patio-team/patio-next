@@ -44,25 +44,25 @@ export default async function Home({
       />
 
       {/* Main Content */}
-      <div className="px-4 md:px-16 py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className="px-4 py-8 md:px-16">
+        <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
           {/* Left Section - Chart and Header */}
-          <div className="xl:col-span-2 space-y-6">
+          <div className="space-y-6 xl:col-span-2">
             {/* Title and Settings */}
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
               <div>
-                <h1 className="font-merriweather text-primary text-2xl md:text-3xl font-normal">
+                <h1 className="font-merriweather text-primary text-2xl font-normal md:text-3xl">
                   {userTeam.team.name}
                 </h1>
-                <p className="text-[#948FB7] text-sm mt-1">
+                <p className="mt-1 text-sm text-[#948FB7]">
                   {/* Polls on Mondays, Tuesdays, Wednesdays, Thursdays and Fridays  */}
                   Polls on {getPollDaysString(userTeam.team.pollDays)}
                 </p>
-                <div className="flex gap-6 mt-4">
-                  <button className="text-[#3FA2F7] text-sm font-medium">
+                <div className="mt-4 flex gap-6">
+                  <button className="text-sm font-medium text-[#3FA2F7]">
                     See members
                   </button>
-                  <button className="text-[#3FA2F7] text-sm font-medium">
+                  <button className="text-sm font-medium text-[#3FA2F7]">
                     Leave team
                   </button>
                 </div>
@@ -70,7 +70,7 @@ export default async function Home({
               {userTeam.role === 'admin' && (
                 <Link
                   href={`/team/${userTeam.team.id}/settings`}
-                  className="flex items-center gap-2 text-primary text-sm">
+                  className="text-primary flex items-center gap-2 text-sm">
                   <svg
                     width="16"
                     height="16"
@@ -96,23 +96,23 @@ export default async function Home({
             </div>
 
             {/* Chart Container */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="rounded-xl bg-white p-6 shadow-sm">
               {/* Chart Legend */}
-              <div className="flex justify-end gap-8 mb-6">
+              <div className="mb-6 flex justify-end gap-8">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-0.5 bg-[#948FB7]"></div>
-                  <span className="text-[#948FB7] text-sm">Results</span>
+                  <div className="h-0.5 w-8 bg-[#948FB7]"></div>
+                  <span className="text-sm text-[#948FB7]">Results</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-0.5 bg-[#948FB7] opacity-50"></div>
-                  <span className="text-[#948FB7] text-sm">Avg.</span>
+                  <div className="h-0.5 w-8 bg-[#948FB7] opacity-50"></div>
+                  <span className="text-sm text-[#948FB7]">Avg.</span>
                 </div>
               </div>
 
               {/* Chart Area */}
               <div className="relative h-64 md:h-80">
                 <svg
-                  className="w-full h-full"
+                  className="h-full w-full"
                   viewBox="0 0 1000 300"
                   preserveAspectRatio="xMidYMid meet">
                   {/* Grid Lines */}
@@ -137,7 +137,7 @@ export default async function Home({
                   />
 
                   {/* Y-axis labels */}
-                  <g className="text-xs fill-primary">
+                  <g className="fill-primary text-xs">
                     <text
                       x="20"
                       y="60"
@@ -261,20 +261,20 @@ export default async function Home({
           {/* Right Section - Poll Results and CTA */}
           <div className="space-y-6">
             {/* Last Poll Result */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="flex justify-between items-start mb-6">
+            <div className="rounded-xl bg-white p-6 shadow-sm">
+              <div className="mb-6 flex items-start justify-between">
                 <h3 className="font-merriweather text-primary text-xl">
                   Last poll result
                 </h3>
-                <span className="text-[#948FB7] text-sm">
+                <span className="text-sm text-[#948FB7]">
                   Monday, July 9th, 2020
                 </span>
               </div>
 
               {/* Score Display */}
-              <div className="flex items-center gap-4 mb-6">
+              <div className="mb-6 flex items-center gap-4">
                 <div className="relative">
-                  <div className="w-20 h-20 bg-[#98DDAB] rounded-full"></div>
+                  <div className="h-20 w-20 rounded-full bg-[#98DDAB]"></div>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="text-primary text-4xl font-light">
                       3,7
@@ -283,59 +283,59 @@ export default async function Home({
                 </div>
                 <div>
                   <div className="text-primary text-2xl font-light">9/20</div>
-                  <div className="font-merriweather text-[#948FB7] text-sm">
+                  <div className="font-merriweather text-sm text-[#948FB7]">
                     Participation
                   </div>
-                  <div className="text-[#948FB7] text-sm">
+                  <div className="text-sm text-[#948FB7]">
                     Usually 12 people participate
                   </div>
                 </div>
               </div>
 
-              <div className="text-[#948FB7] text-sm mb-6">
+              <div className="mb-6 text-sm text-[#948FB7]">
                 7% below average
               </div>
 
               {/* Poll Results Breakdown */}
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full border-4 border-[#3FE3D2] flex items-center justify-center">
-                    <span className="text-black text-lg">70</span>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#3FE3D2]">
+                    <span className="text-lg text-black">70</span>
                   </div>
-                  <div className="flex-1 bg-[#3FE3D2] opacity-50 h-4 rounded-r-full"></div>
+                  <div className="h-4 flex-1 rounded-r-full bg-[#3FE3D2] opacity-50"></div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full border-4 border-[#98DDAB] flex items-center justify-center">
-                    <span className="text-black text-lg">12</span>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#98DDAB]">
+                    <span className="text-lg text-black">12</span>
                   </div>
-                  <div className="w-24 bg-[#98DDAB] opacity-50 h-4 rounded-r-full"></div>
+                  <div className="h-4 w-24 rounded-r-full bg-[#98DDAB] opacity-50"></div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full border-4 border-[#FFC952] flex items-center justify-center">
-                    <span className="text-black text-lg">5</span>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#FFC952]">
+                    <span className="text-lg text-black">5</span>
                   </div>
-                  <div className="w-8 bg-[#FFC952] opacity-50 h-4 rounded-r-full"></div>
+                  <div className="h-4 w-8 rounded-r-full bg-[#FFC952] opacity-50"></div>
                 </div>
-                <div className="w-12 h-12 rounded-full border-4 border-[#FF7473] border-dashed flex items-center justify-center">
-                  <span className="text-black text-lg"></span>
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-dashed border-[#FF7473]">
+                  <span className="text-lg text-black"></span>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full border-4 border-[#FE346E] flex items-center justify-center">
-                    <span className="text-black text-lg">42</span>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#FE346E]">
+                    <span className="text-lg text-black">42</span>
                   </div>
-                  <div className="w-64 bg-[#FE346E] opacity-50 h-4 rounded-r-full"></div>
+                  <div className="h-4 w-64 rounded-r-full bg-[#FE346E] opacity-50"></div>
                 </div>
               </div>
             </div>
 
             {/* Call to Action */}
-            <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-              <p className="text-primary text-sm mb-4">
+            <div className="rounded-xl bg-white p-6 text-center shadow-sm">
+              <p className="text-primary mb-4 text-sm">
                 You haven&apos;t participated yet.
               </p>
               <Link
                 href={`/mood?team=${userTeam.team.id}&date=${todayDate()}`}
-                className="block w-full bg-primary text-white font-bold px-6 py-4 rounded-tl-xl rounded-br-xl shadow-lg hover:bg-cyan hover:text-primary transition-colors duration-200">
+                className="bg-primary hover:bg-cyan hover:text-primary block w-full rounded-tl-xl rounded-br-xl px-6 py-4 font-bold text-white shadow-lg transition-colors duration-200">
                 Share your mood
               </Link>
             </div>

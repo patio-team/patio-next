@@ -147,7 +147,7 @@ export default function MoodForm({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="text-center">
           <LoadingSpinner />
         </div>
@@ -157,10 +157,10 @@ export default function MoodForm({
 
   return (
     <div className="min-h-screen bg-white">
-      <div className="px-4 md:px-16 py-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="font-merriweather text-primary text-3xl font-normal mb-2">
+      <div className="px-4 py-8 md:px-16">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-8 text-center">
+            <h1 className="font-merriweather text-primary mb-2 text-3xl font-normal">
               {existingEntry ? 'Update your mood' : 'Share your mood'}
             </h1>
             <p className="text-[#948FB7]">{formattedDate}</p>
@@ -171,7 +171,7 @@ export default function MoodForm({
             className="space-y-8">
             {/* Error Message */}
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
                 {error}
               </div>
             )}
@@ -179,13 +179,13 @@ export default function MoodForm({
             {/* Team Selection */}
             {teams && teams.length > 1 && (
               <div className="space-y-3">
-                <label className="block text-primary text-base leading-[22px] font-medium">
+                <label className="text-primary block text-base leading-[22px] font-medium">
                   Team
                 </label>
                 <select
                   value={selectedTeam}
                   onChange={(e) => setSelectedTeam(e.target.value)}
-                  className="w-full max-w-[407px] h-[42px] px-4 py-2 border border-[#DBDAE7] rounded-lg bg-white text-base leading-[18px] tracking-[0.1px] focus:outline-none focus:ring-2 focus:ring-[#3FE3D2] focus:border-transparent"
+                  className="h-[42px] w-full max-w-[407px] rounded-lg border border-[#DBDAE7] bg-white px-4 py-2 text-base leading-[18px] tracking-[0.1px] focus:border-transparent focus:ring-2 focus:ring-[#3FE3D2] focus:outline-none"
                   required>
                   {teams.map((team) => (
                     <option
@@ -200,7 +200,7 @@ export default function MoodForm({
 
             {/* Mood Rating Selection */}
             <div className="space-y-6">
-              <label className="block text-primary text-base leading-[22px] font-medium">
+              <label className="text-primary block text-base leading-[22px] font-medium">
                 How are you feeling today?
               </label>
 
@@ -229,7 +229,7 @@ export default function MoodForm({
                         className={`transition-all duration-200 ${
                           isSelected
                             ? 'scale-140'
-                            : 'hover:scale-105 opacity-70 hover:opacity-100'
+                            : 'opacity-70 hover:scale-105 hover:opacity-100'
                         }`}>
                         <Smile mood={moodClass} />
                       </button>
@@ -241,7 +241,7 @@ export default function MoodForm({
 
             {/* Comment */}
             <div className="space-y-3">
-              <label className="block text-primary text-base leading-[22px] font-medium">
+              <label className="text-primary block text-base leading-[22px] font-medium">
                 Additional comments (optional)
               </label>
               <textarea
@@ -249,13 +249,13 @@ export default function MoodForm({
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Share more about your day..."
                 rows={4}
-                className="w-full max-w-[407px] px-4 py-2 border border-[#DBDAE7] rounded-lg bg-white text-base leading-[18px] tracking-[0.1px] placeholder:text-[#948FB7] focus:outline-none focus:ring-2 focus:ring-[#3FE3D2] focus:border-transparent resize-none"
+                className="w-full max-w-[407px] resize-none rounded-lg border border-[#DBDAE7] bg-white px-4 py-2 text-base leading-[18px] tracking-[0.1px] placeholder:text-[#948FB7] focus:border-transparent focus:ring-2 focus:ring-[#3FE3D2] focus:outline-none"
               />
             </div>
 
             {/* Visibility Settings */}
             <div className="space-y-4">
-              <label className="block text-primary text-base leading-[22px] font-medium">
+              <label className="text-primary block text-base leading-[22px] font-medium">
                 Privacy Settings
               </label>
 
@@ -270,11 +270,11 @@ export default function MoodForm({
                     onChange={(e) =>
                       setVisibility(e.target.value as 'public' | 'private')
                     }
-                    className="h-4 w-4 text-[#3FE3D2] focus:ring-[#3FE3D2] border-gray-300"
+                    className="h-4 w-4 border-gray-300 text-[#3FE3D2] focus:ring-[#3FE3D2]"
                   />
                   <label
                     htmlFor="public"
-                    className="text-sm text-primary">
+                    className="text-primary text-sm">
                     Public - visible to all team members
                   </label>
                 </div>
@@ -289,11 +289,11 @@ export default function MoodForm({
                     onChange={(e) =>
                       setVisibility(e.target.value as 'public' | 'private')
                     }
-                    className="h-4 w-4 text-[#3FE3D2] focus:ring-[#3FE3D2] border-gray-300"
+                    className="h-4 w-4 border-gray-300 text-[#3FE3D2] focus:ring-[#3FE3D2]"
                   />
                   <label
                     htmlFor="private"
-                    className="text-sm text-primary">
+                    className="text-primary text-sm">
                     Private - only visible to team admins
                   </label>
                 </div>
@@ -305,18 +305,18 @@ export default function MoodForm({
                   id="allowContact"
                   checked={allowContact}
                   onChange={(e) => setAllowContact(e.target.checked)}
-                  className="h-4 w-4 text-[#3FE3D2] focus:ring-[#3FE3D2] border-gray-300 rounded"
+                  className="h-4 w-4 rounded border-gray-300 text-[#3FE3D2] focus:ring-[#3FE3D2]"
                 />
                 <label
                   htmlFor="allowContact"
-                  className="text-sm text-primary">
+                  className="text-primary text-sm">
                   Allow team members to reach out for support
                 </label>
               </div>
             </div>
 
             {/* Submit Button */}
-            <div className="flex flex-col sm:flex-row gap-6 pt-6">
+            <div className="flex flex-col gap-6 pt-6 sm:flex-row">
               <Button
                 type="button"
                 asChild

@@ -21,23 +21,23 @@ export function LoadingSpinner() {
       transition={{ staggerChildren: -0.2, staggerDirection: -1 }}
       className="flex items-center justify-center space-x-2">
       <motion.div
-        className="w-4 h-4 bg-[#3FE3D2] opacity-50 rounded-full will-change-transform"
+        className="h-4 w-4 rounded-full bg-[#3FE3D2] opacity-50 will-change-transform"
         variants={dotVariants}
       />
       <motion.div
-        className="w-4 h-4 bg-[#98DDAB] opacity-75 rounded-full will-change-transform"
+        className="h-4 w-4 rounded-full bg-[#98DDAB] opacity-75 will-change-transform"
         variants={dotVariants}
       />
       <motion.div
-        className="w-4 h-4 bg-[#FFC952] rounded-full will-change-transform"
+        className="h-4 w-4 rounded-full bg-[#FFC952] will-change-transform"
         variants={dotVariants}
       />
       <motion.div
-        className="w-4 h-4 bg-[#FF7473] opacity-75 rounded-full will-change-transform"
+        className="h-4 w-4 rounded-full bg-[#FF7473] opacity-75 will-change-transform"
         variants={dotVariants}
       />
       <motion.div
-        className="w-4 h-4 bg-[#FE346E] opacity-50 rounded-full will-change-transform"
+        className="h-4 w-4 rounded-full bg-[#FE346E] opacity-50 will-change-transform"
         variants={dotVariants}
       />
     </motion.div>

@@ -1,6 +1,6 @@
 export function BgDecoration() {
   return (
-    <div className="fixed bottom-0 left-0 w-full h-64 overflow-hidden pointer-events-none">
+    <div className="pointer-events-none fixed bottom-0 left-0 h-64 w-full overflow-hidden">
       <svg
         className="absolute bottom-0 left-3"
         width="908"

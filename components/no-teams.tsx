@@ -4,11 +4,11 @@ import { Button } from './ui/button';
 
 export function NoTeams() {
   return (
-    <div className="flex flex-col items-center justify-center h-full p-8">
-      <h2 className={`text-2xl font-bold mb-4 ${merriweatherFont.className}`}>
+    <div className="flex h-full flex-col items-center justify-center p-8">
+      <h2 className={`mb-4 text-2xl font-bold ${merriweatherFont.className}`}>
         Create your first team
       </h2>
-      <p className="text-gray-600 mb-6">
+      <p className="mb-6 text-gray-600">
         Set when you want polls to take place, invite people and don&apos;t miss
         a thing.
       </p>
@@ -299,7 +299,7 @@ export function NoTeams() {
 
       <Button
         asChild
-        className="text-center px-16">
+        className="px-16 text-center">
         <Link href="/new-team">Let&apos;s start</Link>
       </Button>
     </div>

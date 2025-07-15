@@ -24,9 +24,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col lg:flex-row w-6xl gap-8 py-8 align-center justify-center w-full">
+    <div className="align-center flex min-h-screen w-6xl w-full flex-col justify-center gap-8 bg-white py-8 lg:flex-row">
       {/* Left section - Branding (hidden on mobile, shows on tablet/desktop) */}
-      <div className="flex flex-col justify-center w-[430px]">
+      <div className="flex w-[430px] flex-col justify-center">
         {/* Logo */}
         <div className="mb-8 flex justify-center">
           <svg
@@ -34,7 +34,7 @@ export default function LoginPage() {
             height="92"
             viewBox="0 0 239 92"
             fill="none"
-            className="w-48 xl:w-60 h-auto">
+            className="h-auto w-48 xl:w-60">
             <path
               d="M239 45.1699C239 50.4532 237.798 55.2082 235.392 59.4348C232.987 63.5954 229.68 66.8314 225.471 69.1428C221.328 71.4543 216.751 72.61 211.74 72.61C206.663 72.61 202.052 71.4543 197.91 69.1428C193.768 66.8314 190.494 63.5954 188.088 59.4348C185.683 55.2082 184.48 50.4532 184.48 45.1699C184.48 39.8867 185.683 35.1647 188.088 31.0042C190.494 26.7775 193.768 23.5085 197.91 21.1971C202.052 18.8196 206.663 17.6309 211.74 17.6309C216.751 17.6309 221.328 18.8196 225.471 21.1971C229.68 23.5085 232.987 26.7775 235.392 31.0042C237.798 35.1647 239 39.8867 239 45.1699ZM226.974 45.1699C226.974 41.9339 226.272 39.0612 224.869 36.5516C223.533 33.976 221.696 31.9948 219.357 30.6079C217.085 29.221 214.547 28.5276 211.74 28.5276C208.934 28.5276 206.362 29.221 204.023 30.6079C201.752 31.9948 199.914 33.976 198.511 36.5516C197.175 39.0612 196.507 41.9339 196.507 45.1699C196.507 48.406 197.175 51.2787 198.511 53.7883C199.914 56.2979 201.752 58.2461 204.023 59.6329C206.362 61.0198 208.934 61.7132 211.74 61.7132C214.547 61.7132 217.085 61.0198 219.357 59.6329C221.696 58.2461 223.533 56.2979 224.869 53.7883C226.272 51.2787 226.974 48.406 226.974 45.1699Z"
               fill="#3FE3D2"
@@ -63,7 +63,7 @@ export default function LoginPage() {
         </div>
 
         {/* Tagline */}
-        <p className="font-merriweather text-xl xl:text-2xl leading-relaxed text-center text-[#34314C] mb-8">
+        <p className="font-merriweather mb-8 text-center text-xl leading-relaxed text-[#34314C] xl:text-2xl">
           The bottom-up temperature check tool made by teams for teams
         </p>
 
@@ -72,7 +72,7 @@ export default function LoginPage() {
           <Image
             src="/login-deco.png"
             alt="Team collaboration illustration"
-            className="w-full max-w-[350px] xl:max-w-[430px] h-auto rounded-[20px]"
+            className="h-auto w-full max-w-[350px] rounded-[20px] xl:max-w-[430px]"
             width={430}
             height={300}
           />
@@ -83,7 +83,7 @@ export default function LoginPage() {
       <div className="flex flex-col justify-center">
         <div className="w-full max-w-md">
           {/* Form Title */}
-          <h1 className="font-merriweather text-2xl lg:text-[32px] lg:leading-[42px] text-[#34314C] mb-8 lg:mb-12 text-center">
+          <h1 className="font-merriweather mb-8 text-center text-2xl text-[#34314C] lg:mb-12 lg:text-[32px] lg:leading-[42px]">
             Sign in to patio
           </h1>
 
@@ -91,9 +91,9 @@ export default function LoginPage() {
           <button
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full max-w-[322px] mx-auto h-[39px] border border-[#C4C4C4] rounded bg-white flex items-center justify-center mb-6 hover:bg-gray-50 transition-colors relative disabled:opacity-50 disabled:cursor-not-allowed">
+            className="relative mx-auto mb-6 flex h-[39px] w-full max-w-[322px] items-center justify-center rounded border border-[#C4C4C4] bg-white transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50">
             <svg
-              className="absolute left-4 w-[18px] h-[18px]"
+              className="absolute left-4 h-[18px] w-[18px]"
               viewBox="0 0 18 18"
               fill="none">
               <path

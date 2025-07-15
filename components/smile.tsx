@@ -25,7 +25,7 @@ export function Smile({ mood }: { className?: string; mood: Mood }) {
 
   return (
     <div
-      className={`w-[118px] h-[118px] rounded-full flex items-center justify-center text-primary shadow-md ${moodClass}`}>
+      className={`text-primary flex h-[118px] w-[118px] items-center justify-center rounded-full shadow-md ${moodClass}`}>
       {mood === 'mood5' && (
         <svg
           width="42"

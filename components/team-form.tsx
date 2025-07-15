@@ -136,7 +136,7 @@ export default function TeamForm({
           required
         />
         {errors.name && (
-          <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+          <p className="mt-1 text-sm text-red-500">{errors.name}</p>
         )}
       </div>
 
@@ -155,17 +155,17 @@ export default function TeamForm({
           placeholder="Team description..."
         />
         {errors.description && (
-          <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+          <p className="mt-1 text-sm text-red-500">{errors.description}</p>
         )}
       </div>
 
       {/* Poll days section */}
       <div className="space-y-6">
-        <h2 className="text-[#34314C] text-base leading-[22px] font-medium">
+        <h2 className="text-base leading-[22px] font-medium text-[#34314C]">
           On what day do you want polls?
         </h2>
 
-        <div className="flex gap-8 flex-wrap">
+        <div className="flex flex-wrap gap-8">
           <Checkbox
             checked={formData.pollDays.monday}
             label="Monday"
@@ -206,11 +206,11 @@ export default function TeamForm({
 
       {/* Error message */}
       {errors.submit && (
-        <div className="text-red-500 text-sm">{errors.submit}</div>
+        <div className="text-sm text-red-500">{errors.submit}</div>
       )}
 
       {/* Action buttons */}
-      <div className="flex flex-col sm:flex-row gap-6 pt-8">
+      <div className="flex flex-col gap-6 pt-8 sm:flex-row">
         {onCancel && (
           <Button
             type="button"

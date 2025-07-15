@@ -23,16 +23,16 @@ export async function DayResult({
   console.log(entries);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {entries.map((entry, index) => (
         <div
           key={index}
-          className="bg-white rounded-xl shadow-lg p-6 z-10">
+          className="z-10 rounded-xl bg-white p-6 shadow-lg">
           {/* User Avatar */}
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-full border-4 border-[#948FB7] border-opacity-10 bg-[#948FB7] bg-opacity-10 flex items-center justify-center">
+          <div className="mb-4 flex items-center gap-4">
+            <div className="border-opacity-10 bg-opacity-10 flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#948FB7] bg-[#948FB7]">
               <span className="text-primary text-lg">
-                <Avatar className="w-12 h-12">
+                <Avatar className="h-12 w-12">
                   <AvatarImage
                     src={entry.user?.image || ''}
                     alt={entry.user?.name || ''}
@@ -48,7 +48,7 @@ export async function DayResult({
             </span>
           </div>
 
-          <div className="flex justify-center mb-4">
+          <div className="mb-4 flex justify-center">
             <Smile mood={('mood' + entry.rating) as Mood} />
           </div>
 
@@ -65,7 +65,7 @@ export async function DayResult({
                   fill="#948FB7"
                 />
               </svg>
-              <span className="text-[#948FB7] text-sm">{entry.comment}</span>
+              <span className="text-sm text-[#948FB7]">{entry.comment}</span>
             </div>
           )}
         </div>

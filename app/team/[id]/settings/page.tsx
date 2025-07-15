@@ -120,7 +120,7 @@ export default function ManageGroupPage({
   // Show error state
   if (teamError || !teamData) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="text-red-500">Error loading Team</div>
       </div>
     );
@@ -128,22 +128,22 @@ export default function ManageGroupPage({
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="text-red-500">You do not have access to this team</div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen bg-white relative`}>
+    <div className={`relative min-h-screen bg-white`}>
       <Link
         href="/"
         className="absolute top-8 right-8">
         <X />
       </Link>
       {/* Main content */}
-      <div className="px-6 sm:px-16 py-16">
-        <h1 className="font-merriweather text-primary text-[32px] leading-[42px] font-normal pb-4">
+      <div className="px-6 py-16 sm:px-16">
+        <h1 className="font-merriweather text-primary pb-4 text-[32px] leading-[42px] font-normal">
           Manage team
         </h1>
         <Tabs
@@ -154,9 +154,9 @@ export default function ManageGroupPage({
             <TabsTrigger value="members">Members</TabsTrigger>
           </TabsList>
           <TabsContent value="general">
-            <div className="flex flex-col xl:flex-row gap-8 xl:gap-16 w-full py-4">
-              <div className="flex-1 max-w-2xl">
-                <h2 className="font-merriweather text-primary text-2xl leading-[30px] font-normal mb-6">
+            <div className="flex w-full flex-col gap-8 py-4 xl:flex-row xl:gap-16">
+              <div className="max-w-2xl flex-1">
+                <h2 className="font-merriweather text-primary mb-6 text-2xl leading-[30px] font-normal">
                   Team Settings
                 </h2>
                 <TeamForm
@@ -171,16 +171,16 @@ export default function ManageGroupPage({
             </div>
           </TabsContent>
           <TabsContent value="members">
-            <div className="flex flex-col xl:flex-row gap-8 xl:gap-16 w-full py-4">
+            <div className="flex w-full flex-col gap-8 py-4 xl:flex-row xl:gap-16">
               {/* Left section - Group info and members */}
-              <div className="flex-1 max-w-md space-y-8">
+              <div className="max-w-md flex-1 space-y-8">
                 {/* Member counts */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="font-merriweather text-primary text-base leading-[22px]">
                       Members:
                     </span>
-                    <span className="text-[#948FB7] text-base leading-[22px] font-medium">
+                    <span className="text-base leading-[22px] font-medium text-[#948FB7]">
                       {members.length}
                     </span>
                   </div>
@@ -192,7 +192,7 @@ export default function ManageGroupPage({
                     <div
                       key={member.id}
                       className="flex items-center gap-4">
-                      <Avatar className="w-12 h-12">
+                      <Avatar className="h-12 w-12">
                         <AvatarImage
                           src={member.user.image || ''}
                           alt={member.user.name || ''}
@@ -206,7 +206,7 @@ export default function ManageGroupPage({
                         <h4 className="font-merriweather text-primary text-base leading-[22px]">
                           {member.user.name}
                         </h4>
-                        <p className="text-[#948FB7] text-sm leading-[20px] font-medium">
+                        <p className="text-sm leading-[20px] font-medium text-[#948FB7]">
                           {member.user.email}
                         </p>
                       </div>
@@ -219,7 +219,7 @@ export default function ManageGroupPage({
                     <span className="font-merriweather text-primary text-base leading-[22px]">
                       Waiting:
                     </span>
-                    <span className="text-[#948FB7] text-base leading-[22px] font-medium">
+                    <span className="text-base leading-[22px] font-medium text-[#948FB7]">
                       {invitations.length}
                     </span>
                   </div>
@@ -231,7 +231,7 @@ export default function ManageGroupPage({
                     <div
                       key={member.id}
                       className="flex items-center gap-4">
-                      <Avatar className="w-12 h-12">
+                      <Avatar className="h-12 w-12">
                         <AvatarFallback>
                           <User className="h-4 w-16" />
                         </AvatarFallback>
@@ -248,13 +248,13 @@ export default function ManageGroupPage({
               </div>
 
               {/* Right section - Invite members */}
-              <div className="flex-1 max-w-2xl space-y-6">
+              <div className="max-w-2xl flex-1 space-y-6">
                 <h2 className="font-merriweather text-primary text-2xl leading-[30px] font-normal">
                   Invite new members
                 </h2>
 
                 <div className="space-y-3">
-                  <label className="block text-primary text-base leading-[22px] font-medium">
+                  <label className="text-primary block text-base leading-[22px] font-medium">
                     Enter multiple email addresses separated by comma.
                   </label>
                   <Input

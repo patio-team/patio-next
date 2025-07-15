@@ -35,7 +35,7 @@ export default function PageHeader({ user, userTeams }: PageHeaderProps) {
   };
 
   return (
-    <header className="w-full h-20 bg-white shadow-sm border-b border-gray-100 flex items-center justify-between px-4 md:px-16">
+    <header className="flex h-20 w-full items-center justify-between border-b border-gray-100 bg-white px-4 shadow-sm md:px-16">
       {/* Logo */}
       <div className="flex items-center">
         <svg
@@ -77,7 +77,7 @@ export default function PageHeader({ user, userTeams }: PageHeaderProps) {
 
       <div className="flex items-center gap-4">
         <DropdownMenu>
-          <DropdownMenuTrigger className="cursor-pointer flex items-center gap-2">
+          <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2">
             Open <ChevronDown />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -95,7 +95,7 @@ export default function PageHeader({ user, userTeams }: PageHeaderProps) {
             <DropdownMenuItem>
               <Link
                 href="/new-team"
-                className="flex items-center gap-2 text-sm text-muted-foreground">
+                className="text-muted-foreground flex items-center gap-2 text-sm">
                 <CirclePlus />
                 Create New Team
               </Link>
@@ -107,7 +107,7 @@ export default function PageHeader({ user, userTeams }: PageHeaderProps) {
           <DropdownMenuTrigger
             asChild
             className="cursor-pointer">
-            <Avatar className="w-12 h-12">
+            <Avatar className="h-12 w-12">
               <AvatarImage
                 sizes="(140px, 140px)"
                 src={user?.image || ''}
@@ -121,8 +121,8 @@ export default function PageHeader({ user, userTeams }: PageHeaderProps) {
           <DropdownMenuContent align="end">
             <DropdownMenuItem className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user?.name}</p>
-                <p className="text-xs leading-none text-muted-foreground">
+                <p className="text-sm leading-none font-medium">{user?.name}</p>
+                <p className="text-muted-foreground text-xs leading-none">
                   {user?.email}
                 </p>
               </div>

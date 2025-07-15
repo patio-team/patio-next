@@ -37,8 +37,8 @@ export default function NewTeamPage() {
   // Show loading screen while checking session
   if (sessionLoading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-[#34314C] text-lg">Loading...</div>
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="text-lg text-[#34314C]">Loading...</div>
       </div>
     );
   }
@@ -49,11 +49,11 @@ export default function NewTeamPage() {
   }
 
   return (
-    <div className={`min-h-screen bg-white relative`}>
+    <div className={`relative min-h-screen bg-white`}>
       {/* Main content */}
-      <div className="max-w-4xl mx-auto px-6 sm:px-16 py-16">
+      <div className="mx-auto max-w-4xl px-6 py-16 sm:px-16">
         {/* Title */}
-        <h1 className="font-merriweather text-[#34314C] text-[32px] leading-[42px] font-normal mb-8">
+        <h1 className="font-merriweather mb-8 text-[32px] leading-[42px] font-normal text-[#34314C]">
           New team
         </h1>
 
