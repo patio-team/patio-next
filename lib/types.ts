@@ -18,7 +18,6 @@ export interface TeamWithMembers {
   id: string;
   name: string;
   description: string | null;
-  inviteCode: string;
   createdAt: Date;
   updatedAt: Date;
   members: Array<{

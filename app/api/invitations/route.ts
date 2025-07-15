@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is already a member
-    const existingUser = await db.query.user.findFirst({
+    const existingUser = await db.query.users.findFirst({
       where: eq(users.email, email),
     });
 
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       where: eq(teams.id, teamId),
     });
 
-    const inviter = await db.query.user.findFirst({
+    const inviter = await db.query.users.findFirst({
       where: eq(users.id, userId),
     });
 

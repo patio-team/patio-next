@@ -6,11 +6,11 @@ import {
   createResponse,
   createErrorResponse,
   getRequestBody,
-  generateInviteCode,
   generateId,
 } from '@/lib/utils';
 import { eq } from 'drizzle-orm';
 import { headers } from 'next/headers';
+import { createTeamSchema } from '@/lib/api-types';
 
 // GET /api/teams - Get user's teams
 export async function GET() {
@@ -58,10 +58,11 @@ export async function POST(request: NextRequest) {
 
     const userId = session.user.id;
     const body = await getRequestBody(request);
-    const { name, description } = body;
 
-    if (!name) {
-      return createErrorResponse('Team name required', 400);
+    const result = createTeamSchema.safeParse(body);
+
+    if (!result.success) {
+      return createErrorResponse('Invalid request data', 400);
     }
 
     // Create team
@@ -69,9 +70,9 @@ export async function POST(request: NextRequest) {
       .insert(teams)
       .values({
         id: generateId(),
-        name,
-        description,
-        inviteCode: generateInviteCode(),
+        name: result.data.name,
+        description: result.data.description,
+        pollDays: result.data.pollDays,
       })
       .returning();
 

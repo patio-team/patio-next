@@ -24,8 +24,9 @@ export function useCreateTeam() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: Pick<CreateTeamFormData, 'name' | 'description'>) =>
-      apiClient.createTeam(data),
+    mutationFn: (
+      data: Pick<CreateTeamFormData, 'name' | 'description' | 'pollDays'>,
+    ) => apiClient.createTeam(data),
     onSuccess: () => {
       // Invalidate and refetch teams
       queryClient.invalidateQueries({ queryKey: teamKeys.all });

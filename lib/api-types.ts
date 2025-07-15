@@ -8,8 +8,6 @@ export const createTeamSchema = z.object({
     .max(255, 'Team name too long'),
   description: z.string().optional(),
   pollDays: z.object({
-    weekday: z.boolean(),
-    weekend: z.boolean(),
     monday: z.boolean(),
     tuesday: z.boolean(),
     wednesday: z.boolean(),
@@ -27,7 +25,7 @@ export interface Team {
   id: string;
   name: string;
   description?: string;
-  inviteCode: string;
+  pollDays: CreateTeamFormData['pollDays'];
   createdAt: string;
   updatedAt: string;
   members?: TeamMember[];

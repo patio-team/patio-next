@@ -42,7 +42,11 @@ class ApiClient {
   }
 
   // Teams API methods
-  async createTeam(data: { name: string; description?: string }) {
+  async createTeam(data: {
+    name: string;
+    description?: string;
+    pollDays: Record<string, boolean>;
+  }) {
     return this.request<ApiResponse<Team>>('/teams', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -62,7 +66,12 @@ class ApiClient {
     const results = [];
     for (const email of data.emails) {
       try {
-        const result = await this.request<ApiResponse<{ message: string; invitation: { id: string; email: string; expiresAt: string } }>>('/invitations', {
+        const result = await this.request<
+          ApiResponse<{
+            message: string;
+            invitation: { id: string; email: string; expiresAt: string };
+          }>
+        >('/invitations', {
           method: 'POST',
           body: JSON.stringify({ teamId: data.teamId, email: email.trim() }),
         });

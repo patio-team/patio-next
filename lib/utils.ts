@@ -43,11 +43,6 @@ export function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-// Generate invite code
-export function generateInviteCode(): string {
-  return crypto.randomBytes(6).toString('hex').toUpperCase();
-}
-
 // Generate UUID
 export function generateId(): string {
   return crypto.randomUUID();

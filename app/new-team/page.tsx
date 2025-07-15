@@ -12,8 +12,6 @@ import { ZodError } from 'zod';
 import { useSession } from '@/lib/auth-client';
 
 interface DaySelection {
-  weekday: boolean;
-  weekend: boolean;
   monday: boolean;
   tuesday: boolean;
   wednesday: boolean;
@@ -43,8 +41,6 @@ export default function NewTeamPage() {
     name: '',
     description: '',
     pollDays: {
-      weekday: true,
-      weekend: false,
       monday: true,
       tuesday: true,
       wednesday: true,
@@ -95,6 +91,7 @@ export default function NewTeamPage() {
       const response = await createTeamMutation.mutateAsync({
         name: formData.name,
         description: formData.description || undefined,
+        pollDays: formData.pollDays,
       });
 
       const team = response.data;
@@ -175,16 +172,6 @@ export default function NewTeamPage() {
             </h2>
 
             <div className="flex gap-8 flex-wrap">
-              <Checkbox
-                checked={formData.pollDays.weekday}
-                label="Weekday"
-                onClick={() => handleDayToggle('weekday')}
-              />
-              <Checkbox
-                checked={formData.pollDays.weekend}
-                label="Weekend"
-                onClick={() => handleDayToggle('weekend')}
-              />
               <Checkbox
                 checked={formData.pollDays.monday}
                 label="Monday"

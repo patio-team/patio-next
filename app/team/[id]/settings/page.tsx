@@ -48,6 +48,9 @@ export default function ManageGroupPage({
   // Extract members and invitations from team data
   const members = teamResponse?.data?.members || [];
   const invitations = teamResponse?.data?.invitations || [];
+  const teamData = teamResponse?.data;
+
+  console.log(teamData);
 
   const handleSendInvites = async () => {
     if (!emailInput.trim() || !isAdmin) return;
@@ -91,7 +94,7 @@ export default function ManageGroupPage({
   }
 
   // Show error state
-  if (teamError) {
+  if (teamError || !teamData) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-red-500">Error loading Team</div>
@@ -136,7 +139,7 @@ export default function ManageGroupPage({
                 {/* Header */}
                 <div className="space-y-4">
                   <p className="text-[#948FB7] text-base leading-[22px] font-medium">
-                    Tracks on weekdays from 14:00 pm to 12:00 am
+                    {/* Tracks on weekdays from 14:00 pm to 12:00 am */}
                   </p>
                 </div>
 
