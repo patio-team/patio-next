@@ -5,7 +5,7 @@ import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSession } from '@/lib/auth-client';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { use, useEffect, useState } from 'react';
 import {
   useTeam,

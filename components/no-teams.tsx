@@ -9,8 +9,8 @@ export function NoTeams() {
         Create your first team
       </h2>
       <p className="text-gray-600 mb-6">
-        Set when you want polls to take place, invite people and don't miss a
-        thing.
+        Set when you want polls to take place, invite people and don&apos;t miss
+        a thing.
       </p>
 
       <div className="p-8">
@@ -300,7 +300,7 @@ export function NoTeams() {
       <Button
         asChild
         className="text-center px-16">
-        <Link href="/new-team">Let's start</Link>
+        <Link href="/new-team">Let&apos;s start</Link>
       </Button>
     </div>
   );

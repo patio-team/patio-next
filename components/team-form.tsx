@@ -16,7 +16,7 @@ interface TeamFormProps {
     name: string;
     description?: string;
     pollDays: DaySelection;
-  }) => Promise<void>;
+  }) => void;
   isLoading?: boolean;
   onCancel?: () => void;
   cancelLabel?: string;

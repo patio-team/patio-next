@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { latoFont, merriweatherFont } from '@/lib/fonts';
 import { Providers } from '@/components/providers';
-import { BgDecoration } from '@/components/ui/bg-decoration';
 
 export const metadata: Metadata = {
   title: 'Patio',
@@ -21,7 +20,6 @@ export default function RootLayout({
       suppressHydrationWarning>
       <body className="antialiased">
         <Providers>{children}</Providers>
-        <BgDecoration />
       </body>
     </html>
   );
