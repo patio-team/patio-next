@@ -1,5 +1,3 @@
-'use client';
-
 import { useSession as useBetterAuthSession } from '@/lib/auth-client';
 
 export function useAuth() {

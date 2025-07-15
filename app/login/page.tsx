@@ -2,11 +2,9 @@
 
 import { useState } from 'react';
 import { signIn } from '@/lib/auth-client';
-import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleGoogleSignIn = async () => {
     try {

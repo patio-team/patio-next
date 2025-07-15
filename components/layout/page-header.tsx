@@ -15,7 +15,6 @@ import { User, LogOut, CirclePlus } from 'lucide-react';
 import { TeamMemberWithTeam } from '@/db/schema';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { Button } from '../ui/button';
 
 export interface User {
   id: string;
