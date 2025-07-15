@@ -139,6 +139,7 @@ export const moodEntries = pgTable('mood_entries', {
     .references(() => teams.id, { onDelete: 'cascade' }),
   rating: moodRatingEnum('rating').notNull(),
   comment: text('comment'),
+  // TODO: Only admins
   isAnonymous: boolean('is_anonymous').default(false).notNull(),
   allowContact: boolean('allow_contact').default(true).notNull(),
   entryDate: timestamp('entry_date').notNull(), // The actual date of the entry

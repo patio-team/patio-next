@@ -1,4 +1,12 @@
-import { ApiResponse, Team, DaySelection } from './api-types';
+import {
+  ApiResponse,
+  Team,
+  DaySelection,
+  MoodEntriesResponse,
+  MoodEntry,
+  CreateMoodEntryRequest,
+  UpdateMoodEntryRequest,
+} from './api-types';
 
 class ApiClient {
   private baseUrl = '/api';
@@ -95,6 +103,42 @@ class ApiClient {
       }
     }
     return results;
+  }
+
+  // Mood Entries API methods
+  async getTodayMoodEntries(teamId: string) {
+    return this.request<ApiResponse<MoodEntriesResponse>>(
+      `/mood-entries/today?teamId=${teamId}`,
+    );
+  }
+
+  async getMoodEntriesByDate(teamId: string, date: string) {
+    return this.request<ApiResponse<MoodEntriesResponse>>(
+      `/mood-entries/date/${date}?teamId=${teamId}`,
+    );
+  }
+
+  async createMoodEntry(data: CreateMoodEntryRequest) {
+    return this.request<ApiResponse<MoodEntry>>('/mood-entries', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateMoodEntry(data: UpdateMoodEntryRequest) {
+    return this.request<ApiResponse<MoodEntry>>('/mood-entries', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteMoodEntry(entryId: string) {
+    return this.request<ApiResponse<{ message: string }>>(
+      `/mood-entries?entryId=${entryId}`,
+      {
+        method: 'DELETE',
+      },
+    );
   }
 }
 

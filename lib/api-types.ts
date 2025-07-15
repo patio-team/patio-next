@@ -70,6 +70,137 @@ export interface TeamInvitation {
   rejectedAt?: string;
 }
 
+// Mood entry types
+export interface MoodEntry {
+  id: string;
+  userId: string;
+  teamId: string;
+  rating: '1' | '2' | '3' | '4' | '5';
+  comment?: string;
+  isAnonymous: boolean;
+  allowContact: boolean;
+  entryDate: string; // ISO date string
+  createdAt: string;
+  updatedAt: string;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+  };
+  mentions?: MoodEntryMention[];
+}
+
+export interface MoodEntryMention {
+  id: string;
+  moodEntryId: string;
+  mentionedUserId: string;
+  mentionedByUserId: string;
+  createdAt: string;
+  mentionedUser: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+  };
+}
+
+export interface ParticipationStats {
+  totalEntries: number;
+  uniqueParticipants: number;
+  totalMembers: number;
+  participationRate: number; // percentage
+  averageParticipation?: number;
+  averageParticipationRate?: number;
+  historicalDays?: number;
+}
+
+export interface MoodEntriesResponse {
+  date: string; // ISO date string (YYYY-MM-DD)
+  entries: MoodEntry[];
+  stats: ParticipationStats;
+}
+
+// Request types
+export interface CreateMoodEntryRequest {
+  teamId: string;
+  rating: '1' | '2' | '3' | '4' | '5';
+  comment?: string;
+  isAnonymous?: boolean;
+  allowContact?: boolean;
+  mentionedUserIds?: string[];
+  entryDate?: string; // Optional ISO date string (YYYY-MM-DD)
+}
+
+export interface UpdateMoodEntryRequest {
+  entryId: string;
+  rating?: '1' | '2' | '3' | '4' | '5';
+  comment?: string;
+  isAnonymous?: boolean;
+  allowContact?: boolean;
+  mentionedUserIds?: string[];
+}
+
+// Validation schemas
+export const createMoodEntrySchema = z.object({
+  teamId: z.string().min(1, 'Team ID is required'),
+  rating: z.enum(['1', '2', '3', '4', '5']),
+  comment: z.string().optional(),
+  isAnonymous: z.boolean().default(false),
+  allowContact: z.boolean().default(true),
+  mentionedUserIds: z.array(z.string()).default([]),
+  entryDate: z.string().optional(), // ISO date string validation
+});
+
+export const updateMoodEntrySchema = z.object({
+  entryId: z.string().min(1, 'Entry ID is required'),
+  rating: z.enum(['1', '2', '3', '4', '5']).optional(),
+  comment: z.string().optional(),
+  isAnonymous: z.boolean().optional(),
+  allowContact: z.boolean().optional(),
+  mentionedUserIds: z.array(z.string()).optional(),
+});
+
+export type CreateMoodEntryFormData = z.infer<typeof createMoodEntrySchema>;
+export type UpdateMoodEntryFormData = z.infer<typeof updateMoodEntrySchema>;
+
+// API Response types
+export interface Team {
+  id: string;
+  name: string;
+  description?: string;
+  pollDays: DaySelection;
+  createdAt: string;
+  updatedAt: string;
+  members?: TeamMember[];
+  invitations?: TeamInvitation[];
+}
+
+export interface TeamMember {
+  id: string;
+  userId: string;
+  teamId: string;
+  role: 'member' | 'admin';
+  joinedAt: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+  };
+}
+
+export interface TeamInvitation {
+  id: string;
+  teamId: string;
+  email: string;
+  invitedBy: string;
+  expiresAt: string;
+  createdAt: string;
+  acceptedAt?: string;
+  rejectedAt?: string;
+}
+
 export interface ApiResponse<T> {
   data: T;
   success: boolean;

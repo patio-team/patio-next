@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import crypto from 'crypto';
+import { DateTime } from 'luxon';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -58,4 +59,65 @@ export function getPollDaysString(pollDays: Record<string, boolean>): string {
     .filter(([, value]) => value)
     .map(([key]) => key.charAt(0).toUpperCase() + key.slice(1));
   return days.join(', ');
+}
+
+// Date and timezone utilities
+export function getTimezone(): string {
+  return process.env.TIMEZONE || 'UTC';
+}
+
+export function getTodayInTimezone(timezone?: string): DateTime {
+  const tz = timezone || getTimezone();
+  return DateTime.now().setZone(tz).startOf('day');
+}
+
+export function getDateInTimezone(
+  dateStr: string,
+  timezone?: string,
+): DateTime {
+  const tz = timezone || getTimezone();
+  const date = DateTime.fromISO(dateStr).setZone(tz).startOf('day');
+  if (!date.isValid) {
+    throw new Error('Invalid date format');
+  }
+  return date;
+}
+
+export function getDayOfWeek(date: Date | DateTime): string {
+  const dt = date instanceof Date ? DateTime.fromJSDate(date) : date;
+  const dayNames = [
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+  ];
+  return dayNames[dt.weekday % 7];
+}
+
+export function canPostOnDate(date: DateTime): boolean {
+  const today = getTodayInTimezone();
+  return date <= today;
+}
+
+export function formatDateForDB(date: DateTime): Date {
+  return date.toJSDate();
+}
+
+export function getParticipationStats(
+  entries: { userId: string }[],
+  totalMembers: number,
+) {
+  const uniqueParticipants = new Set(entries.map((entry) => entry.userId)).size;
+  const participationRate =
+    totalMembers > 0 ? (uniqueParticipants / totalMembers) * 100 : 0;
+
+  return {
+    totalEntries: entries.length,
+    uniqueParticipants,
+    totalMembers,
+    participationRate: Math.round(participationRate * 100) / 100,
+  };
 }
