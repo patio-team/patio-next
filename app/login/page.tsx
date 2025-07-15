@@ -24,52 +24,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col lg:flex-row relative overflow-hidden">
-      {/* Background decorative circles */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden">
-          <svg
-            className="w-full max-w-[908px] h-auto opacity-50 lg:opacity-100"
-            viewBox="0 0 908 153"
-            fill="none">
-            <circle
-              opacity="0.25"
-              cx="494.5"
-              cy="168.5"
-              r="100.5"
-              fill="#FFC952"
-            />
-            <circle
-              opacity="0.25"
-              cx="671.5"
-              cy="48.5"
-              r="48.5"
-              fill="#98DDAB"
-            />
-            <circle
-              opacity="0.25"
-              cx="850.5"
-              cy="130.5"
-              r="57.5"
-              fill="#3FE3D2"
-            />
-            <circle
-              opacity="0.25"
-              cx="250.5"
-              cy="114.5"
-              r="65.5"
-              fill="#FF7473"
-            />
-            <circle
-              opacity="0.25"
-              cx="50"
-              cy="138"
-              r="50"
-              fill="#FE346E"
-            />
-          </svg>
-        </div>
-      </div>
-
       {/* Close button */}
       <button className="absolute top-4 right-4 lg:top-14 lg:right-14 z-10 w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-full transition-colors">
         <svg
