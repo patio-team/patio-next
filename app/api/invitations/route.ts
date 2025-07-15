@@ -6,19 +6,26 @@ import {
   createErrorResponse,
   getRequestBody,
   generateToken,
+  generateId,
   isValidEmail,
 } from '@/lib/utils';
 import { sendTeamInvitationEmail } from '@/lib/email';
 import { eq, and, isNull } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 
 // POST /api/invitations - Send team invitation
 export async function POST(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!userId) {
-      return createErrorResponse('No autorizado', 401);
+    if (!session) {
+      return createErrorResponse('No autorized', 401);
     }
+
+    const userId = session.user.id;
 
     const body = await getRequestBody(request);
     const { teamId, email } = body;
@@ -41,14 +48,11 @@ export async function POST(request: NextRequest) {
     });
 
     if (!adminMembership) {
-      return createErrorResponse(
-        'Solo los administradores pueden enviar invitaciones',
-        403,
-      );
+      return createErrorResponse('Only admins can send invitations', 403);
     }
 
     // Check if user is already a member
-    const existingUser = await db.query.users.findFirst({
+    const existingUser = await db.query.user.findFirst({
       where: eq(users.email, email),
     });
 
@@ -61,7 +65,7 @@ export async function POST(request: NextRequest) {
       });
 
       if (existingMembership) {
-        return createErrorResponse('El usuario ya es miembro del equipo', 409);
+        return createErrorResponse('User is already a member of the team', 409);
       }
     }
 
@@ -77,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     if (existingInvitation) {
       return createErrorResponse(
-        'Ya existe una invitación pendiente para este email',
+        'Invitation already exists for this email',
         409,
       );
     }
@@ -87,12 +91,12 @@ export async function POST(request: NextRequest) {
       where: eq(teams.id, teamId),
     });
 
-    const inviter = await db.query.users.findFirst({
+    const inviter = await db.query.user.findFirst({
       where: eq(users.id, userId),
     });
 
     if (!team || !inviter) {
-      return createErrorResponse('Equipo o usuario no encontrado', 404);
+      return createErrorResponse('Team or user not found', 404);
     }
 
     // Create invitation
@@ -103,6 +107,7 @@ export async function POST(request: NextRequest) {
     const [invitation] = await db
       .insert(teamInvitations)
       .values({
+        id: generateId(),
         teamId,
         invitedBy: userId,
         email,

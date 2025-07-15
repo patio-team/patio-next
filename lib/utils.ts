@@ -52,3 +52,8 @@ export function generateInviteCode(): string {
 export function generateId(): string {
   return crypto.randomUUID();
 }
+
+// Generate token for invitations
+export function generateToken(): string {
+  return crypto.randomBytes(32).toString('hex');
+}

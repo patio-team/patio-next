@@ -3,20 +3,26 @@ import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
 import { createResponse, createErrorResponse } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 
 interface Context {
-  params: { teamId: string };
+  params: Promise<{ teamId: string }>;
 }
 
 // POST /api/teams/[teamId]/leave - Leave team
 export async function POST(request: NextRequest, { params }: Context) {
   try {
-    const userId = request.headers.get('x-user-id');
-    const { teamId } = params;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    const { teamId } = await params;
 
-    if (!userId) {
+    if (!session) {
       return createErrorResponse('No autorizado', 401);
     }
+
+    const userId = session.user.id;
 
     // Check if user is member of the team
     const membership = await db.query.teamMembers.findFirst({

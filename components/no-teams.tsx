@@ -109,7 +109,7 @@ export function NoTeams() {
           <path
             d="M501.479 50.5234C501.479 50.5234 490.082 58.605 486.716 66.362C482.968 75.0015 486.046 90.4681 486.046 90.4681"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -118,7 +118,7 @@ export function NoTeams() {
             x2="491.518"
             y2="98.5534"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -128,7 +128,7 @@ export function NoTeams() {
             y2="-0.577083"
             transform="matrix(-0.812922 0.582372 0.582372 0.812922 487.432 90.0625)"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -138,7 +138,7 @@ export function NoTeams() {
             y2="-0.577083"
             transform="matrix(-0.489053 0.872254 0.872254 0.489053 487.539 90.0625)"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -148,7 +148,7 @@ export function NoTeams() {
             y2="-0.577083"
             transform="matrix(-0.576562 0.817054 0.817054 0.576562 608.934 95.752)"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -157,7 +157,7 @@ export function NoTeams() {
             x2="615.437"
             y2="101.572"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -166,7 +166,7 @@ export function NoTeams() {
             x2="608.461"
             y2="105.422"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -176,7 +176,7 @@ export function NoTeams() {
             y2="-0.577083"
             transform="matrix(0.360399 0.932798 0.932798 -0.360399 592.895 54.9863)"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <path
@@ -186,12 +186,12 @@ export function NoTeams() {
           <path
             d="M495.248 24.1748C495.248 24.1748 503.306 29.3889 516.105 28.9149C525.537 28.5656 539.805 24.1748 539.805 24.1748M539.805 24.1748C546.442 18.4866 581.519 10.2506 584.837 12.3244C588.629 14.6945 596.213 18.9606 598.109 20.3827M539.805 24.1748C542.65 27.3349 550.423 36.4991 562.558 36.4991C574.693 36.4991 586.733 19.9087 598.109 20.3827M598.109 20.3827C600.953 22.5157 603.233 33.798 596.687 32.7071C593.843 32.233 587.681 28.5989 585.785 25.5968"
             stroke="#F9ABC1"
-            stroke-width="2.30833"
+            strokeWidth="2.30833"
           />
           <path
             d="M250.162 158.099C250.162 158.099 261.56 166.18 264.925 173.937C268.674 182.577 265.595 198.043 265.595 198.043"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -200,7 +200,7 @@ export function NoTeams() {
             x2="257.582"
             y2="201.136"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -209,7 +209,7 @@ export function NoTeams() {
             x2="273.325"
             y2="203.458"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -218,7 +218,7 @@ export function NoTeams() {
             x2="267.632"
             y2="207.569"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <circle
@@ -242,7 +242,7 @@ export function NoTeams() {
           <path
             d="M157.797 154.618C157.797 154.618 146.399 146.537 143.034 138.78C139.285 130.14 142.364 114.674 142.364 114.674"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -252,7 +252,7 @@ export function NoTeams() {
             y2="-0.577083"
             transform="matrix(0.576562 -0.817054 -0.817054 -0.576562 141.138 115.079)"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -261,7 +261,7 @@ export function NoTeams() {
             x2="134.634"
             y2="109.259"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <line
@@ -270,7 +270,7 @@ export function NoTeams() {
             x2="138.072"
             y2="105.942"
             stroke="#34314C"
-            stroke-width="1.15417"
+            strokeWidth="1.15417"
             stroke-linecap="round"
           />
           <path

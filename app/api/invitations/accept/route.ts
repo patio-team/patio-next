@@ -1,8 +1,10 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { teamInvitations, teamMembers, users } from '@/db/schema';
-import { createResponse, createErrorResponse } from '@/lib/utils';
+import { createResponse, createErrorResponse, generateId } from '@/lib/utils';
 import { eq, and, gt, isNull } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 
 // GET /api/invitations/accept?token=... - Accept invitation via email link
 export async function GET(request: NextRequest) {
@@ -32,21 +34,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user exists
-    let user = await db.query.users.findFirst({
+    const user = await db.query.users.findFirst({
       where: eq(users.email, invitation.email),
     });
 
-    // If user doesn't exist, create one
+    // redirect to login if user does not exist
     if (!user) {
-      const [newUser] = await db
-        .insert(users)
-        .values({
-          email: invitation.email,
-          name: invitation.email.split('@')[0], // Use email prefix as default name
-          emailVerified: true,
-        })
-        .returning();
-      user = newUser;
+      const loginUrl = new URL('/login', request.url);
+      return NextResponse.redirect(loginUrl);
     }
 
     // Check if user is already a member
@@ -58,11 +53,12 @@ export async function GET(request: NextRequest) {
     });
 
     if (existingMembership) {
-      return createErrorResponse('Ya eres miembro de este equipo', 409);
+      return createErrorResponse('You are already a member of this team', 409);
     }
 
     // Add user to team
     await db.insert(teamMembers).values({
+      id: generateId(),
       userId: user.id,
       teamId: invitation.teamId,
       role: 'member',
@@ -78,28 +74,30 @@ export async function GET(request: NextRequest) {
 
     // Redirect to login or team page
     const redirectUrl =
-      process.env.NEXT_PUBLIC_APP_URL + '/login?message=invitation-accepted';
+      process.env.NEXT_PUBLIC_APP_URL + 'teams/' + invitation.teamId;
     return Response.redirect(redirectUrl);
   } catch (error) {
     console.error('Error accepting invitation:', error);
-    return createErrorResponse('Error interno del servidor', 500);
+    return createErrorResponse('Internal Server Error', 500);
   }
 }
 
 // POST /api/invitations/accept - Accept invitation via API
 export async function POST(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!userId) {
-      return createErrorResponse('No autorizado', 401);
+    if (!session?.user) {
+      return createErrorResponse('Unauthorized', 401);
     }
 
     const { searchParams } = new URL(request.url);
     const token = searchParams.get('token');
 
     if (!token) {
-      return createErrorResponse('Token de invitación requerido', 400);
+      return createErrorResponse('Invitation token is required', 400);
     }
 
     // Find invitation
@@ -116,16 +114,19 @@ export async function POST(request: NextRequest) {
     });
 
     if (!invitation) {
-      return createErrorResponse('Invitación no válida o expirada', 404);
+      return createErrorResponse('Invalid or expired invitation', 404);
     }
 
     // Get current user
     const user = await db.query.users.findFirst({
-      where: eq(users.id, userId),
+      where: eq(users.id, session.user.id),
     });
 
     if (!user || user.email !== invitation.email) {
-      return createErrorResponse('Esta invitación no es para tu cuenta', 403);
+      return createErrorResponse(
+        'This invitation is not for your account',
+        403,
+      );
     }
 
     // Check if user is already a member
@@ -142,6 +143,7 @@ export async function POST(request: NextRequest) {
 
     // Add user to team
     await db.insert(teamMembers).values({
+      id: generateId(),
       userId: user.id,
       teamId: invitation.teamId,
       role: 'member',
@@ -156,11 +158,11 @@ export async function POST(request: NextRequest) {
       .where(eq(teamInvitations.id, invitation.id));
 
     return createResponse({
-      message: 'Te has unido al equipo correctamente',
+      message: 'You have successfully joined the team',
       team: invitation.team,
     });
   } catch (error) {
     console.error('Error accepting invitation:', error);
-    return createErrorResponse('Error interno del servidor', 500);
+    return createErrorResponse('Internal Server Error', 500);
   }
 }

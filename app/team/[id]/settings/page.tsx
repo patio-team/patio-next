@@ -5,8 +5,11 @@ import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSession } from '@/lib/auth-client';
-import router from 'next/router';
-import { use, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { use, useEffect, useState } from 'react';
+import { useTeam, useSendInvitations } from '@/lib/hooks/use-teams';
+import { X } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ManageGroupPage({
   params,
@@ -14,6 +17,20 @@ export default function ManageGroupPage({
   params: Promise<{ id: string }>;
 }) {
   const { data: session, isPending: sessionLoading } = useSession();
+  const router = useRouter();
+  const teamId = use(params).id;
+
+  // State for email input
+  const [emailInput, setEmailInput] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch team data
+  const {
+    data: teamResponse,
+    isLoading: teamLoading,
+    error: teamError,
+  } = useTeam(teamId);
+  const sendInvitationsMutation = useSendInvitations();
 
   useEffect(() => {
     if (!sessionLoading && !session) {
@@ -21,15 +38,81 @@ export default function ManageGroupPage({
     }
   }, [session, sessionLoading, router]);
 
-  const id = use(params).id;
+  // Check if current user is admin
+  const currentUserMembership = teamResponse?.data?.members?.find(
+    (member) => member.userId === session?.user?.id,
+  );
+  const isAdmin = currentUserMembership?.role === 'admin';
 
-  const members = [];
-  const invitations = [];
+  // Extract members and invitations from team data
+  const members = teamResponse?.data?.members || [];
+  const invitations = teamResponse?.data?.invitations || [];
 
-  // const [emailInput, setEmailInput] = useState('');
+  const handleSendInvites = async () => {
+    if (!emailInput.trim() || !isAdmin) return;
+
+    setIsSubmitting(true);
+
+    // Parse emails from input (comma-separated)
+    const emails = emailInput
+      .split(',')
+      .map((email) => email.trim())
+      .filter((email) => email.length > 0);
+
+    if (emails.length === 0) {
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      await sendInvitationsMutation.mutateAsync({
+        teamId,
+        emails,
+      });
+
+      // Clear input on success
+      setEmailInput('');
+    } catch (error) {
+      console.error('Error sending invitations:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Show loading state
+  if (sessionLoading || teamLoading) {
+    return (
+      // TODO: Loading component
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-primary">Loading...</div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (teamError) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-red-500">Error loading Team</div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-red-500">You do not have access to this team</div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen bg-white relative`}>
+      <Link
+        href="/"
+        className="absolute top-8 right-8">
+        <X />
+      </Link>
       {/* Main content */}
       <div className="flex flex-col xl:flex-row gap-8 xl:gap-16 px-6 sm:px-16 py-16">
         {/* Left section - Group info and members */}
@@ -127,10 +210,24 @@ export default function ManageGroupPage({
             <label className="block text-primary text-base leading-[22px] font-medium">
               Enter multiple email addresses separated by comma.
             </label>
-            <Input placeholder="e.g. username@mail.com, userpetname@mail.com" />
+            <Input
+              placeholder="e.g. username@mail.com, userpetname@mail.com"
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              disabled={!isAdmin || isSubmitting}
+            />
+            {!isAdmin && (
+              <p className="text-sm text-red-500">
+                Only admins can send invitations
+              </p>
+            )}
           </div>
 
-          <Button>Send invites</Button>
+          <Button
+            onClick={handleSendInvites}
+            disabled={!isAdmin || !emailInput.trim() || isSubmitting}>
+            {isSubmitting ? 'Enviando...' : 'Send invites'}
+          </Button>
         </div>
       </div>
     </div>

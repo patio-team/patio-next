@@ -7,19 +7,25 @@ import {
   getRequestBody,
 } from '@/lib/utils';
 import { eq, and, desc } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 
 // GET /api/notifications - Get user notifications
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
     const unreadOnly = searchParams.get('unreadOnly') === 'true';
 
-    if (!userId) {
+    if (!session) {
       return createErrorResponse('No autorizado', 401);
     }
+
+    const userId = session.user.id;
 
     const whereConditions = [eq(notifications.userId, userId)];
 
@@ -44,11 +50,15 @@ export async function GET(request: NextRequest) {
 // PUT /api/notifications - Mark notifications as read
 export async function PUT(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!userId) {
+    if (!session) {
       return createErrorResponse('No autorizado', 401);
     }
+
+    const userId = session.user.id;
 
     const body = await getRequestBody(request);
     const { notificationIds, markAllAsRead = false } = body;
@@ -89,11 +99,15 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/notifications - Delete notifications
 export async function DELETE(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!userId) {
+    if (!session) {
       return createErrorResponse('No autorizado', 401);
     }
+
+    const userId = session.user.id;
 
     const body = await getRequestBody(request);
     const { notificationIds, deleteAll = false } = body;

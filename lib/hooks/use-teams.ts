@@ -32,3 +32,28 @@ export function useCreateTeam() {
     },
   });
 }
+
+// Get single team query
+export function useTeam(teamId: string) {
+  return useQuery({
+    queryKey: teamKeys.detail(teamId),
+    queryFn: () => apiClient.getTeam(teamId),
+    enabled: !!teamId,
+  });
+}
+
+// Send invitations mutation
+export function useSendInvitations() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: { teamId: string; emails: string[] }) =>
+      apiClient.sendInvitations(data),
+    onSuccess: (_, variables) => {
+      // Invalidate team details to refresh members and invitations
+      queryClient.invalidateQueries({
+        queryKey: teamKeys.detail(variables.teamId),
+      });
+    },
+  });
+}

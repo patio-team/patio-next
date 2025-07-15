@@ -12,23 +12,29 @@ import {
   createResponse,
   createErrorResponse,
   getRequestBody,
-  getDayOfWeek,
+  generateId,
 } from '@/lib/utils';
 import { sendMentionNotificationEmail } from '@/lib/email';
 import { eq, and, desc } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 
 // GET /api/mood-entries - Get mood entries for a team
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
     const { searchParams } = new URL(request.url);
     const teamId = searchParams.get('teamId');
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    if (!userId) {
+    if (!session) {
       return createErrorResponse('No autorizado', 401);
     }
+
+    const userId = session.user.id;
 
     if (!teamId) {
       return createErrorResponse('ID del equipo es requerido', 400);
@@ -77,11 +83,15 @@ export async function GET(request: NextRequest) {
 // POST /api/mood-entries - Create new mood entry
 export async function POST(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!userId) {
+    if (!session) {
       return createErrorResponse('No autorizado', 401);
     }
+
+    const userId = session.user.id;
 
     const body = await getRequestBody(request);
     const {

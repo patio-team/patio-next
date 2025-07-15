@@ -30,6 +30,33 @@ export interface Team {
   inviteCode: string;
   createdAt: string;
   updatedAt: string;
+  members?: TeamMember[];
+  invitations?: TeamInvitation[];
+}
+
+export interface TeamMember {
+  id: string;
+  userId: string;
+  teamId: string;
+  role: 'member' | 'admin';
+  joinedAt: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+  };
+}
+
+export interface TeamInvitation {
+  id: string;
+  teamId: string;
+  email: string;
+  invitedBy: string;
+  expiresAt: string;
+  createdAt: string;
+  acceptedAt?: string;
+  rejectedAt?: string;
 }
 
 export interface ApiResponse<T> {

@@ -7,15 +7,21 @@ import {
   getRequestBody,
 } from '@/lib/utils';
 import { eq } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 
 // GET /api/users/settings - Get user settings
 export async function GET(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!userId) {
+    if (!session) {
       return createErrorResponse('No autorizado', 401);
     }
+
+    const userId = session.user.id;
 
     const settings = await db.query.userSettings.findFirst({
       where: eq(userSettings.userId, userId),
@@ -35,11 +41,15 @@ export async function GET(request: NextRequest) {
 // PUT /api/users/settings - Update user settings
 export async function PUT(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!userId) {
+    if (!session) {
       return createErrorResponse('No autorizado', 401);
     }
+
+    const userId = session.user.id;
 
     const body = await getRequestBody(request);
     const { allowedDays, timezone, emailNotifications, mentionNotifications } =
@@ -71,7 +81,11 @@ export async function PUT(request: NextRequest) {
 // POST /api/users/settings/pause-notifications - Pause notifications
 export async function POST(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    const userId = session?.user?.id;
 
     if (!userId) {
       return createErrorResponse('No autorizado', 401);

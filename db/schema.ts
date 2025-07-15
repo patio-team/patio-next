@@ -26,7 +26,7 @@ export const notificationTypeEnum = pgEnum('notification_type', [
   'team_update',
 ]);
 
-export const user = pgTable('user', {
+export const users = pgTable('user', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
@@ -52,7 +52,7 @@ export const session = pgTable('session', {
   userAgent: text('user_agent'),
   userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
 });
 
 export const account = pgTable('account', {
@@ -61,7 +61,7 @@ export const account = pgTable('account', {
   providerId: text('provider_id').notNull(),
   userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   accessToken: text('access_token'),
   refreshToken: text('refresh_token'),
   idToken: text('id_token'),
@@ -101,7 +101,7 @@ export const teamMembers = pgTable('team_members', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   teamId: text('team_id')
     .notNull()
     .references(() => teams.id, { onDelete: 'cascade' }),
@@ -114,7 +114,7 @@ export const moodEntries = pgTable('mood_entries', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   teamId: text('team_id')
     .notNull()
     .references(() => teams.id, { onDelete: 'cascade' }),
@@ -136,7 +136,7 @@ export const teamInvitations = pgTable('team_invitations', {
     .references(() => teams.id, { onDelete: 'cascade' }),
   invitedBy: text('invited_by')
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   email: varchar('email', { length: 255 }).notNull(),
   token: varchar('token', { length: 255 }).unique().notNull(),
   expiresAt: timestamp('expires_at').notNull(),
@@ -150,7 +150,7 @@ export const notifications = pgTable('notifications', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   type: notificationTypeEnum('type').notNull(),
   title: varchar('title', { length: 255 }).notNull(),
   message: text('message').notNull(),
@@ -167,10 +167,10 @@ export const mentions = pgTable('mentions', {
     .references(() => moodEntries.id, { onDelete: 'cascade' }),
   mentionedUserId: text('mentioned_user_id')
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   mentionedByUserId: text('mentioned_by_user_id')
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -179,7 +179,7 @@ export const userSettings = pgTable('user_settings', {
   id: text('id').primaryKey(),
   userId: text('user_id')
     .notNull()
-    .references(() => user.id, { onDelete: 'cascade' })
+    .references(() => users.id, { onDelete: 'cascade' })
     .unique(),
   allowedDays: json('allowed_days')
     .default(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'])
@@ -194,7 +194,7 @@ export const userSettings = pgTable('user_settings', {
 });
 
 // Relations
-export const usersRelations = relations(user, ({ many, one }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   teamMembers: many(teamMembers),
   moodEntries: many(moodEntries),
   sentInvitations: many(teamInvitations, { relationName: 'invitedBy' }),
@@ -207,16 +207,16 @@ export const usersRelations = relations(user, ({ many, one }) => ({
 }));
 
 export const accountsRelations = relations(account, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [account.userId],
-    references: [user.id],
+    references: [users.id],
   }),
 }));
 
 export const sessionsRelations = relations(session, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [session.userId],
-    references: [user.id],
+    references: [users.id],
   }),
 }));
 
@@ -227,9 +227,9 @@ export const teamsRelations = relations(teams, ({ many }) => ({
 }));
 
 export const teamMembersRelations = relations(teamMembers, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [teamMembers.userId],
-    references: [user.id],
+    references: [users.id],
   }),
   team: one(teams, {
     fields: [teamMembers.teamId],
@@ -238,9 +238,9 @@ export const teamMembersRelations = relations(teamMembers, ({ one }) => ({
 }));
 
 export const moodEntriesRelations = relations(moodEntries, ({ one, many }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [moodEntries.userId],
-    references: [user.id],
+    references: [users.id],
   }),
   team: one(teams, {
     fields: [moodEntries.teamId],
@@ -256,17 +256,17 @@ export const teamInvitationsRelations = relations(
       fields: [teamInvitations.teamId],
       references: [teams.id],
     }),
-    inviter: one(user, {
+    inviter: one(users, {
       fields: [teamInvitations.invitedBy],
-      references: [user.id],
+      references: [users.id],
     }),
   }),
 );
 
 export const notificationsRelations = relations(notifications, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [notifications.userId],
-    references: [user.id],
+    references: [users.id],
   }),
 }));
 
@@ -275,28 +275,28 @@ export const mentionsRelations = relations(mentions, ({ one }) => ({
     fields: [mentions.moodEntryId],
     references: [moodEntries.id],
   }),
-  mentionedUser: one(user, {
+  mentionedUser: one(users, {
     fields: [mentions.mentionedUserId],
-    references: [user.id],
+    references: [users.id],
     relationName: 'mentionedUser',
   }),
-  mentionedByUser: one(user, {
+  mentionedByUser: one(users, {
     fields: [mentions.mentionedByUserId],
-    references: [user.id],
+    references: [users.id],
     relationName: 'mentionedBy',
   }),
 }));
 
 export const userSettingsRelations = relations(userSettings, ({ one }) => ({
-  user: one(user, {
+  user: one(users, {
     fields: [userSettings.userId],
-    references: [user.id],
+    references: [users.id],
   }),
 }));
 
 // Types
-export type User = typeof user.$inferSelect;
-export type NewUser = typeof user.$inferInsert;
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
 export type Account = typeof account.$inferSelect;
 export type NewAccount = typeof account.$inferInsert;
 export type Session = typeof session.$inferSelect;

@@ -3,15 +3,21 @@ import { db } from '@/db';
 import { users } from '@/db/schema';
 import { createResponse, createErrorResponse } from '@/lib/utils';
 import { eq } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 
 // POST /api/users/settings/resume-notifications - Resume notifications
 export async function POST(request: NextRequest) {
   try {
-    const userId = request.headers.get('x-user-id');
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (!userId) {
+    if (!session) {
       return createErrorResponse('No autorizado', 401);
     }
+
+    const userId = session.user.id;
 
     const [updatedUser] = await db
       .update(users)

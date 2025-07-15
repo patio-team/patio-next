@@ -7,20 +7,26 @@ import {
   getRequestBody,
 } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
+import { headers } from 'next/headers';
+import { auth } from '@/lib/auth';
 
 interface Context {
-  params: { teamId: string };
+  params: Promise<{ teamId: string }>;
 }
 
 // GET /api/teams/[teamId]/members - Get team members
 export async function GET(request: NextRequest, { params }: Context) {
   try {
-    const userId = request.headers.get('x-user-id');
-    const { teamId } = params;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    const { teamId } = await params;
 
-    if (!userId) {
-      return createErrorResponse('No autorizado', 401);
+    if (!session) {
+      return createErrorResponse('Not authorized', 401);
     }
+
+    const userId = session.user.id;
 
     // Check if user is member of the team
     const membership = await db.query.teamMembers.findFirst({
@@ -31,7 +37,7 @@ export async function GET(request: NextRequest, { params }: Context) {
     });
 
     if (!membership) {
-      return createErrorResponse('No tienes acceso a este equipo', 403);
+      return createErrorResponse('You do not have access to this team', 403);
     }
 
     const members = await db.query.teamMembers.findMany({
@@ -51,12 +57,16 @@ export async function GET(request: NextRequest, { params }: Context) {
 // PUT /api/teams/[teamId]/members - Update member role
 export async function PUT(request: NextRequest, { params }: Context) {
   try {
-    const userId = request.headers.get('x-user-id');
-    const { teamId } = params;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    const { teamId } = await params;
 
-    if (!userId) {
-      return createErrorResponse('No autorizado', 401);
+    if (!session) {
+      return createErrorResponse('Not authorized', 401);
     }
+
+    const userId = session.user.id;
 
     // Check if user is admin of the team
     const adminMembership = await db.query.teamMembers.findFirst({
@@ -68,21 +78,18 @@ export async function PUT(request: NextRequest, { params }: Context) {
     });
 
     if (!adminMembership) {
-      return createErrorResponse(
-        'Solo los administradores pueden cambiar roles',
-        403,
-      );
+      return createErrorResponse('Only admins can change roles', 403);
     }
 
     const body = await getRequestBody(request);
     const { memberId, role } = body;
 
     if (!memberId || !role) {
-      return createErrorResponse('ID de miembro y rol son requeridos', 400);
+      return createErrorResponse('Member ID and role are required', 400);
     }
 
     if (!['member', 'admin'].includes(role)) {
-      return createErrorResponse('Rol inválido', 400);
+      return createErrorResponse('Invalid role', 400);
     }
 
     const [updatedMember] = await db
@@ -92,25 +99,29 @@ export async function PUT(request: NextRequest, { params }: Context) {
       .returning();
 
     if (!updatedMember) {
-      return createErrorResponse('Miembro no encontrado', 404);
+      return createErrorResponse('Member not found', 404);
     }
 
     return createResponse(updatedMember);
   } catch (error) {
     console.error('Error updating member role:', error);
-    return createErrorResponse('Error interno del servidor', 500);
+    return createErrorResponse('Internal server error', 500);
   }
 }
 
 // DELETE /api/teams/[teamId]/members - Remove member from team
 export async function DELETE(request: NextRequest, { params }: Context) {
   try {
-    const userId = request.headers.get('x-user-id');
-    const { teamId } = params;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    const { teamId } = await params;
 
-    if (!userId) {
-      return createErrorResponse('No autorizado', 401);
+    if (!session) {
+      return createErrorResponse('Not authorized', 401);
     }
+
+    const userId = session.user.id;
 
     // Check if user is admin of the team
     const adminMembership = await db.query.teamMembers.findFirst({
@@ -122,26 +133,23 @@ export async function DELETE(request: NextRequest, { params }: Context) {
     });
 
     if (!adminMembership) {
-      return createErrorResponse(
-        'Solo los administradores pueden eliminar miembros',
-        403,
-      );
+      return createErrorResponse('Only admins can remove members', 403);
     }
 
     const body = await getRequestBody(request);
     const { memberId } = body;
 
     if (!memberId) {
-      return createErrorResponse('ID de miembro es requerido', 400);
+      return createErrorResponse('Member ID is required', 400);
     }
 
     await db
       .delete(teamMembers)
       .where(and(eq(teamMembers.id, memberId), eq(teamMembers.teamId, teamId)));
 
-    return createResponse({ message: 'Miembro eliminado correctamente' });
+    return createResponse({ message: 'Member removed successfully' });
   } catch (error) {
     console.error('Error removing member:', error);
-    return createErrorResponse('Error interno del servidor', 500);
+    return createErrorResponse('Internal server error', 500);
   }
 }

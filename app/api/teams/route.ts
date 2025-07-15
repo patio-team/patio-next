@@ -10,12 +10,13 @@ import {
   generateId,
 } from '@/lib/utils';
 import { eq } from 'drizzle-orm';
+import { headers } from 'next/headers';
 
 // GET /api/teams - Get user's teams
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers,
+      headers: await headers(),
     });
 
     if (!session?.user?.id) {
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers,
+      headers: await headers(),
     });
 
     if (!session?.user?.id) {
