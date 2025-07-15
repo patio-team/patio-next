@@ -83,6 +83,12 @@ export interface MoodEntry {
   createdAt: string;
   updatedAt: string;
   mentions?: MoodEntryMention[];
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+  };
 }
 
 export interface MoodEntryMention {

@@ -2,7 +2,6 @@ import {
   ApiResponse,
   Team,
   DaySelection,
-  MoodEntriesResponse,
   MoodEntry,
   CreateMoodEntryRequest,
   UpdateMoodEntryRequest,

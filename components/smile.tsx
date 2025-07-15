@@ -1,9 +1,6 @@
-export function Smile({
-  mood,
-}: {
-  className?: string;
-  mood: 'mood5' | 'mood4' | 'mood3' | 'mood2' | 'mood1';
-}) {
+export type Mood = 'mood5' | 'mood4' | 'mood3' | 'mood2' | 'mood1';
+
+export function Smile({ mood }: { className?: string; mood: Mood }) {
   let moodClass = '';
   switch (mood) {
     case 'mood5':
@@ -20,6 +17,9 @@ export function Smile({
       break;
     case 'mood1':
       moodClass = 'bg-mood1 shadow-mood1/50';
+      break;
+    default:
+      moodClass = 'bg-mood5 shadow-mood5/50';
       break;
   }
 
