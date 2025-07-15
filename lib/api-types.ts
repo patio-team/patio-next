@@ -110,9 +110,17 @@ export interface ParticipationStats {
   uniqueParticipants: number;
   totalMembers: number;
   participationRate: number; // percentage
-  averageParticipation?: number;
-  averageParticipationRate?: number;
-  historicalDays?: number;
+}
+
+export interface ParticipationAnalyticsResponse {
+  teamId: string;
+  startDate: string; // ISO date string (YYYY-MM-DD)
+  endDate: string; // ISO date string (YYYY-MM-DD)
+  totalMembers: number;
+  averageParticipation: number;
+  averageParticipationRate: number;
+  totalDays: number;
+  dailyParticipationCounts: number[];
 }
 
 export interface MoodEntriesResponse {

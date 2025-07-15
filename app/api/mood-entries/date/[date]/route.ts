@@ -94,51 +94,9 @@ export async function GET(
     // Get participation stats
     const stats = getParticipationStats(entries, totalMembers);
 
-    // Get 2-week historical participation data for comparison
-    const twoWeeksAgo = targetDate.minus({ weeks: 2 });
-    const twoWeeksAgoDate = formatDateForDB(twoWeeksAgo);
-
-    const historicalEntries = await db.query.moodEntries.findMany({
-      where: and(
-        eq(moodEntries.teamId, teamId),
-        gte(moodEntries.entryDate, twoWeeksAgoDate),
-        lt(moodEntries.entryDate, startOfDay),
-      ),
-      columns: {
-        userId: true,
-        entryDate: true,
-      },
-    });
-
-    // Calculate average participation over the last 2 weeks
-    const dailyParticipation: Record<string, Set<string>> = {};
-    historicalEntries.forEach((entry) => {
-      const dateKey = entry.entryDate.toISOString().split('T')[0];
-      if (!dailyParticipation[dateKey]) {
-        dailyParticipation[dateKey] = new Set();
-      }
-      dailyParticipation[dateKey].add(entry.userId);
-    });
-
-    const dailyParticipationCounts = Object.values(dailyParticipation).map(
-      (participants) => participants.size,
-    );
-
-    const averageParticipation =
-      dailyParticipationCounts.length > 0
-        ? dailyParticipationCounts.reduce((sum, count) => sum + count, 0) /
-          dailyParticipationCounts.length
-        : 0;
-
-    const averageParticipationRate =
-      totalMembers > 0 ? (averageParticipation / totalMembers) * 100 : 0;
-
     return createResponse({
       date: targetDate.toISODate(),
       entries: processedEntries,
-      averageParticipation: Math.round(averageParticipation * 100) / 100,
-      averageParticipationRate:
-        Math.round(averageParticipationRate * 100) / 100,
       stats,
     });
   } catch (error) {
