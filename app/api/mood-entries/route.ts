@@ -11,9 +11,10 @@ import {
   formatDateForDB,
   generateId,
 } from '@/lib/utils';
-import { eq, and, gte, lte, avg, count } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
+import { getMoodEntries } from '@/db/mood-entries';
 
 // POST /api/mood-entries - Create new mood entry
 export async function POST(request: NextRequest) {
@@ -264,37 +265,14 @@ export async function GET(request: NextRequest) {
       return createErrorResponse('Start date cannot be after end date', 400);
     }
 
-    const startDateForDB = formatDateForDB(parsedStartDate);
-    const endDateForDB = formatDateForDB(parsedEndDate);
-
-    // Query for average mood and entry count in the date range
-    const result = await db
-      .select({
-        averageRating: avg(moodEntries.rating),
-        totalEntries: count(moodEntries.id),
-      })
-      .from(moodEntries)
-      .where(
-        and(
-          eq(moodEntries.teamId, teamId),
-          gte(moodEntries.entryDate, startDateForDB),
-          lte(moodEntries.entryDate, endDateForDB),
-          eq(moodEntries.visibility, 'public'), // Only include public entries
-        ),
-      );
-
-    const averageRating = result[0]?.averageRating;
-    const totalEntries = result[0]?.totalEntries || 0;
-
-    return createResponse({
+    const entries = await getMoodEntries(
+      parsedStartDate,
+      parsedEndDate,
       teamId,
-      startDate,
-      endDate,
-      averageRating: averageRating
-        ? parseFloat(Number(averageRating).toFixed(2))
-        : null,
-      totalEntries,
-    });
+      membership.role === 'admin' ? undefined : 'public',
+    );
+
+    return createResponse(entries);
   } catch (error) {
     console.error('Error calculating average mood:', error);
     return createErrorResponse('Internal server error', 500);

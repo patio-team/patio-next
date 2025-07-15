@@ -1,16 +1,15 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/db';
-import { moodEntries, teamMembers } from '@/db/schema';
+import { teamMembers } from '@/db/schema';
 import {
   createResponse,
   createErrorResponse,
   getTodayInTimezone,
-  getParticipationStats,
-  formatDateForDB,
 } from '@/lib/utils';
-import { eq, and, gte, lt, count } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
+import { getMoodEntries } from '@/db/mood-entries';
 
 // GET /api/mood-entries/today - Get today's mood entries for a team
 export async function GET(request: NextRequest) {
@@ -46,49 +45,15 @@ export async function GET(request: NextRequest) {
 
     // Get today's date range in the configured timezone
     const today = getTodayInTimezone();
-    const startOfDay = formatDateForDB(today);
-    const endOfDay = formatDateForDB(today.plus({ days: 1 }));
 
-    // Get today's entries
-    const entries = await db.query.moodEntries.findMany({
-      where: and(
-        eq(moodEntries.teamId, teamId),
-        gte(moodEntries.entryDate, startOfDay),
-        lt(moodEntries.entryDate, endOfDay),
-      ),
-      with: {
-        user: true,
-        mentions: {
-          with: {
-            mentionedUser: true,
-          },
-        },
-      },
-      orderBy: [moodEntries.createdAt],
-    });
+    const entries = await getMoodEntries(
+      today,
+      today.plus({ days: 1 }),
+      teamId,
+      membership.role === 'admin' ? undefined : 'public',
+    );
 
-    // Get total team members count
-    const totalMembersResult = await db
-      .select({ count: count() })
-      .from(teamMembers)
-      .where(eq(teamMembers.teamId, teamId));
-
-    const totalMembers = totalMembersResult[0]?.count || 0;
-
-    // Hide user info for anonymous entries
-    const processedEntries = entries.map((entry) => ({
-      ...entry,
-      user: entry.visibility === 'private' ? null : entry.user,
-    }));
-
-    // Get participation stats
-    const stats = getParticipationStats(entries, totalMembers);
-
-    return createResponse({
-      date: today.toISODate(),
-      entries: processedEntries,
-      stats,
-    });
+    return createResponse(entries);
   } catch (error) {
     console.error("Error fetching today's mood entries:", error);
     return createErrorResponse('Internal server error', 500);

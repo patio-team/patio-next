@@ -105,19 +105,3 @@ export function canPostOnDate(date: DateTime): boolean {
 export function formatDateForDB(date: DateTime): Date {
   return date.toJSDate();
 }
-
-export function getParticipationStats(
-  entries: { userId: string }[],
-  totalMembers: number,
-) {
-  const uniqueParticipants = new Set(entries.map((entry) => entry.userId)).size;
-  const participationRate =
-    totalMembers > 0 ? (uniqueParticipants / totalMembers) * 100 : 0;
-
-  return {
-    totalEntries: entries.length,
-    uniqueParticipants,
-    totalMembers,
-    participationRate: Math.round(participationRate * 100) / 100,
-  };
-}
