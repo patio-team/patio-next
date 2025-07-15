@@ -5,7 +5,7 @@ import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSession } from '@/lib/auth-client';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { use, useEffect, useState } from 'react';
 import {
   useTeam,
@@ -57,17 +57,27 @@ export default function ManageGroupPage({
   const teamData = teamResponse?.data;
   const updateTeamMutation = useUpdateTeam();
 
-  const handleUpdateTeam = async (data: {
+  const handleUpdateTeam = (data: {
     name: string;
     description?: string;
     pollDays: DaySelection;
   }) => {
-    await updateTeamMutation.mutateAsync({
-      teamId,
-      name: data.name,
-      description: data.description,
-      pollDays: data.pollDays,
-    });
+    updateTeamMutation.mutate(
+      {
+        teamId,
+        name: data.name,
+        description: data.description,
+        pollDays: data.pollDays,
+      },
+      {
+        onSuccess: () => {
+          router.push(`/team/${teamId}`);
+        },
+        onError: (error) => {
+          console.error('Failed to update team:', error);
+        },
+      },
+    );
   };
 
   const handleSendInvites = async () => {

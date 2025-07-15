@@ -52,3 +52,10 @@ export function generateId(): string {
 export function generateToken(): string {
   return crypto.randomBytes(32).toString('hex');
 }
+
+export function getPollDaysString(pollDays: Record<string, boolean>): string {
+  const days = Object.entries(pollDays)
+    .filter(([, value]) => value)
+    .map(([key]) => key.charAt(0).toUpperCase() + key.slice(1));
+  return days.join(', ');
+}

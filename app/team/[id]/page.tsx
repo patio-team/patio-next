@@ -6,6 +6,7 @@ import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import Link from 'next/link';
+import { getPollDaysString } from '@/lib/utils';
 
 export default async function Home({
   params,
@@ -53,7 +54,8 @@ export default async function Home({
                   {userTeam.team.name}
                 </h1>
                 <p className="text-[#948FB7] text-sm mt-1">
-                  Tracks on weekdays from 14:00 pm to 12:00 am
+                  {/* Polls on Mondays, Tuesdays, Wednesdays, Thursdays and Fridays  */}
+                  Polls on {getPollDaysString(userTeam.team.pollDays)}
                 </p>
                 <div className="flex gap-6 mt-4">
                   <button className="text-[#3FA2F7] text-sm font-medium">
