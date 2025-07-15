@@ -11,7 +11,7 @@ import {
   formatDateForDB,
   generateId,
 } from '@/lib/utils';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, gte, lte, avg, count } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 
@@ -208,6 +208,95 @@ export async function DELETE(request: NextRequest) {
     return createResponse({ message: 'Entry deleted successfully' });
   } catch (error) {
     console.error('Error deleting mood entry:', error);
+    return createErrorResponse('Internal server error', 500);
+  }
+}
+
+// GET /api/mood-entries - Get average mood for a date range
+export async function GET(request: NextRequest) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return createErrorResponse('Not authorized', 401);
+    }
+
+    const { searchParams } = new URL(request.url);
+    const teamId = searchParams.get('teamId');
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
+    if (!teamId) {
+      return createErrorResponse('Team ID is required', 400);
+    }
+
+    if (!startDate || !endDate) {
+      return createErrorResponse('Start date and end date are required', 400);
+    }
+
+    const userId = session.user.id;
+
+    // Check if user is member of the team
+    const membership = await db.query.teamMembers.findFirst({
+      where: and(
+        eq(teamMembers.userId, userId),
+        eq(teamMembers.teamId, teamId),
+      ),
+    });
+
+    if (!membership) {
+      return createErrorResponse('You are not a member of this team', 403);
+    }
+
+    // Validate date format and parse dates
+    let parsedStartDate, parsedEndDate;
+    try {
+      parsedStartDate = getDateInTimezone(startDate);
+      parsedEndDate = getDateInTimezone(endDate);
+    } catch {
+      return createErrorResponse('Invalid date format. Use YYYY-MM-DD', 400);
+    }
+
+    // Ensure start date is not after end date
+    if (parsedStartDate > parsedEndDate) {
+      return createErrorResponse('Start date cannot be after end date', 400);
+    }
+
+    const startDateForDB = formatDateForDB(parsedStartDate);
+    const endDateForDB = formatDateForDB(parsedEndDate);
+
+    // Query for average mood and entry count in the date range
+    const result = await db
+      .select({
+        averageRating: avg(moodEntries.rating),
+        totalEntries: count(moodEntries.id),
+      })
+      .from(moodEntries)
+      .where(
+        and(
+          eq(moodEntries.teamId, teamId),
+          gte(moodEntries.entryDate, startDateForDB),
+          lte(moodEntries.entryDate, endDateForDB),
+          eq(moodEntries.visibility, 'public'), // Only include public entries
+        ),
+      );
+
+    const averageRating = result[0]?.averageRating;
+    const totalEntries = result[0]?.totalEntries || 0;
+
+    return createResponse({
+      teamId,
+      startDate,
+      endDate,
+      averageRating: averageRating
+        ? parseFloat(Number(averageRating).toFixed(2))
+        : null,
+      totalEntries,
+    });
+  } catch (error) {
+    console.error('Error calculating average mood:', error);
     return createErrorResponse('Internal server error', 500);
   }
 }

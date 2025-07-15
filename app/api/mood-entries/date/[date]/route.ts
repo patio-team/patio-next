@@ -15,7 +15,7 @@ import { auth } from '@/lib/auth';
 // GET /api/mood-entries/date/[date] - Get mood entries for a specific date
 export async function GET(
   request: NextRequest,
-  { params }: { params: { date: string } },
+  { params }: { params: Promise<{ date: string }> },
 ) {
   try {
     const session = await auth.api.getSession({
@@ -46,11 +46,11 @@ export async function GET(
     if (!membership) {
       return createErrorResponse('You do not have access to this team', 403);
     }
-
+    const dateParam = (await params).date;
     // Parse and validate the date
     let targetDate;
     try {
-      targetDate = getDateInTimezone(params.date);
+      targetDate = getDateInTimezone(dateParam);
     } catch {
       return createErrorResponse('Invalid date format. Use YYYY-MM-DD', 400);
     }

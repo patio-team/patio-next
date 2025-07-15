@@ -8,6 +8,7 @@ import { Smile } from '@/components/smile';
 import { Button } from '@/components/ui/button';
 import { formatMoodDate } from '@/lib/types';
 import { User } from 'better-auth';
+import Link from 'next/link';
 
 export default function MoodForm({
   params: { user, date, teamId },
@@ -48,7 +49,6 @@ export default function MoodForm({
       selectedTeam
         ? apiClient.getMoodEntriesByDate(selectedTeam, isoDate)
         : null,
-    enabled: !!selectedTeam && !!user,
   });
 
   const existingEntry = existingEntries?.data?.entries?.find(
@@ -159,25 +159,6 @@ export default function MoodForm({
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Simple Header */}
-      <header className="w-full h-20 bg-white shadow-sm border-b border-gray-100 flex items-center justify-between px-4 md:px-16">
-        <div className="flex items-center">
-          <button
-            onClick={() =>
-              selectedTeam
-                ? router.push(`/team/${selectedTeam}`)
-                : router.back()
-            }
-            className="text-gray-600 hover:text-gray-800 mr-4 flex items-center gap-2">
-            ← Back to team
-          </button>
-          <h1 className="text-xl font-semibold text-gray-800">
-            {existingEntry ? 'Update Mood' : 'Share Mood'}
-          </h1>
-        </div>
-        <div className="text-sm text-gray-600">{user?.name}</div>
-      </header>
-
       <div className="px-4 md:px-16 py-8">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-8">
@@ -337,11 +318,20 @@ export default function MoodForm({
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-center pt-6">
+            <div className="flex flex-col sm:flex-row gap-6 pt-6">
+              <Button
+                type="button"
+                asChild
+                variant="secondary">
+                <Link
+                  className="text-center"
+                  href={`/team/${selectedTeam}`}>
+                  Cancel
+                </Link>
+              </Button>
               <Button
                 type="submit"
-                disabled={!selectedRating || !selectedTeam || isMutating}
-                className="w-full max-w-[300px]">
+                disabled={!selectedRating || !selectedTeam || isMutating}>
                 {isMutating
                   ? existingEntry
                     ? 'Updating...'
