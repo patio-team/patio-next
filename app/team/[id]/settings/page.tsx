@@ -10,6 +10,7 @@ import { use, useEffect, useState } from 'react';
 import { useTeam, useSendInvitations } from '@/lib/hooks/use-teams';
 import { X } from 'lucide-react';
 import Link from 'next/link';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function ManageGroupPage({
   params,
@@ -114,121 +115,136 @@ export default function ManageGroupPage({
         <X />
       </Link>
       {/* Main content */}
-      <div className="flex flex-col xl:flex-row gap-8 xl:gap-16 px-6 sm:px-16 py-16">
-        {/* Left section - Group info and members */}
-        <div className="flex-1 max-w-md space-y-8">
-          {/* Header */}
-          <div className="space-y-4">
-            <h1 className="font-merriweather text-primary text-[32px] leading-[42px] font-normal">
-              Manage group
-            </h1>
-            <p className="text-[#948FB7] text-base leading-[22px] font-medium">
-              Tracks on weekdays from 14:00 pm to 12:00 am
-            </p>
-          </div>
-
-          {/* Member counts */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="font-merriweather text-primary text-base leading-[22px]">
-                Members:
-              </span>
-              <span className="text-[#948FB7] text-base leading-[22px] font-medium">
-                {members.length}
-              </span>
-            </div>
-          </div>
-
-          {/* Members list */}
-          <div className="space-y-6">
-            {members.map((member) => (
-              <div
-                key={member.id}
-                className="flex items-center gap-4">
-                <Avatar className="w-12 h-12">
-                  <AvatarImage
-                    src={member.user.image || ''}
-                    alt={member.user.name || ''}
-                  />
-                  <AvatarFallback>
-                    <User className="h-4 w-16" />
-                  </AvatarFallback>
-                </Avatar>
-
-                <div className="flex-1">
-                  <h4 className="font-merriweather text-primary text-base leading-[22px]">
-                    {member.user.name}
-                  </h4>
-                  <p className="text-[#948FB7] text-sm leading-[20px] font-medium">
-                    {member.user.email}
+      <div className="px-6 sm:px-16 py-16">
+        <h1 className="font-merriweather text-primary text-[32px] leading-[42px] font-normal pb-4">
+          Manage team
+        </h1>
+        <Tabs
+          defaultValue="general"
+          className="w-full">
+          <TabsList>
+            <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="members">Members</TabsTrigger>
+          </TabsList>
+          <TabsContent value="general">
+            Make changes to your account here.
+          </TabsContent>
+          <TabsContent value="members">
+            <div className="flex flex-col xl:flex-row gap-8 xl:gap-16 w-full">
+              {/* Left section - Group info and members */}
+              <div className="flex-1 max-w-md space-y-8">
+                {/* Header */}
+                <div className="space-y-4">
+                  <p className="text-[#948FB7] text-base leading-[22px] font-medium">
+                    Tracks on weekdays from 14:00 pm to 12:00 am
                   </p>
                 </div>
-              </div>
-            ))}
-          </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="font-merriweather text-primary text-base leading-[22px]">
-                Waiting:
-              </span>
-              <span className="text-[#948FB7] text-base leading-[22px] font-medium">
-                {invitations.length}
-              </span>
-            </div>
-          </div>
+                {/* Member counts */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-merriweather text-primary text-base leading-[22px]">
+                      Members:
+                    </span>
+                    <span className="text-[#948FB7] text-base leading-[22px] font-medium">
+                      {members.length}
+                    </span>
+                  </div>
+                </div>
 
-          {/* Waiting members */}
-          <div className="space-y-6">
-            {invitations.map((member) => (
-              <div
-                key={member.id}
-                className="flex items-center gap-4">
-                <Avatar className="w-12 h-12">
-                  <AvatarFallback>
-                    <User className="h-4 w-16" />
-                  </AvatarFallback>
-                </Avatar>
+                {/* Members list */}
+                <div className="space-y-6">
+                  {members.map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex items-center gap-4">
+                      <Avatar className="w-12 h-12">
+                        <AvatarImage
+                          src={member.user.image || ''}
+                          alt={member.user.name || ''}
+                        />
+                        <AvatarFallback>
+                          <User className="h-4 w-16" />
+                        </AvatarFallback>
+                      </Avatar>
 
-                <div className="flex-1">
-                  <h4 className="font-merriweather text-primary text-base leading-[22px]">
-                    {member.email}
-                  </h4>
+                      <div className="flex-1">
+                        <h4 className="font-merriweather text-primary text-base leading-[22px]">
+                          {member.user.name}
+                        </h4>
+                        <p className="text-[#948FB7] text-sm leading-[20px] font-medium">
+                          {member.user.email}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-merriweather text-primary text-base leading-[22px]">
+                      Waiting:
+                    </span>
+                    <span className="text-[#948FB7] text-base leading-[22px] font-medium">
+                      {invitations.length}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Waiting members */}
+                <div className="space-y-6">
+                  {invitations.map((member) => (
+                    <div
+                      key={member.id}
+                      className="flex items-center gap-4">
+                      <Avatar className="w-12 h-12">
+                        <AvatarFallback>
+                          <User className="h-4 w-16" />
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div className="flex-1">
+                        <h4 className="font-merriweather text-primary text-base leading-[22px]">
+                          {member.email}
+                        </h4>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Right section - Invite members */}
-        <div className="flex-1 max-w-2xl space-y-6">
-          <h2 className="font-merriweather text-primary text-2xl leading-[30px] font-normal">
-            Invite new members
-          </h2>
+              {/* Right section - Invite members */}
+              <div className="flex-1 max-w-2xl space-y-6">
+                <h2 className="font-merriweather text-primary text-2xl leading-[30px] font-normal">
+                  Invite new members
+                </h2>
 
-          <div className="space-y-3">
-            <label className="block text-primary text-base leading-[22px] font-medium">
-              Enter multiple email addresses separated by comma.
-            </label>
-            <Input
-              placeholder="e.g. username@mail.com, userpetname@mail.com"
-              value={emailInput}
-              onChange={(e) => setEmailInput(e.target.value)}
-              disabled={!isAdmin || isSubmitting}
-            />
-            {!isAdmin && (
-              <p className="text-sm text-red-500">
-                Only admins can send invitations
-              </p>
-            )}
-          </div>
+                <div className="space-y-3">
+                  <label className="block text-primary text-base leading-[22px] font-medium">
+                    Enter multiple email addresses separated by comma.
+                  </label>
+                  <Input
+                    placeholder="e.g. username@mail.com, userpetname@mail.com"
+                    value={emailInput}
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    disabled={!isAdmin || isSubmitting}
+                  />
+                  {!isAdmin && (
+                    <p className="text-sm text-red-500">
+                      Only admins can send invitations
+                    </p>
+                  )}
+                </div>
 
-          <Button
-            onClick={handleSendInvites}
-            disabled={!isAdmin || !emailInput.trim() || isSubmitting}>
-            {isSubmitting ? 'Enviando...' : 'Send invites'}
-          </Button>
-        </div>
+                <Button
+                  onClick={handleSendInvites}
+                  disabled={!isAdmin || !emailInput.trim() || isSubmitting}>
+                  {isSubmitting ? 'Enviando...' : 'Send invites'}
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
