@@ -7,7 +7,6 @@ import { teamMembers } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import Link from 'next/link';
 import { getPollDaysString } from '@/lib/utils';
-import { Smile } from '@/components/smile';
 
 export default async function Home({
   params,
@@ -331,11 +330,13 @@ export default async function Home({
             {/* Call to Action */}
             <div className="bg-white rounded-xl shadow-sm p-6 text-center">
               <p className="text-primary text-sm mb-4">
-                You haven't participated yet.
+                You haven&apos;t participated yet.
               </p>
-              <button className="w-full bg-primary text-white font-bold px-6 py-4 rounded-tl-xl rounded-br-xl shadow-lg">
+              <Link
+                href={`/mood?team=${userTeam.team.id}&date=${new Date().toISOString().split('T')[0]}`}
+                className="block w-full bg-primary text-white font-bold px-6 py-4 rounded-tl-xl rounded-br-xl shadow-lg hover:bg-cyan hover:text-primary transition-colors duration-200">
                 Share your mood
-              </button>
+              </Link>
             </div>
           </div>
         </div>

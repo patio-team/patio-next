@@ -66,15 +66,6 @@ export interface NotificationWithMetadata {
   createdAt: Date;
 }
 
-// Utility functions for mood ratings
-export const MOOD_RATINGS = {
-  '1': { label: 'Muy mal', color: '#EF4444', emoji: '😞' },
-  '2': { label: 'Mal', color: '#F97316', emoji: '😔' },
-  '3': { label: 'Regular', color: '#EAB308', emoji: '😐' },
-  '4': { label: 'Bien', color: '#22C55E', emoji: '😊' },
-  '5': { label: 'Excelente', color: '#10B981', emoji: '😄' },
-} as const;
-
 export const DAYS_OF_WEEK = {
   monday: 'Lunes',
   tuesday: 'Martes',
@@ -84,11 +75,6 @@ export const DAYS_OF_WEEK = {
   saturday: 'Sábado',
   sunday: 'Domingo',
 } as const;
-
-// Helper functions
-export function getMoodRatingInfo(rating: '1' | '2' | '3' | '4' | '5') {
-  return MOOD_RATINGS[rating];
-}
 
 export function getDayName(day: keyof typeof DAYS_OF_WEEK) {
   return DAYS_OF_WEEK[day];
