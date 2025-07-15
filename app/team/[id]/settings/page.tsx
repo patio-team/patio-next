@@ -17,6 +17,7 @@ import TeamForm from '@/components/team-form';
 import { X } from 'lucide-react';
 import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LoadingSpinner } from '@/components/ui/loading';
 
 export default function ManageGroupPage({
   params,
@@ -113,12 +114,7 @@ export default function ManageGroupPage({
 
   // Show loading state
   if (sessionLoading || teamLoading) {
-    return (
-      // TODO: Loading component
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-primary">Loading...</div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   // Show error state

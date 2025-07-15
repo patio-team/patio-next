@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { formatMoodDate } from '@/lib/types';
 import { User } from 'better-auth';
 import Link from 'next/link';
+import { LoadingSpinner } from '@/components/ui/loading';
 
 export default function MoodForm({
   params: { user, date, teamId },
@@ -150,8 +151,7 @@ export default function MoodForm({
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-2 text-gray-600">Loading...</p>
+          <LoadingSpinner />
         </div>
       </div>
     );

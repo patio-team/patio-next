@@ -512,17 +512,6 @@ export default async function Home({
             ))}
           </div>
         </div>
-
-        {/* Loading Indicator */}
-        <div className="flex justify-center mt-8">
-          <div className="flex items-center gap-4">
-            <div className="w-4 h-4 bg-[#3FE3D2] opacity-50 rounded-full"></div>
-            <div className="w-4 h-4 bg-[#98DDAB] opacity-75 rounded-full"></div>
-            <div className="w-4 h-4 bg-[#FFC952] rounded-full"></div>
-            <div className="w-4 h-4 bg-[#FF7473] opacity-75 rounded-full"></div>
-            <div className="w-4 h-4 bg-[#FE346E] opacity-50 rounded-full"></div>
-          </div>
-        </div>
       </div>
     </div>
   );
