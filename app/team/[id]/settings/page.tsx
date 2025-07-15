@@ -130,19 +130,14 @@ export default function ManageGroupPage({
             <TabsTrigger value="members">Members</TabsTrigger>
           </TabsList>
           <TabsContent value="general">
-            Make changes to your account here.
+            <div className="flex flex-col xl:flex-row gap-8 xl:gap-16 w-full py-4">
+              Add edit team form here
+            </div>
           </TabsContent>
           <TabsContent value="members">
-            <div className="flex flex-col xl:flex-row gap-8 xl:gap-16 w-full">
+            <div className="flex flex-col xl:flex-row gap-8 xl:gap-16 w-full py-4">
               {/* Left section - Group info and members */}
               <div className="flex-1 max-w-md space-y-8">
-                {/* Header */}
-                <div className="space-y-4">
-                  <p className="text-[#948FB7] text-base leading-[22px] font-medium">
-                    {/* Tracks on weekdays from 14:00 pm to 12:00 am */}
-                  </p>
-                </div>
-
                 {/* Member counts */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
