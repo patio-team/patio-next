@@ -1,83 +1,95 @@
-import { notFound, redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
-import { db } from '@/db';
-import { teamMembers, moodEntries } from '@/db/schema';
-import { eq, and, desc } from 'drizzle-orm';
+'use client';
+
+import { redirect } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { User } from 'lucide-react';
 import { Mood, Smile } from '@/components/smile';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { apiClient } from '@/lib/api-client';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading';
 
-interface PageProps {
-  params: Promise<{
-    id: string;
-    memberId: string;
-  }>;
-}
+export default function MemberProfilePage() {
+  const { user, isLoading: authLoading, isAuthenticated } = useAuth();
+  const params = useParams<{ id: string; memberId: string }>();
 
-export default async function MemberProfilePage({ params }: PageProps) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
+  const teamId = params.id;
+  const memberId = params.memberId;
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      redirect('/login');
+    }
+  }, [authLoading, isAuthenticated]);
+
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+  } = useInfiniteQuery({
+    queryKey: ['member-data', teamId, memberId],
+    queryFn: ({ pageParam }) =>
+      apiClient.getMemberData(teamId, memberId, pageParam, 20),
+    getNextPageParam: (lastPage) =>
+      lastPage.pagination.hasMore ? lastPage.pagination.nextCursor : undefined,
+    initialPageParam: undefined as string | undefined,
+    enabled: !!teamId && !!memberId && isAuthenticated,
   });
 
-  if (!session) {
-    redirect('/login');
+  // Show loading state
+  if (authLoading || isLoading) {
+    return (
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
-  const { id: teamId, memberId } = await params;
-
-  // Check if current user is member of the team
-  const currentUserMembership = await db.query.teamMembers.findFirst({
-    where: and(
-      eq(teamMembers.userId, session.user.id),
-      eq(teamMembers.teamId, teamId),
-    ),
-    with: {
-      team: true,
-    },
-  });
-
-  if (!currentUserMembership) {
-    notFound();
+  // Handle error or no data
+  if (isError || !data?.pages[0]) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-[#F8F9FF] to-[#E8F2FF]">
+        <div className="max-w-md rounded-xl bg-white p-8 text-center shadow-sm">
+          <div className="mb-4 text-4xl">⚠️</div>
+          <h2 className="font-merriweather text-primary mb-2 text-xl">
+            Member Not Found
+          </h2>
+          <p className="mb-4 text-[#948FB7]">
+            The member you&apos;re looking for doesn&apos;t exist or you
+            don&apos;t have permission to view their profile.
+          </p>
+          <Link
+            href="/team"
+            className="text-[#3FA2F7] underline hover:text-[#2563eb]">
+            Go back to teams
+          </Link>
+        </div>
+      </div>
+    );
   }
 
-  // Get the member we want to view
-  const member = await db.query.teamMembers.findFirst({
-    where: and(
-      eq(teamMembers.userId, memberId),
-      eq(teamMembers.teamId, teamId),
-    ),
-    with: {
-      user: true,
-    },
-  });
+  const firstPage = data.pages[0];
+  const member = firstPage.member;
+  const team = firstPage.team;
 
-  if (!member) {
-    notFound();
-  }
+  // Flatten all mood entries from all pages
+  const allMoodEntries = data.pages.flatMap((page) => page.moodEntries);
 
-  // Get all mood entries for this member in this team
-  const memberMoodEntries = await db.query.moodEntries.findMany({
-    where: and(
-      eq(moodEntries.userId, memberId),
-      eq(moodEntries.teamId, teamId),
-      // Only show public entries unless it's the user's own profile or current user is admin
-      currentUserMembership.role === 'admin' || session.user.id === memberId
-        ? undefined
-        : eq(moodEntries.visibility, 'public'),
-    ),
-    orderBy: desc(moodEntries.entryDate),
-    limit: 50, // Show last 50 entries
-  });
-
-  const formatDateForDisplay = (date: Date) => {
-    return DateTime.fromJSDate(date).toFormat('EEEE, MMMM dd, yyyy');
+  const formatDateForDisplay = (date: string) => {
+    return DateTime.fromISO(date).toFormat('EEEE, MMMM dd, yyyy');
   };
 
-  const formatRelativeDate = (date: Date) => {
-    return DateTime.fromJSDate(date).toRelative();
+  const formatRelativeDate = (date: string) => {
+    return DateTime.fromISO(date).toRelative();
   };
 
   return (
@@ -99,7 +111,7 @@ export default async function MemberProfilePage({ params }: PageProps) {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          Back to {currentUserMembership.team.name}
+          Back to {team.name}
         </Link>
 
         {/* Header */}
@@ -127,12 +139,12 @@ export default async function MemberProfilePage({ params }: PageProps) {
               <div className="mt-3 flex items-center space-x-4">
                 <span className="text-sm text-[#948FB7] capitalize">
                   {member.role} • Joined{' '}
-                  {DateTime.fromJSDate(member.joinedAt).toFormat('MMMM yyyy')}
+                  {DateTime.fromISO(member.joinedAt).toFormat('MMMM yyyy')}
                 </span>
-                {memberMoodEntries.length > 0 && (
+                {allMoodEntries.length > 0 && (
                   <span className="text-sm text-[#948FB7]">
-                    {memberMoodEntries.length} mood entr
-                    {memberMoodEntries.length === 1 ? 'y' : 'ies'}
+                    {allMoodEntries.length} mood entr
+                    {allMoodEntries.length === 1 ? 'y' : 'ies'}
                   </span>
                 )}
               </div>
@@ -146,18 +158,18 @@ export default async function MemberProfilePage({ params }: PageProps) {
             Mood History
           </h2>
 
-          {memberMoodEntries.length === 0 ? (
+          {allMoodEntries.length === 0 ? (
             <div className="py-12 text-center">
               <div className="mb-4 text-4xl">📊</div>
               <p className="text-[#948FB7]">
-                {session.user.id === memberId
-                  ? "You haven't submitted any mood entries yet."
-                  : `${member.user.name} hasn't submitted any mood entries yet.`}
+                {user?.id === memberId
+                  ? 'You haven&apos;t submitted any mood entries yet.'
+                  : `${member.user.name} hasn&apos;t submitted any mood entries yet.`}
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {memberMoodEntries.map((entry) => (
+              {allMoodEntries.map((entry) => (
                 <div
                   key={entry.id}
                   className="flex items-start space-x-4 rounded-lg border border-gray-100 p-4 transition-colors hover:bg-gray-50">
@@ -197,6 +209,26 @@ export default async function MemberProfilePage({ params }: PageProps) {
                   </div>
                 </div>
               ))}
+
+              {/* Load More Button */}
+              {hasNextPage && (
+                <div className="mt-6 text-center">
+                  <Button
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                    variant="secondary"
+                    className="min-w-40">
+                    {isFetchingNextPage ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-current"></div>
+                        <span>Loading more...</span>
+                      </div>
+                    ) : (
+                      'Load More'
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>

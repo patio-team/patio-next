@@ -39,6 +39,7 @@ export default async function Home({
       team: true,
     },
   });
+
   const id = (await params).id;
 
   const userTeam = userTeams.find((tm) => tm.team.id === id);

@@ -123,7 +123,7 @@ export function TeamMembersModal({ teamId, children }: TeamMembersModalProps) {
                   {/* Last Vote Info */}
                   <div className="flex items-center space-x-4">
                     {member.lastVote ? (
-                      <div>
+                      <div className="flex flex-col items-center">
                         <Smile
                           mood={`mood${member.lastVote.rating}` as Mood}
                           size="small"

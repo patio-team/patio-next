@@ -154,6 +154,59 @@ class ApiClient {
       },
     );
   }
+
+  // Member API methods
+  async getMemberData(
+    teamId: string,
+    memberId: string,
+    cursor?: string,
+    limit = 20,
+  ) {
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+    });
+
+    if (cursor) {
+      params.append('cursor', cursor);
+    }
+
+    return this.request<{
+      member: {
+        id: string;
+        userId: string;
+        teamId: string;
+        role: 'member' | 'admin';
+        joinedAt: string;
+        user: {
+          id: string;
+          name: string;
+          email: string;
+          image?: string;
+        };
+      };
+      team: {
+        id: string;
+        name: string;
+        description?: string;
+      };
+      moodEntries: Array<{
+        id: string;
+        userId: string;
+        teamId: string;
+        rating: string;
+        comment?: string;
+        visibility: 'public' | 'private';
+        allowContact: boolean;
+        entryDate: string;
+        createdAt: string;
+        updatedAt: string;
+      }>;
+      pagination: {
+        hasMore: boolean;
+        nextCursor: string | null;
+      };
+    }>(`/teams/${teamId}/members/${memberId}?${params.toString()}`);
+  }
 }
 
 // Custom error class
