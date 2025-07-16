@@ -1,6 +1,6 @@
 import { moodEntries, teamMembers } from './schema';
 import { db } from '.';
-import { eq, and, gte, lt, count } from 'drizzle-orm';
+import { eq, and, gte, lt, count, desc } from 'drizzle-orm';
 import { getMoodEntries } from './mood-entries';
 
 export async function totalMembersCount(teamId: string) {
@@ -92,4 +92,46 @@ export async function dateScore(date: Date, teamId: string) {
     scoreVotes,
     totalVotes,
   };
+}
+
+export async function getTeamMembersWithLastVote(teamId: string) {
+  const members = await db.query.teamMembers.findMany({
+    where: eq(teamMembers.teamId, teamId),
+    with: {
+      user: {
+        columns: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+    },
+  });
+
+  // Get last vote for each member
+  const membersWithLastVote = await Promise.all(
+    members.map(async (member) => {
+      const lastVote = await db.query.moodEntries.findFirst({
+        where: and(
+          eq(moodEntries.userId, member.userId),
+          eq(moodEntries.teamId, teamId),
+        ),
+        orderBy: desc(moodEntries.entryDate),
+      });
+
+      return {
+        ...member,
+        lastVote: lastVote
+          ? {
+              date: lastVote.entryDate,
+              rating: Number(lastVote.rating),
+              comment: lastVote.comment,
+            }
+          : null,
+      };
+    }),
+  );
+
+  return membersWithLastVote;
 }

@@ -6,6 +6,7 @@ import { getMoodEntries } from '@/db/mood-entries';
 import { DateTime } from 'luxon';
 import PollResults from '@/components/poll-result';
 import LeaveTeamButton from './leave-team-button';
+import { TeamMembersModal } from '@/components/team-members-modal';
 
 export default async function MoodEntries({
   userTeam,
@@ -44,9 +45,11 @@ export default async function MoodEntries({
                   Polls on {getPollDaysString(userTeam.team.pollDays)}
                 </p>
                 <div className="mt-4 flex gap-6">
-                  <button className="text-sm font-medium text-[#3FA2F7]">
-                    See members
-                  </button>
+                  <TeamMembersModal teamId={userTeam.team.id}>
+                    <button className="cursor-pointer text-sm font-medium text-[#3FA2F7] transition-colors hover:text-[#2563eb]">
+                      See members
+                    </button>
+                  </TeamMembersModal>
                   <LeaveTeamButton teamId={userTeam.team.id} />
                 </div>
               </div>

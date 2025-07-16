@@ -59,6 +59,14 @@ export interface TeamMember {
   };
 }
 
+export interface TeamMemberWithLastVote extends TeamMember {
+  lastVote: {
+    date: string;
+    rating: number;
+    comment?: string;
+  } | null;
+}
+
 export interface TeamInvitation {
   id: string;
   teamId: string;
@@ -190,6 +198,14 @@ export interface TeamMember {
     email: string;
     image?: string;
   };
+}
+
+export interface TeamMemberWithLastVote extends TeamMember {
+  lastVote: {
+    date: string;
+    rating: number;
+    comment?: string;
+  } | null;
 }
 
 export interface TeamInvitation {
