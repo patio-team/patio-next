@@ -10,6 +10,7 @@ import { todayDate } from '@/lib/utils';
 import MoodEntries from './mood-entries';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading';
+import VoteChart from '@/components/vote-chart';
 
 function LoadingSection() {
   return (
@@ -46,6 +47,39 @@ export default async function Home({
     redirect('/');
   }
 
+  // const exampleData = [
+  //   {
+  //     votingId: 'v1',
+  //     createdAt: '2025-06-01T12:00:00.000Z',
+  //     average: 2.3,
+  //     movingAverage: 2.1,
+  //   },
+  //   {
+  //     votingId: 'v2',
+  //     createdAt: '2025-06-05T12:00:00.000Z',
+  //     average: 3.4,
+  //     movingAverage: 2.8,
+  //   },
+  //   {
+  //     votingId: 'v3',
+  //     createdAt: '2025-06-10T12:00:00.000Z',
+  //     average: 4.1,
+  //     movingAverage: 3.2,
+  //   },
+  //   {
+  //     votingId: 'v4',
+  //     createdAt: '2025-06-15T12:00:00.000Z',
+  //     average: 1.7,
+  //     movingAverage: 2.4,
+  //   },
+  //   {
+  //     votingId: 'v5',
+  //     createdAt: '2025-06-20T12:00:00.000Z',
+  //     average: 3.9,
+  //     movingAverage: 3.4,
+  //   },
+  // ];
+
   const date = todayDate();
 
   return (
@@ -55,6 +89,11 @@ export default async function Home({
         userTeams={userTeams}
         currentTeamId={userTeam.team.id}
       />
+
+      {/* <VoteChart
+        data={exampleData}
+        selectedVotingId="v3"
+      /> */}
 
       <Suspense fallback={<LoadingSection />}>
         <MoodEntries
