@@ -133,7 +133,7 @@ export default function VoteChart({
                     ?.createdAt || '',
                 borderColor: '#34314C',
                 borderWidth: 2,
-                label: { enabled: false },
+                // label: { enabled: false },
               },
             ]
           : [],
