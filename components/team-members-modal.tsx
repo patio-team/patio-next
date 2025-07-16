@@ -9,7 +9,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import Link from 'next/link';
-import Image from 'next/image';
 import { DateTime } from 'luxon';
 import { TeamMemberWithLastVote } from '@/lib/api-types';
 import { LoadingSpinner } from './ui/loading';
@@ -138,12 +137,11 @@ export function TeamMembersModal({ teamId, children }: TeamMembersModalProps) {
                   <div className="flex items-center space-x-4">
                     {member.lastVote ? (
                       <div>
-                        <span className="text-2xl">
-                          <Smile
-                            mood={`mood${member.lastVote.rating}` as Mood}
-                            size="small"
-                          />
-                        </span>
+                        <Smile
+                          mood={`mood${member.lastVote.rating}` as Mood}
+                          size="small"
+                        />
+
                         <p className="mt-1 text-xs text-gray-500">
                           Last vote:{' '}
                           {DateTime.fromJSDate(member.lastVote.date).toFormat(
