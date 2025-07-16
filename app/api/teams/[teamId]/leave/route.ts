@@ -33,7 +33,24 @@ export async function POST(request: NextRequest, { params }: Context) {
     });
 
     if (!membership) {
-      return createErrorResponse('No eres miembro de este equipo', 403);
+      return createErrorResponse('You are not a member of this team', 403);
+    }
+
+    // If user is admin, check if they are the last admin
+    if (membership.role === 'admin') {
+      const adminMembers = await db.query.teamMembers.findMany({
+        where: and(
+          eq(teamMembers.teamId, teamId),
+          eq(teamMembers.role, 'admin'),
+        ),
+      });
+
+      if (adminMembers.length <= 1) {
+        return createErrorResponse(
+          'You cannot leave the team as the last admin',
+          400,
+        );
+      }
     }
 
     // Remove user from team
@@ -44,10 +61,10 @@ export async function POST(request: NextRequest, { params }: Context) {
       );
 
     return createResponse({
-      message: 'Has abandonado el equipo correctamente',
+      message: 'You have left the team successfully',
     });
   } catch (error) {
     console.error('Error leaving team:', error);
-    return createErrorResponse('Error interno del servidor', 500);
+    return createErrorResponse('Internal server error', 500);
   }
 }

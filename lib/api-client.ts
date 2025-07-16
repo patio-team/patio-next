@@ -82,6 +82,15 @@ class ApiClient {
     });
   }
 
+  async leaveTeam(teamId: string) {
+    return this.request<ApiResponse<{ message: string }>>(
+      `/teams/${teamId}/leave`,
+      {
+        method: 'POST',
+      },
+    );
+  }
+
   // Invitations API methods
   async sendInvitations(data: { teamId: string; emails: string[] }) {
     const results = [];

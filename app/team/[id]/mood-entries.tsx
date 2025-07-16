@@ -5,6 +5,7 @@ import { DayResult } from '@/components/day-result';
 import { getMoodEntries } from '@/db/mood-entries';
 import { DateTime } from 'luxon';
 import PollResults from '@/components/poll-result';
+import LeaveTeamButton from './leave-team-button';
 
 export default async function MoodEntries({
   userTeam,
@@ -46,9 +47,7 @@ export default async function MoodEntries({
                   <button className="text-sm font-medium text-[#3FA2F7]">
                     See members
                   </button>
-                  <button className="text-sm font-medium text-[#3FA2F7]">
-                    Leave team
-                  </button>
+                  <LeaveTeamButton teamId={userTeam.team.id} />
                 </div>
               </div>
               {userTeam.role === 'admin' && (

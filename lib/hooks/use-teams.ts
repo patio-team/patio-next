@@ -84,3 +84,16 @@ export function useUpdateTeam() {
     },
   });
 }
+
+// Leave team mutation
+export function useLeaveTeam() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (teamId: string) => apiClient.leaveTeam(teamId),
+    onSuccess: () => {
+      // Invalidate teams list to remove the left team
+      queryClient.invalidateQueries({ queryKey: teamKeys.all });
+    },
+  });
+}
