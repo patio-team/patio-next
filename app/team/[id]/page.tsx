@@ -10,7 +10,7 @@ import { todayDate } from '@/lib/utils';
 import MoodEntries from './mood-entries';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading';
-import VoteChart from '@/components/vote-chart';
+// import VoteChart from '@/components/vote-chart';
 
 function LoadingSection() {
   return (
