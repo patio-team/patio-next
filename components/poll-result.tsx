@@ -59,10 +59,6 @@ export default async function PollResults({
       };
     });
 
-  scoreVotes[0].total = 10;
-
-  console.log(scoreVotes);
-
   return (
     <div className="relative max-w-[644px] bg-white p-4">
       {/* Score Section with Participation */}

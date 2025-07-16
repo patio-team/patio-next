@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { getPollDaysString } from '@/lib/utils';
 import { DayResult } from '@/components/day-result';
 import { getMoodEntries } from '@/db/mood-entries';
-import { Button } from '@/components/ui/button';
 import { DateTime } from 'luxon';
 import PollResults from '@/components/poll-result';
 
