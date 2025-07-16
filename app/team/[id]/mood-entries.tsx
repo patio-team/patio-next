@@ -6,10 +6,6 @@ import { getMoodEntries } from '@/db/mood-entries';
 import { Button } from '@/components/ui/button';
 import { DateTime } from 'luxon';
 
-async function awaitTimeout(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export default async function MoodEntries({
   userTeam,
   date,
