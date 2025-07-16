@@ -24,7 +24,7 @@ export default async function MoodEntries({
     userTeam.role === 'admin' ? undefined : 'public',
   );
 
-  // const userVote = entries.find((entry) => entry.user?.id === session.user.id);
+  const userVote = entries.find((entry) => entry.user?.id === userId);
 
   return (
     <div>
@@ -244,9 +244,8 @@ export default async function MoodEntries({
           </div>
 
           <PollResults
+            userHasVoted={!!userVote}
             teamId={userTeam.team.id}
-            totalExpected={20}
-            averageChange={10}
             date={date}
             results={entries}
           />

@@ -76,7 +76,13 @@ export async function dateScore(date: Date, teamId: string) {
       acc[entry.rating] = (acc[entry.rating] || 0) + 1;
       return acc;
     },
-    {} as Record<string, number>,
+    {
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+    } as Record<string, number>,
   );
 
   const totalVotes = entries.length;

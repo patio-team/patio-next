@@ -3,8 +3,11 @@ import { DateTime } from 'luxon';
 import { Mood, Smile } from './smile';
 import { dateScore, participationStats } from '@/db/team';
 import { getDateInTimezone } from '@/lib/utils';
+import { Button } from './ui/button';
+import Link from 'next/link';
 
 interface PollResultsProps {
+  userHasVoted: boolean;
   teamId: string;
   date: string;
   results: Awaited<ReturnType<typeof getMoodEntries>>;
@@ -18,7 +21,16 @@ const rankingToColor: Record<number, string> = {
   5: '#3fe3d2',
 };
 
+const rankingLabels: Record<number, string> = {
+  1: 'Very Bad',
+  2: 'Bad',
+  3: 'Neutral',
+  4: 'Good',
+  5: 'Very Good',
+};
+
 export default async function PollResults({
+  userHasVoted,
   teamId,
   date,
   results,
@@ -36,34 +48,41 @@ export default async function PollResults({
 
   const dayScore = await dateScore(DateTime.fromISO(date).toJSDate(), teamId);
   const formattedDate = DateTime.fromISO(date).toFormat('cccc, MMMM d, yyyy');
+  const scoreVotes = Object.entries(dayScore.scoreVotes)
+    .toSorted(([a], [b]) => {
+      return Number(b) - Number(a);
+    })
+    .map(([score, total]) => {
+      return {
+        mood: Number(score),
+        total,
+      };
+    });
+
+  scoreVotes[0].total = 10;
+
+  console.log(scoreVotes);
 
   return (
     <div className="relative max-w-[644px] bg-white p-4">
-      {/* Header */}
-      <div className="mb-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
-        <h2 className="font-merriweather text-2xl font-normal text-[#34314C]">
-          Last poll result
-        </h2>
-        <span className="font-lato text-base font-medium text-[#948FB7]">
-          {formattedDate}
-        </span>
-      </div>
-
       {/* Score Section with Participation */}
       <div className="mb-6 flex flex-col items-start gap-6 lg:flex-row lg:items-start">
         {/* Left side - Score */}
         <div className="relative flex flex-col items-start">
-          <div className="relative mb-4 flex items-center">
+          <h2 className="font-merriweather text-2xl font-normal text-[#34314C]">
+            Last poll result
+          </h2>
+          <div className="relative mt-10 mb-4 flex items-center">
             {/* Green circle positioned behind the text */}
-            <div className="absolute top-5 left-6 h-20 w-20 rounded-full bg-[#98DDAB]"></div>
+            <div className="absolute top-1/2 left-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-[#98DDAB]"></div>
             {/* Large score text */}
             <div className="relative z-10">
-              <span className="font-lato text-[96px] leading-[42px] font-light text-[#34314C]">
+              <span className="text-[96px] leading-[42px] font-light text-[#34314C]">
                 {dayScore.averageScore.toFixed(1).replace('.', ',')}
               </span>
             </div>
           </div>
-          <div className="font-lato mt-2 text-base text-[#948FB7]">
+          <div className="mt-2 text-base text-[#948FB7]">
             {Math.abs(stats.averageParticipation)}%{' '}
             {stats.averageParticipation < 0 ? 'below' : 'above'} average
           </div>
@@ -71,22 +90,43 @@ export default async function PollResults({
 
         {/* Right side - Participation */}
         <div className="ml-auto flex flex-col items-start">
-          <div className="font-merriweather mb-2 text-base text-[#948FB7]">
+          <div className="text-base font-medium text-[#948FB7]">
+            {formattedDate}
+          </div>
+
+          <div className="font-merriweather mt-8 mb-2 text-base text-[#948FB7]">
             Participation
           </div>
-          <div className="font-lato mb-1 text-[32px] leading-[36px] font-light text-[#34314C]">
+          <div className="mb-1 text-[32px] leading-[36px] font-light text-[#34314C]">
             {results.length}/{stats.totalMembers}
           </div>
-          <div className="font-lato text-base text-[#948FB7]">
+          <div className="text-base text-[#948FB7]">
             Usually {stats.totalMembers} people participate
           </div>
+
+          {!userHasVoted && (
+            <div className="text-primary mt-3">
+              You haven&apos;t participated yet
+            </div>
+          )}
+
+          {/* Button to share mood */}
+          <Button
+            className="mt-4"
+            asChild>
+            <Link
+              className="text-center"
+              href={`/mood?team=${teamId}&date=${date}`}>
+              {userHasVoted ? 'Edit your mood' : 'Share your mood'}
+            </Link>
+          </Button>
         </div>
       </div>
 
       {/* Results Chart */}
       <div className="relative">
         {/* Background grid lines */}
-        <div className="absolute top-0 left-[90px] flex h-[301px] w-[538px] overflow-hidden">
+        <div className="absolute top-5 right-0 z-0 flex h-[301px] w-[538px] overflow-hidden">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
@@ -94,38 +134,36 @@ export default async function PollResults({
           ))}
         </div>
 
-        <div className="space-y-4">
-          {Object.entries(dayScore.scoreVotes).map(([score, total], index) => (
+        <div className="z-10 space-y-4">
+          {scoreVotes.map((scoreVote) => (
             <div
-              key={index}
-              className="flex items-center">
+              key={scoreVote.mood}
+              className="flex min-h-[50px] items-center">
               {/* Emoji */}
-              <div>
+              <div className="h-full self-end">
                 <Smile
-                  mood={`mood${score}` as Mood}
+                  mood={`mood${scoreVote.mood}` as Mood}
                   size="small"
                 />
               </div>
 
-              {/* Label */}
-              <div className="mr-6 w-[90px] flex-shrink-0">
-                <span className="font-lato text-sm text-[#191825]">label</span>
-              </div>
-
               {/* Bar Chart */}
-              <div className="relative flex flex-1 items-center">
-                {Number(score) > 0 && (
+              <div className="z-10 flex w-full flex-col pl-4">
+                {scoreVote.total > 0 && (
                   <>
-                    <div
-                      className="h-[18px] rounded-r-full opacity-50"
-                      style={{
-                        backgroundColor: rankingToColor[Number(score)],
-                        width: `${(total / maxValue) * 100}%`,
-                        minWidth: '38px',
-                      }}></div>
-                    <span className="font-lato absolute right-[-30px] text-base text-[#191825]">
-                      {total}
-                    </span>
+                    <div>{rankingLabels[scoreVote.mood]}</div>
+                    <div className="relative flex flex-1 items-center">
+                      <div
+                        className="h-[18px] rounded-r-full opacity-50"
+                        style={{
+                          backgroundColor: rankingToColor[scoreVote.mood],
+                          width: `${(scoreVote.total / maxValue) * 100}%`,
+                          minWidth: '38px',
+                        }}></div>
+                      <div className="ml-4 text-[#191825]">
+                        {scoreVote.total}
+                      </div>
+                    </div>
                   </>
                 )}
               </div>

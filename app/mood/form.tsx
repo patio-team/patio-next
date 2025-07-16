@@ -17,7 +17,6 @@ export default function MoodForm({
   params: { user: User; date: string; teamId: string };
 }) {
   const router = useRouter();
-  const queryClient = useQueryClient();
 
   // Get user's teams
   const teamsQuery = useQuery({
