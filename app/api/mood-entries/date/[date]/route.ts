@@ -56,8 +56,8 @@ export async function GET(
 
     // Get entries for the specified date
     const entries = await getMoodEntries(
-      targetDate,
-      targetDate.plus({ days: 1 }),
+      targetDate.toJSDate(),
+      targetDate.plus({ days: 1 }).toJSDate(),
       teamId,
       membership.role === 'admin' ? undefined : 'public',
     );

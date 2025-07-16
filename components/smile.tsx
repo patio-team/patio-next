@@ -1,6 +1,24 @@
 export type Mood = 'mood5' | 'mood4' | 'mood3' | 'mood2' | 'mood1';
 
-export function Smile({ mood }: { className?: string; mood: Mood }) {
+const sizeClasses = {
+  small: 'w-[32px] h-[32px]',
+  medium: 'w-[80px] h-[80px]',
+} as const;
+
+const svgSizes = {
+  small: { width: 11, height: 7 },
+  medium: { width: 28, height: 18 },
+} as const;
+
+export function Smile({
+  className = '',
+  mood,
+  size = 'medium',
+}: {
+  className?: string;
+  mood: Mood;
+  size?: keyof typeof sizeClasses;
+}) {
   let moodClass = '';
   switch (mood) {
     case 'mood5':
@@ -23,13 +41,15 @@ export function Smile({ mood }: { className?: string; mood: Mood }) {
       break;
   }
 
+  const { width, height } = svgSizes[size];
+
   return (
     <div
-      className={`text-primary flex h-[118px] w-[118px] items-center justify-center rounded-full shadow-md ${moodClass}`}>
+      className={`text-primary flex items-center justify-center rounded-full shadow-md ${moodClass} ${sizeClasses[size]} ${className}`}>
       {mood === 'mood5' && (
         <svg
-          width="42"
-          height="28"
+          width={width}
+          height={height}
           viewBox="0 0 42 28"
           fill="none"
           xmlns="http://www.w3.org/2000/svg">
@@ -46,9 +66,9 @@ export function Smile({ mood }: { className?: string; mood: Mood }) {
       )}
       {mood === 'mood4' && (
         <svg
-          width="42"
-          height="29"
-          viewBox="0 0 42 29"
+          width={width}
+          height={height}
+          viewBox="0 0 42 28"
           fill="none"
           xmlns="http://www.w3.org/2000/svg">
           <path
@@ -64,9 +84,9 @@ export function Smile({ mood }: { className?: string; mood: Mood }) {
       )}
       {mood === 'mood3' && (
         <svg
-          width="42"
-          height="27"
-          viewBox="0 0 42 27"
+          width={width}
+          height={height}
+          viewBox="0 0 42 28"
           fill="none"
           xmlns="http://www.w3.org/2000/svg">
           <path
@@ -82,8 +102,8 @@ export function Smile({ mood }: { className?: string; mood: Mood }) {
       )}
       {mood === 'mood2' && (
         <svg
-          width="42"
-          height="28"
+          width={width}
+          height={height}
           viewBox="0 0 42 28"
           fill="none"
           xmlns="http://www.w3.org/2000/svg">
@@ -100,9 +120,9 @@ export function Smile({ mood }: { className?: string; mood: Mood }) {
       )}
       {mood === 'mood1' && (
         <svg
-          width="42"
-          height="27"
-          viewBox="0 0 42 27"
+          width={width}
+          height={height}
+          viewBox="0 0 42 28"
           fill="none"
           xmlns="http://www.w3.org/2000/svg">
           <path

@@ -114,7 +114,11 @@ export default function ManageGroupPage({
 
   // Show loading state
   if (sessionLoading || teamLoading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
   }
 
   // Show error state

@@ -1,18 +1,13 @@
-import { formatDateForDB } from '@/lib/utils';
 import { db } from '.';
-import { DateTime } from 'luxon/src/luxon';
 import { and, desc, eq, gte, lte } from 'drizzle-orm';
 import { moodEntries, users } from './schema';
 
 export async function getMoodEntries(
-  startDate: DateTime,
-  endDate: DateTime,
+  startDate: Date,
+  endDate: Date,
   teamId: string,
   visibility?: 'public' | 'private',
 ) {
-  const startDateForDB = formatDateForDB(startDate);
-  const endDateForDB = formatDateForDB(endDate);
-
   const result = await db
     .select({
       mood_entries: moodEntries,
@@ -27,8 +22,8 @@ export async function getMoodEntries(
     .where(
       and(
         eq(moodEntries.teamId, teamId),
-        gte(moodEntries.entryDate, startDateForDB),
-        lte(moodEntries.entryDate, endDateForDB),
+        gte(moodEntries.entryDate, startDate),
+        lte(moodEntries.entryDate, endDate),
         visibility ? eq(moodEntries.visibility, visibility) : undefined,
       ),
     )
@@ -37,6 +32,7 @@ export async function getMoodEntries(
 
   return result.map((entry) => ({
     ...entry.mood_entries,
+    rating: Number(entry.mood_entries.rating),
     user: {
       ...entry.user,
     },

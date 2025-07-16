@@ -228,8 +228,8 @@ export default function MoodForm({
                         }}
                         className={`transition-all duration-200 ${
                           isSelected
-                            ? 'scale-140'
-                            : 'opacity-70 hover:scale-105 hover:opacity-100'
+                            ? 'scale-150'
+                            : 'opacity-70 hover:scale-120 hover:opacity-100'
                         }`}>
                         <Smile mood={moodClass} />
                       </button>

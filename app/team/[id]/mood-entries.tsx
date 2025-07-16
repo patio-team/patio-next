@@ -5,6 +5,7 @@ import { DayResult } from '@/components/day-result';
 import { getMoodEntries } from '@/db/mood-entries';
 import { Button } from '@/components/ui/button';
 import { DateTime } from 'luxon';
+import PollResults from '@/components/poll-result';
 
 export default async function MoodEntries({
   userTeam,
@@ -15,9 +16,10 @@ export default async function MoodEntries({
   date: string;
   userId: string;
 }) {
+  const time = DateTime.fromISO(date);
   const entries = await getMoodEntries(
-    DateTime.fromISO(date),
-    DateTime.fromISO(date).plus({ days: 1 }),
+    time.toJSDate(),
+    time.plus({ days: 1 }).toJSDate(),
     userTeam.team.id,
     userTeam.role === 'admin' ? undefined : 'public',
   );
@@ -241,88 +243,13 @@ export default async function MoodEntries({
             </div>
           </div>
 
-          {/* Right Section - Poll Results and CTA */}
-          <div className="space-y-6">
-            {/* Last Poll Result */}
-            <div className="rounded-xl bg-white p-6 shadow-sm">
-              <div className="mb-6 flex items-start justify-between">
-                <h3 className="font-merriweather text-primary text-xl">
-                  Last poll result
-                </h3>
-                <span className="text-sm text-[#948FB7]">
-                  Monday, July 9th, 2020
-                </span>
-              </div>
-
-              {/* Score Display */}
-              <div className="mb-6 flex items-center gap-4">
-                <div className="relative">
-                  <div className="h-20 w-20 rounded-full bg-[#98DDAB]"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-primary text-4xl font-light">
-                      3,7
-                    </span>
-                  </div>
-                </div>
-                <div>
-                  <div className="text-primary text-2xl font-light">9/20</div>
-                  <div className="font-merriweather text-sm text-[#948FB7]">
-                    Participation
-                  </div>
-                  <div className="text-sm text-[#948FB7]">
-                    Usually 12 people participate
-                  </div>
-                </div>
-              </div>
-
-              <div className="mb-6 text-sm text-[#948FB7]">
-                7% below average
-              </div>
-
-              {/* Poll Results Breakdown */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#3FE3D2]">
-                    <span className="text-lg text-black">70</span>
-                  </div>
-                  <div className="h-4 flex-1 rounded-r-full bg-[#3FE3D2] opacity-50"></div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#98DDAB]">
-                    <span className="text-lg text-black">12</span>
-                  </div>
-                  <div className="h-4 w-24 rounded-r-full bg-[#98DDAB] opacity-50"></div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#FFC952]">
-                    <span className="text-lg text-black">5</span>
-                  </div>
-                  <div className="h-4 w-8 rounded-r-full bg-[#FFC952] opacity-50"></div>
-                </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-dashed border-[#FF7473]">
-                  <span className="text-lg text-black"></span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#FE346E]">
-                    <span className="text-lg text-black">42</span>
-                  </div>
-                  <div className="h-4 w-64 rounded-r-full bg-[#FE346E] opacity-50"></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Call to Action */}
-            <div className="rounded-xl bg-white p-6 text-center shadow-sm">
-              <p className="text-primary mb-4 text-sm">
-                You haven&apos;t participated yet.
-              </p>
-              <Button asChild>
-                <Link href={`/mood?team=${userTeam.team.id}&date=${date}`}>
-                  Share your mood
-                </Link>
-              </Button>
-            </div>
-          </div>
+          <PollResults
+            teamId={userTeam.team.id}
+            totalExpected={20}
+            averageChange={10}
+            date={date}
+            results={entries}
+          />
         </div>
 
         {/* Team Member Cards Grid */}

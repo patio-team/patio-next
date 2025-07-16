@@ -47,8 +47,8 @@ export async function GET(request: NextRequest) {
     const today = getTodayInTimezone();
 
     const entries = await getMoodEntries(
-      today,
-      today.plus({ days: 1 }),
+      today.toJSDate(),
+      today.plus({ days: 1 }).toJSDate(),
       teamId,
       membership.role === 'admin' ? undefined : 'public',
     );

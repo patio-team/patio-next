@@ -282,8 +282,8 @@ export async function GET(request: NextRequest) {
     }
 
     const entries = await getMoodEntries(
-      parsedStartDate,
-      parsedEndDate,
+      parsedStartDate.toJSDate(),
+      parsedEndDate.toJSDate(),
       teamId,
       membership.role === 'admin' ? undefined : 'public',
     );
