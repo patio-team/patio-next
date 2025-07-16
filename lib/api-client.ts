@@ -91,6 +91,12 @@ class ApiClient {
     );
   }
 
+  async getTeamMembersWithVotes(teamId: string) {
+    return this.request<
+      ApiResponse<import('./api-types').TeamMemberWithLastVote[]>
+    >(`/teams/${teamId}/members/with-votes`);
+  }
+
   // Invitations API methods
   async sendInvitations(data: { teamId: string; emails: string[] }) {
     const results = [];

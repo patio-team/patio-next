@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -15,6 +16,7 @@ import { LoadingSpinner } from './ui/loading';
 import { Mood, Smile } from './smile';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { User } from 'lucide-react';
+import { apiClient } from '@/lib/api-client';
 
 interface TeamMembersModalProps {
   teamId: string;
@@ -27,56 +29,37 @@ interface LocalTeamMember
   lastVote: {
     date: Date;
     rating: number;
-    comment: string | null;
+    comment?: string;
   } | null;
 }
 
 export function TeamMembersModal({ teamId, children }: TeamMembersModalProps) {
-  const [members, setMembers] = useState<LocalTeamMember[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const fetchMembers = async () => {
-    if (members.length > 0) return; // Don't fetch again if we already have data
+  const {
+    data: membersResponse,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['team-members', teamId],
+    queryFn: () => apiClient.getTeamMembersWithVotes(teamId),
+    enabled: isOpen, // Only fetch when modal is open
+  });
 
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/teams/${teamId}/members/with-votes`);
-      if (response.ok) {
-        const data = await response.json();
-
-        setMembers(
-          data.data.map(
-            (
-              member: TeamMemberWithLastVote & {
-                joinedAt: string;
-                lastVote?: { date: string };
-              },
-            ) => ({
-              ...member,
-              joinedAt: new Date(member.joinedAt),
-              lastVote: member.lastVote
-                ? {
-                    ...member.lastVote,
-                    date: new Date(member.lastVote.date),
-                  }
-                : null,
-            }),
-          ),
-        );
-      }
-    } catch (error) {
-      console.error('Error fetching team members:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const members: LocalTeamMember[] =
+    membersResponse?.data.map((member) => ({
+      ...member,
+      joinedAt: new Date(member.joinedAt),
+      lastVote: member.lastVote
+        ? {
+            ...member.lastVote,
+            date: new Date(member.lastVote.date),
+          }
+        : null,
+    })) || [];
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
-    if (open) {
-      fetchMembers();
-    }
   };
 
   return (
@@ -95,6 +78,10 @@ export function TeamMembersModal({ teamId, children }: TeamMembersModalProps) {
           {isLoading ? (
             <div className="flex h-32 items-center justify-center">
               <LoadingSpinner />
+            </div>
+          ) : error ? (
+            <div className="flex h-32 items-center justify-center">
+              <p className="text-red-500">Failed to load team members</p>
             </div>
           ) : (
             <div className="space-y-4">
