@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { latoFont, merriweatherFont } from '@/lib/fonts';
 import { Providers } from '@/components/providers';
+import { Toaster } from '@/components/ui/sonner';
 
 export const metadata: Metadata = {
   title: 'Patio',
@@ -20,6 +21,7 @@ export default function RootLayout({
       suppressHydrationWarning>
       <body className="antialiased">
         <Providers>{children}</Providers>
+        <Toaster richColors />
       </body>
     </html>
   );

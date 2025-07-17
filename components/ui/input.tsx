@@ -10,9 +10,9 @@ export interface InputProps
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, label, ...props }, ref) => {
     return (
-      <div className="space-y-3">
+      <div className="space-y-2">
         {label && (
-          <label className="block text-base leading-[22px] font-medium text-[#34314C]">
+          <label className="text-primary block text-base leading-[22px] font-medium">
             {label}
           </label>
         )}

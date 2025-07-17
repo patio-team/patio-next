@@ -165,67 +165,6 @@ export const teamInvitations = pgTable('team_invitations', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-// Notifications table
-export const notifications = pgTable('notifications', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  type: notificationTypeEnum('type').notNull(),
-  title: varchar('title', { length: 255 }).notNull(),
-  message: text('message').notNull(),
-  metadata: json('metadata'), // Additional data for the notification
-  isRead: boolean('is_read').default(false).notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-});
-
-// Mentions table (for user mentions in mood entries)
-export const mentions = pgTable('mentions', {
-  id: text('id').primaryKey(),
-  moodEntryId: text('mood_entry_id')
-    .notNull()
-    .references(() => moodEntries.id, { onDelete: 'cascade' }),
-  mentionedUserId: text('mentioned_user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  mentionedByUserId: text('mentioned_by_user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-});
-
-// User settings table
-export const userSettings = pgTable('user_settings', {
-  id: text('id').primaryKey(),
-  userId: text('user_id')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' })
-    .unique(),
-  allowedDays: json('allowed_days')
-    .default(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'])
-    .notNull(), // Days user wants to submit mood
-  timezone: varchar('timezone', { length: 100 }).default('UTC').notNull(),
-  emailNotifications: boolean('email_notifications').default(true).notNull(),
-  mentionNotifications: boolean('mention_notifications')
-    .default(true)
-    .notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
-});
-
-// Relations
-export const usersRelations = relations(users, ({ many, one }) => ({
-  teamMembers: many(teamMembers),
-  moodEntries: many(moodEntries),
-  sentInvitations: many(teamInvitations, { relationName: 'invitedBy' }),
-  notifications: many(notifications),
-  mentionsSent: many(mentions, { relationName: 'mentionedBy' }),
-  mentionsReceived: many(mentions, { relationName: 'mentionedUser' }),
-  settings: one(userSettings),
-  accounts: many(account),
-  sessions: many(session),
-}));
-
 export const accountsRelations = relations(account, ({ one }) => ({
   user: one(users, {
     fields: [account.userId],
@@ -257,18 +196,6 @@ export const teamMembersRelations = relations(teamMembers, ({ one }) => ({
   }),
 }));
 
-export const moodEntriesRelations = relations(moodEntries, ({ one, many }) => ({
-  user: one(users, {
-    fields: [moodEntries.userId],
-    references: [users.id],
-  }),
-  team: one(teams, {
-    fields: [moodEntries.teamId],
-    references: [teams.id],
-  }),
-  mentions: many(mentions),
-}));
-
 export const teamInvitationsRelations = relations(
   teamInvitations,
   ({ one }) => ({
@@ -282,37 +209,6 @@ export const teamInvitationsRelations = relations(
     }),
   }),
 );
-
-export const notificationsRelations = relations(notifications, ({ one }) => ({
-  user: one(users, {
-    fields: [notifications.userId],
-    references: [users.id],
-  }),
-}));
-
-export const mentionsRelations = relations(mentions, ({ one }) => ({
-  moodEntry: one(moodEntries, {
-    fields: [mentions.moodEntryId],
-    references: [moodEntries.id],
-  }),
-  mentionedUser: one(users, {
-    fields: [mentions.mentionedUserId],
-    references: [users.id],
-    relationName: 'mentionedUser',
-  }),
-  mentionedByUser: one(users, {
-    fields: [mentions.mentionedByUserId],
-    references: [users.id],
-    relationName: 'mentionedBy',
-  }),
-}));
-
-export const userSettingsRelations = relations(userSettings, ({ one }) => ({
-  user: one(users, {
-    fields: [userSettings.userId],
-    references: [users.id],
-  }),
-}));
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -332,9 +228,3 @@ export type MoodEntry = typeof moodEntries.$inferSelect;
 export type NewMoodEntry = typeof moodEntries.$inferInsert;
 export type TeamInvitation = typeof teamInvitations.$inferSelect;
 export type NewTeamInvitation = typeof teamInvitations.$inferInsert;
-export type Notification = typeof notifications.$inferSelect;
-export type NewNotification = typeof notifications.$inferInsert;
-export type Mention = typeof mentions.$inferSelect;
-export type NewMention = typeof mentions.$inferInsert;
-export type UserSettings = typeof userSettings.$inferSelect;
-export type NewUserSettings = typeof userSettings.$inferInsert;

@@ -10,6 +10,7 @@ import { formatMoodDate } from '@/lib/types';
 import { User } from 'better-auth';
 import Link from 'next/link';
 import { LoadingSpinner } from '@/components/ui/loading';
+import { Select } from '@/components/ui/select';
 
 export default function MoodForm({
   params: { user, date, teamId },
@@ -178,14 +179,10 @@ export default function MoodForm({
             {/* Team Selection */}
             {teams && teams.length > 1 && (
               <div className="space-y-3">
-                <label className="text-primary block text-base leading-[22px] font-medium">
-                  Team
-                </label>
-                <select
+                <Select
                   value={selectedTeam}
                   onChange={(e) => setSelectedTeam(e.target.value)}
-                  className="h-[42px] w-full max-w-[407px] rounded-lg border border-[#DBDAE7] bg-white px-4 py-2 text-base leading-[18px] tracking-[0.1px] focus:border-transparent focus:ring-2 focus:ring-[#3FE3D2] focus:outline-none"
-                  required>
+                  label="Team">
                   {teams.map((team) => (
                     <option
                       key={team.id}
@@ -193,7 +190,7 @@ export default function MoodForm({
                       {team.name}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
             )}
 

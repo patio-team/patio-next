@@ -97,3 +97,22 @@ export function useLeaveTeam() {
     },
   });
 }
+
+// Update member role mutation
+export function useUpdateMemberRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: {
+      teamId: string;
+      memberId: string;
+      role: 'member' | 'admin';
+    }) => apiClient.updateMemberRole(data.teamId, data.memberId, data.role),
+    onSuccess: (_, variables) => {
+      // Invalidate team details to refresh members
+      queryClient.invalidateQueries({
+        queryKey: teamKeys.detail(variables.teamId),
+      });
+    },
+  });
+}

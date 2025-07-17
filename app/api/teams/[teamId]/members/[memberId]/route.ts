@@ -3,7 +3,7 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { db } from '@/db';
 import { teamMembers, moodEntries } from '@/db/schema';
-import { eq, and, desc, lt } from 'drizzle-orm';
+import { eq, and, desc, lt, count } from 'drizzle-orm';
 import { z } from 'zod';
 
 const getMemberDataSchema = z.object({
@@ -11,6 +11,10 @@ const getMemberDataSchema = z.object({
   memberId: z.string(),
   cursor: z.string().optional(),
   limit: z.coerce.number().min(1).max(50).default(20),
+});
+
+const updateMemberRoleSchema = z.object({
+  role: z.enum(['member', 'admin']),
 });
 
 export async function GET(
@@ -134,6 +138,106 @@ export async function GET(
     });
   } catch (error) {
     console.error('Error fetching member data:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ teamId: string; memberId: string }> },
+) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { teamId, memberId } = await params;
+    const body = await request.json();
+
+    const validatedData = updateMemberRoleSchema.parse(body);
+
+    // Check if current user is admin of the team
+    const currentUserMembership = await db.query.teamMembers.findFirst({
+      where: and(
+        eq(teamMembers.userId, session.user.id),
+        eq(teamMembers.teamId, teamId),
+      ),
+    });
+
+    if (!currentUserMembership || currentUserMembership.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    // Get the member to update
+    const memberToUpdate = await db.query.teamMembers.findFirst({
+      where: and(
+        eq(teamMembers.userId, memberId),
+        eq(teamMembers.teamId, teamId),
+      ),
+    });
+
+    if (!memberToUpdate) {
+      return NextResponse.json({ error: 'Member not found' }, { status: 404 });
+    }
+
+    // If trying to demote current user from admin to member, check if there are other admins
+    if (
+      session.user.id === memberId &&
+      memberToUpdate.role === 'admin' &&
+      validatedData.role === 'member'
+    ) {
+      const adminCount = await db
+        .select({ count: count() })
+        .from(teamMembers)
+        .where(
+          and(eq(teamMembers.teamId, teamId), eq(teamMembers.role, 'admin')),
+        );
+
+      if (adminCount[0].count <= 1) {
+        return NextResponse.json(
+          {
+            error:
+              'Cannot demote yourself. There must be at least one admin in the team.',
+          },
+          { status: 400 },
+        );
+      }
+    }
+
+    // Update the member role
+    await db
+      .update(teamMembers)
+      .set({
+        role: validatedData.role,
+      })
+      .where(
+        and(eq(teamMembers.userId, memberId), eq(teamMembers.teamId, teamId)),
+      );
+
+    // Get updated member data
+    const updatedMember = await db.query.teamMembers.findFirst({
+      where: and(
+        eq(teamMembers.userId, memberId),
+        eq(teamMembers.teamId, teamId),
+      ),
+      with: {
+        user: true,
+      },
+    });
+
+    return NextResponse.json({
+      message: 'Member role updated successfully',
+      member: updatedMember,
+    });
+  } catch (error) {
+    console.error('Error updating member role:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },
