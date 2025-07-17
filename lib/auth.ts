@@ -24,6 +24,12 @@ export const auth = betterAuth({
   },
   baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   secret: process.env.BETTER_AUTH_SECRET as string,
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 10 * 60,
+    },
+  },
 });
 
 export type Session = typeof auth.$Infer.Session;
