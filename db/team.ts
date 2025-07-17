@@ -63,9 +63,9 @@ export async function participationStats(
   };
 }
 
-export async function dateScore(date: Date, teamId: string) {
-  const entries = await getMoodEntries(date, date, teamId);
-
+export async function dateScore(
+  entries: Awaited<ReturnType<typeof getMoodEntries>>,
+) {
   const averageScore =
     entries.reduce((sum, entry) => sum + entry.rating, 0) / entries.length || 0;
 

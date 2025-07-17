@@ -245,6 +245,7 @@ export default async function MoodEntries({
           </div>
 
           <PollResults
+            entries={entries}
             userHasVoted={!!userVote}
             teamId={userTeam.team.id}
             date={date}

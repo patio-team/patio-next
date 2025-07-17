@@ -5,13 +5,14 @@ import { getDateInTimezone } from '@/lib/utils';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { Team } from '@/db/schema';
-import { getMoodEntries } from '@/db/mood-entries';
+import type { getMoodEntries } from '@/db/mood-entries';
 
 interface PollResultsProps {
   userHasVoted: boolean;
   teamId: string;
   date: string;
   pollDays: Team['pollDays'];
+  entries: Awaited<ReturnType<typeof getMoodEntries>>;
 }
 
 const rankingToColor: Record<number, string> = {
@@ -34,13 +35,11 @@ export default async function PollResults({
   userHasVoted,
   teamId,
   date,
+  entries,
 }: PollResultsProps) {
   const dateWithTimeZone = getDateInTimezone(date);
 
-  const jsDate = dateWithTimeZone.toJSDate();
-  const results = await getMoodEntries(jsDate, jsDate, teamId);
-
-  const maxValue = Math.max(...results.map((r) => r.rating));
+  const maxValue = Math.max(...entries.map((r) => r.rating));
 
   const parsedStartDate = dateWithTimeZone.minus({ days: 7 });
   const parsedEndDate = dateWithTimeZone.endOf('day');
@@ -51,7 +50,7 @@ export default async function PollResults({
     parsedEndDate.toJSDate(),
   );
 
-  const dayScore = await dateScore(jsDate, teamId);
+  const dayScore = await dateScore(entries);
   const formattedDate = DateTime.fromISO(date).toFormat('cccc, MMMM d, yyyy');
   const scoreVotes = Object.entries(dayScore.scoreVotes)
     .toSorted(([a], [b]) => {
@@ -99,7 +98,7 @@ export default async function PollResults({
             Participation
           </div>
           <div className="mb-1 text-[32px] leading-[36px] font-light text-[#34314C]">
-            {results.length}/{stats.totalMembers}
+            {entries.length}/{stats.totalMembers}
           </div>
           <div className="text-base text-[#948FB7]">
             Usually {stats.totalMembers} people participate

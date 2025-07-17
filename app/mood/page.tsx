@@ -49,6 +49,7 @@ export default async function MoodPage({
         date: dateParam,
         teamId: teamParam,
         currentEntry,
+        entries,
       }}
     />
   );
