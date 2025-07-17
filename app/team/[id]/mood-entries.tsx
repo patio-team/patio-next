@@ -1,6 +1,6 @@
 import { TeamMemberWithTeam } from '@/db/schema';
 import Link from 'next/link';
-import { getPollDaysString } from '@/lib/utils';
+import { getDateInTimezone, getPollDaysString } from '@/lib/utils';
 import { DayResult } from '@/components/day-result';
 import { getMoodEntries } from '@/db/mood-entries';
 import { DateTime } from 'luxon';
@@ -18,7 +18,9 @@ export default async function MoodEntries({
   userId: string;
 }) {
   const time = DateTime.fromISO(date);
-  const jsDate = time.toJSDate();
+  console.log('from iso', time);
+  const dateWithTimeZone = getDateInTimezone(date);
+  const jsDate = dateWithTimeZone.toJSDate();
   const entries = await getMoodEntries(
     jsDate,
     jsDate,

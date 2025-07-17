@@ -93,6 +93,8 @@ export default async function Home({
   const dateParam = (await searchParams).date;
   const date = dateParam || todayDate();
 
+  console.log('Current date:', date);
+
   const targetDayOfTheWeek = getDayOfWeek(getDateInTimezone(date));
 
   if (userTeam.team.pollDays?.[targetDayOfTheWeek] === false) {
