@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     const token = searchParams.get('token');
 
     if (!token) {
-      return createErrorResponse('Token de invitación requerido', 400);
+      return createErrorResponse('Token invitation required', 400);
     }
 
     // Find invitation
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!invitation) {
-      return createErrorResponse('Invitación no válida o expirada', 404);
+      return createErrorResponse('Invalid or expired invitation', 404);
     }
 
     // Check if user exists
