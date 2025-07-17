@@ -11,6 +11,7 @@ import { User } from 'better-auth';
 import Link from 'next/link';
 import { LoadingSpinner } from '@/components/ui/loading';
 import { Select } from '@/components/ui/select';
+import Editor from '@/components/editor/editor';
 
 export default function MoodForm({
   params: { user, date, teamId },
@@ -242,13 +243,7 @@ export default function MoodForm({
               <label className="text-primary block text-base leading-[22px] font-medium">
                 Additional comments (optional)
               </label>
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Share more about your day..."
-                rows={4}
-                className="w-full max-w-[407px] resize-none rounded-lg border border-[#DBDAE7] bg-white px-4 py-2 text-base leading-[18px] tracking-[0.1px] placeholder:text-[#948FB7] focus:border-transparent focus:ring-2 focus:ring-[#3FE3D2] focus:outline-none"
-              />
+              <Editor onChange={(value) => setComment(value)} />
             </div>
 
             {/* Visibility Settings */}

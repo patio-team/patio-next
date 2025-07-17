@@ -51,7 +51,9 @@ export async function DayResult({
                   fill="#948FB7"
                 />
               </svg>
-              <span className="text-sm text-[#948FB7]">{entry.comment}</span>
+              <div
+                className="text-sm text-[#948FB7]"
+                dangerouslySetInnerHTML={{ __html: entry.comment }}></div>
             </div>
           )}
         </div>
