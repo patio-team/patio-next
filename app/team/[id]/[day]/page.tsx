@@ -12,7 +12,7 @@ import {
   todayDate,
 } from '@/lib/utils';
 
-import MoodEntries from './mood-entries';
+import MoodEntries from '../mood-entries';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading';
 // import VoteChart from '@/components/vote-chart';
@@ -29,10 +29,8 @@ export const dynamic = 'force-dynamic';
 
 export default async function Home({
   params,
-  searchParams,
 }: {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ date?: string }>;
+  params: Promise<{ id: string; day: string }>;
 }) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -49,7 +47,7 @@ export default async function Home({
     },
   });
 
-  const id = (await params).id;
+  const { id, day } = await params;
 
   const userTeam = userTeams.find((tm) => tm.team.id === id);
 
@@ -90,18 +88,15 @@ export default async function Home({
   //   },
   // ];
 
-  const dateParam = (await searchParams).date;
-  const date = dateParam || todayDate();
-
-  const targetDayOfTheWeek = getDayOfWeek(getDateInTimezone(date));
+  const targetDayOfTheWeek = getDayOfWeek(getDateInTimezone(day));
 
   if (
     userTeam.team.pollDays?.[targetDayOfTheWeek] === false ||
-    date > todayDate()
+    day > todayDate()
   ) {
     const lastValidDate = getLastValidDate(userTeam.team.pollDays);
     redirect(
-      `/team/${userTeam.team.id}/?date=${lastValidDate.toFormat('yyyy-MM-dd')}`,
+      `/team/${userTeam.team.id}/${lastValidDate.toFormat('yyyy-MM-dd')}`,
     );
   }
 
@@ -121,7 +116,7 @@ export default async function Home({
       <Suspense fallback={<LoadingSection />}>
         <MoodEntries
           userTeam={userTeam}
-          date={date}
+          date={day}
           userId={session.user.id}
         />
       </Suspense>

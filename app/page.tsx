@@ -40,5 +40,5 @@ export default async function Home() {
 
   const date = getLastValidDate(firstTeam.pollDays).toFormat('yyyy-MM-dd');
 
-  redirect(`/team/${firstTeam.id}/?date=${date}`);
+  redirect(`/team/${firstTeam.id}/${date}`);
 }

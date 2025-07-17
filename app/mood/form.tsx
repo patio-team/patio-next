@@ -72,7 +72,7 @@ export default function MoodForm({
     }) => apiClient.createMoodEntry(data),
     onSuccess: () => {
       setError(null);
-      router.push(`/team/${selectedTeam}?date=${isoDate}`);
+      router.push(`/team/${selectedTeam}/${isoDate}`);
     },
     onError: (error) => {
       console.error('Error creating mood entry:', error);
@@ -91,7 +91,7 @@ export default function MoodForm({
     }) => apiClient.updateMoodEntry(data),
     onSuccess: () => {
       setError(null);
-      router.push(`/team/${selectedTeam}/?date=${isoDate}`);
+      router.push(`/team/${selectedTeam}/${isoDate}`);
     },
     onError: (error) => {
       console.error('Error updating mood entry:', error);
@@ -301,7 +301,7 @@ export default function MoodForm({
                 variant="secondary">
                 <Link
                   className="text-center"
-                  href={`/team/${selectedTeam}?date=${isoDate}`}>
+                  href={`/team/${selectedTeam}/${isoDate}`}>
                   Cancel
                 </Link>
               </Button>
