@@ -5,12 +5,14 @@ import { dateScore, participationStats } from '@/db/team';
 import { getDateInTimezone } from '@/lib/utils';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import { Team } from '@/db/schema';
 
 interface PollResultsProps {
   userHasVoted: boolean;
   teamId: string;
   date: string;
   results: Awaited<ReturnType<typeof getMoodEntries>>;
+  pollDays: Team['pollDays'];
 }
 
 const rankingToColor: Record<number, string> = {
@@ -45,8 +47,9 @@ export default async function PollResults({
     parsedStartDate.toJSDate(),
     parsedEndDate.toJSDate(),
   );
+  const jsDate = DateTime.fromISO(date).toJSDate();
 
-  const dayScore = await dateScore(DateTime.fromISO(date).toJSDate(), teamId);
+  const dayScore = await dateScore(jsDate, teamId);
   const formattedDate = DateTime.fromISO(date).toFormat('cccc, MMMM d, yyyy');
   const scoreVotes = Object.entries(dayScore.scoreVotes)
     .toSorted(([a], [b]) => {
@@ -107,6 +110,7 @@ export default async function PollResults({
           )}
 
           {/* Button to share mood */}
+
           <Button
             className="mt-4"
             asChild>

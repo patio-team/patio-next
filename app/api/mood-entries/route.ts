@@ -10,6 +10,7 @@ import {
   canPostOnDate,
   formatDateForDB,
   generateId,
+  getDayOfWeek,
 } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
@@ -53,6 +54,9 @@ export async function POST(request: NextRequest) {
         eq(teamMembers.userId, userId),
         eq(teamMembers.teamId, teamId),
       ),
+      with: {
+        team: true,
+      },
     });
 
     if (!membership) {
@@ -75,6 +79,15 @@ export async function POST(request: NextRequest) {
       }
     } else {
       targetDate = getTodayInTimezone();
+    }
+
+    const targetDayOfTheWeek = getDayOfWeek(targetDate);
+
+    if (membership?.team.pollDays?.[targetDayOfTheWeek] === false) {
+      return createErrorResponse(
+        `Mood entries are not allowed on ${targetDayOfTheWeek}`,
+        400,
+      );
     }
 
     // Check if the user already has an entry for today
