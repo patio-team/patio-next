@@ -95,7 +95,10 @@ export default async function Home({
 
   const targetDayOfTheWeek = getDayOfWeek(getDateInTimezone(date));
 
-  if (userTeam.team.pollDays?.[targetDayOfTheWeek] === false) {
+  if (
+    userTeam.team.pollDays?.[targetDayOfTheWeek] === false ||
+    date > todayDate()
+  ) {
     const lastValidDate = getLastValidDate(userTeam.team.pollDays);
     redirect(
       `/team/${userTeam.team.id}/?date=${lastValidDate.toFormat('yyyy-MM-dd')}`,
