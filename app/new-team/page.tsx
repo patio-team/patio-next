@@ -6,6 +6,7 @@ import { useCreateTeam } from '@/lib/hooks/use-teams';
 import { useSession } from '@/lib/auth-client';
 import { DaySelection } from '@/lib/api-types';
 import TeamForm from '@/components/team-form';
+import { LoadingSpinner } from '@/components/ui/loading';
 
 export default function NewTeamPage() {
   const router = useRouter();
@@ -37,8 +38,8 @@ export default function NewTeamPage() {
   // Show loading screen while checking session
   if (sessionLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
-        <div className="text-lg text-[#34314C]">Loading...</div>
+      <div className="flex min-h-screen items-center justify-center">
+        <LoadingSpinner />
       </div>
     );
   }
@@ -49,7 +50,7 @@ export default function NewTeamPage() {
   }
 
   return (
-    <div className={`relative min-h-screen bg-white`}>
+    <div className={`min-h-scree relative`}>
       {/* Main content */}
       <div className="mx-auto max-w-4xl px-6 py-16 sm:px-16">
         {/* Title */}

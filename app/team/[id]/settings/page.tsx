@@ -188,14 +188,14 @@ export default function ManageGroupPage({
   // Show error state
   if (teamError || !teamData) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-red-500">Error loading Team</div>
       </div>
     );
   }
 
   return (
-    <div className={`relative min-h-screen bg-white`}>
+    <div className={`relative min-h-screen`}>
       <Link
         href="/"
         className="absolute top-8 right-8">

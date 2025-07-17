@@ -134,7 +134,7 @@ export default async function PollResults({
           ))}
         </div>
 
-        <div className="z-10 space-y-4">
+        <div className="relative z-10 space-y-4">
           {scoreVotes.map((scoreVote) => (
             <div
               key={scoreVote.mood}

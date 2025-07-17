@@ -25,7 +25,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col justify-center gap-8 bg-white py-8 lg:flex-row">
+    <div className="flex min-h-screen w-full flex-col justify-center gap-8 py-8 lg:flex-row">
       {/* Left section - Branding (hidden on mobile, shows on tablet/desktop) */}
       <div className="flex w-[430px] flex-col justify-center">
         {/* Logo */}

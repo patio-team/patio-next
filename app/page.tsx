@@ -26,7 +26,7 @@ export default async function Home() {
 
   if (!userTeams.length) {
     return (
-      <div className={`min-h-screen bg-white`}>
+      <div>
         <PageHeader
           user={session.user}
           userTeams={userTeams}

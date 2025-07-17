@@ -141,7 +141,7 @@ export default function MoodForm({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <LoadingSpinner />
         </div>
@@ -150,7 +150,7 @@ export default function MoodForm({
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div>
       <div className="px-4 py-8 md:px-16">
         <div className="mx-auto max-w-3xl">
           <div className="mb-8 text-center">
