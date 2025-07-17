@@ -2,11 +2,14 @@ import { getMoodEntries } from '@/db/mood-entries';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { User } from 'lucide-react';
 import { Mood, Smile } from './smile';
+import Link from 'next/link';
 
 export async function DayResult({
   entries,
+  teamId,
 }: {
   entries: Awaited<ReturnType<typeof getMoodEntries>>;
+  teamId: string;
 }) {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -30,7 +33,9 @@ export async function DayResult({
               </span>
             </div>
             <span className="font-merriweather text-primary text-sm">
-              {entry.user?.name || 'Unknown User'}
+              <Link href={`/team/${teamId}/member/${entry.user.id}`}>
+                {entry.user.name}
+              </Link>
             </span>
           </div>
 

@@ -193,9 +193,11 @@ export default function MemberProfilePage() {
                     </div>
 
                     {entry.comment && (
-                      <p className="mt-2 text-sm text-gray-700">
-                        {entry.comment}
-                      </p>
+                      <div
+                        className="mt-2 text-sm text-gray-700"
+                        dangerouslySetInnerHTML={{
+                          __html: entry.comment,
+                        }}></div>
                     )}
 
                     <div className="mt-2 flex items-center justify-between">

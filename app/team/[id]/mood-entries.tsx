@@ -255,7 +255,10 @@ export default async function MoodEntries({
 
         {/* Team Member Cards Grid */}
         <div className="mt-12">
-          <DayResult entries={entries} />
+          <DayResult
+            entries={entries}
+            teamId={userTeam.team.id}
+          />
         </div>
       </div>
     </div>
