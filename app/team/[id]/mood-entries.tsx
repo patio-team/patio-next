@@ -18,9 +18,10 @@ export default async function MoodEntries({
   userId: string;
 }) {
   const time = DateTime.fromISO(date);
+  const jsDate = time.toJSDate();
   const entries = await getMoodEntries(
-    time.toJSDate(),
-    time.plus({ days: 1 }).toJSDate(),
+    jsDate,
+    jsDate,
     userTeam.team.id,
     userTeam.role === 'admin' ? undefined : 'public',
   );
@@ -248,7 +249,6 @@ export default async function MoodEntries({
             userHasVoted={!!userVote}
             teamId={userTeam.team.id}
             date={date}
-            results={entries}
             pollDays={userTeam.team.pollDays}
           />
         </div>

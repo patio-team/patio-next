@@ -1,4 +1,3 @@
-import { getMoodEntries } from '@/db/mood-entries';
 import { DateTime } from 'luxon';
 import { Mood, Smile } from './smile';
 import { dateScore, participationStats } from '@/db/team';
@@ -6,12 +5,12 @@ import { getDateInTimezone } from '@/lib/utils';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { Team } from '@/db/schema';
+import { getMoodEntries } from '@/db/mood-entries';
 
 interface PollResultsProps {
   userHasVoted: boolean;
   teamId: string;
   date: string;
-  results: Awaited<ReturnType<typeof getMoodEntries>>;
   pollDays: Team['pollDays'];
 }
 
@@ -35,8 +34,10 @@ export default async function PollResults({
   userHasVoted,
   teamId,
   date,
-  results,
 }: PollResultsProps) {
+  const jsDate = DateTime.fromISO(date).toJSDate();
+  const results = await getMoodEntries(jsDate, jsDate, teamId);
+
   const maxValue = Math.max(...results.map((r) => r.rating));
 
   const parsedStartDate = getDateInTimezone(date).minus({ days: 7 });
@@ -47,7 +48,6 @@ export default async function PollResults({
     parsedStartDate.toJSDate(),
     parsedEndDate.toJSDate(),
   );
-  const jsDate = DateTime.fromISO(date).toJSDate();
 
   const dayScore = await dateScore(jsDate, teamId);
   const formattedDate = DateTime.fromISO(date).toFormat('cccc, MMMM d, yyyy');
