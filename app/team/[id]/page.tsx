@@ -5,7 +5,12 @@ import PageHeader from '@/components/layout/page-header';
 import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { todayDate } from '@/lib/utils';
+import {
+  getDateInTimezone,
+  getDayOfWeek,
+  getLastValidDate,
+  todayDate,
+} from '@/lib/utils';
 
 import MoodEntries from './mood-entries';
 import { Suspense } from 'react';
@@ -22,8 +27,10 @@ function LoadingSection() {
 
 export default async function Home({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ date?: string }>;
 }) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -81,7 +88,27 @@ export default async function Home({
   //   },
   // ];
 
-  const date = todayDate();
+  const dateParam = (await searchParams).date;
+  const date = dateParam || todayDate();
+
+  const targetDayOfTheWeek = getDayOfWeek(getDateInTimezone(date));
+
+  if (userTeam.team.pollDays?.[targetDayOfTheWeek] === false) {
+    return (
+      <div className={`min-h-screen bg-white`}>
+        <PageHeader
+          user={session.user}
+          userTeams={userTeams}
+          currentTeamId={userTeam.team.id}
+        />
+        <div className="p-4">
+          <p className="text-red-500">
+            Mood entries are not allowed on {targetDayOfTheWeek}.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen bg-white`}>

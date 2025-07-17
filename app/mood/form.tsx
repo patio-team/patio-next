@@ -59,7 +59,9 @@ export default function MoodForm({
   // Initialize form with existing entry data
   useEffect(() => {
     if (existingEntry) {
-      setSelectedRating(existingEntry.rating);
+      setSelectedRating(
+        String(existingEntry.rating) as '1' | '2' | '3' | '4' | '5',
+      );
       setComment(existingEntry.comment || '');
       setVisibility(existingEntry.visibility);
       setAllowContact(existingEntry.allowContact);
@@ -85,7 +87,7 @@ export default function MoodForm({
     }) => apiClient.createMoodEntry(data),
     onSuccess: () => {
       setError(null);
-      router.push(`/team/${selectedTeam}`);
+      router.push(`/team/${selectedTeam}?date=${isoDate}`);
     },
     onError: (error) => {
       console.error('Error creating mood entry:', error);
@@ -104,7 +106,7 @@ export default function MoodForm({
     }) => apiClient.updateMoodEntry(data),
     onSuccess: () => {
       setError(null);
-      router.push(`/team/${selectedTeam}`);
+      router.push(`/team/${selectedTeam}/?date=${isoDate}`);
     },
     onError: (error) => {
       console.error('Error updating mood entry:', error);
@@ -319,7 +321,7 @@ export default function MoodForm({
                 variant="secondary">
                 <Link
                   className="text-center"
-                  href={`/team/${selectedTeam}`}>
+                  href={`/team/${selectedTeam}?date=${isoDate}`}>
                   Cancel
                 </Link>
               </Button>

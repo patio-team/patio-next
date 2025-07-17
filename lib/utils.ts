@@ -111,6 +111,20 @@ export function todayDate(): string {
   return DateTime.now().toFormat('yyyy-MM-dd');
 }
 
+export function getLastValidDate(pollDays: Team['pollDays']): DateTime {
+  const date = getDateInTimezone(todayDate());
+  const dayOfWeek = getDayOfWeek(date);
+  if (pollDays[dayOfWeek]) {
+    return date;
+  }
+
+  let lastValidDate = date.minus({ days: 1 });
+  while (!pollDays[getDayOfWeek(lastValidDate)]) {
+    lastValidDate = lastValidDate.minus({ days: 1 });
+  }
+  return lastValidDate;
+}
+
 export async function awaitTimeout(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
