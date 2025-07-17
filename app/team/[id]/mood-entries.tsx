@@ -26,6 +26,15 @@ export default async function MoodEntries({
     userTeam.role === 'admin' ? undefined : 'public',
   );
 
+  console.log(
+    jsDate,
+    jsDate,
+    userTeam.team.id,
+    userTeam.role === 'admin' ? undefined : 'public',
+  );
+
+  console.log('MoodEntries', entries);
+
   const userVote = entries.find((entry) => entry.user?.id === userId);
 
   return (

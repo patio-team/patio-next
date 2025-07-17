@@ -16,7 +16,7 @@ export async function DayResult({
       {entries.map((entry, index) => (
         <div
           key={index}
-          className="z-10 mb-4 break-inside-avoid rounded-xl bg-gray-200 bg-white p-2 p-6 shadow-lg">
+          className="z-10 mb-4 break-inside-avoid rounded-xl bg-white p-2 p-6 shadow-lg">
           {/* User Avatar */}
           <div className="mb-4 flex items-center gap-4">
             <div className="border-opacity-10 bg-opacity-10 flex h-12 w-12 items-center justify-center rounded-full border-4 border-[#948FB7] bg-[#948FB7]">
