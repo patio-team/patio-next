@@ -163,7 +163,7 @@ export default function MemberProfilePage() {
               <div className="mb-4 text-4xl">📊</div>
               <p className="text-[#948FB7]">
                 {user?.id === memberId
-                  ? 'You haven&apos;t submitted any mood entries yet.'
+                  ? "You haven't submitted any mood entries yet."
                   : `${member.user.name} hasn&apos;t submitted any mood entries yet.`}
               </p>
             </div>
