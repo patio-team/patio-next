@@ -32,7 +32,6 @@ export async function getMoodEntries(
 
   return result.map((entry) => ({
     ...entry.mood_entries,
-    rating: Number(entry.mood_entries.rating),
     user: {
       ...entry.user,
     },

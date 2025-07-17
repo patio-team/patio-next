@@ -67,7 +67,8 @@ export async function dateScore(
   entries: Awaited<ReturnType<typeof getMoodEntries>>,
 ) {
   const averageScore =
-    entries.reduce((sum, entry) => sum + entry.rating, 0) / entries.length || 0;
+    entries.reduce((sum, entry) => sum + Number(entry.rating), 0) /
+      entries.length || 0;
 
   const scoreVotes = entries.reduce(
     (acc, entry) => {
@@ -123,7 +124,7 @@ export async function getTeamMembersWithLastVote(teamId: string) {
         lastVote: lastVote
           ? {
               date: lastVote.entryDate,
-              rating: Number(lastVote.rating),
+              rating: lastVote.rating,
               comment: lastVote.comment,
             }
           : null,

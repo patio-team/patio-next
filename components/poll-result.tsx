@@ -39,7 +39,7 @@ export default async function PollResults({
 }: PollResultsProps) {
   const dateWithTimeZone = getDateInTimezone(date);
 
-  const maxValue = Math.max(...entries.map((r) => r.rating));
+  const maxValue = Math.max(...entries.map((r) => Number(r.rating)));
 
   const parsedStartDate = dateWithTimeZone.minus({ days: 7 });
   const parsedEndDate = dateWithTimeZone.endOf('day');

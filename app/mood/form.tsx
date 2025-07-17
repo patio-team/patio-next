@@ -12,6 +12,7 @@ import { LoadingSpinner } from '@/components/ui/loading';
 import { Select } from '@/components/ui/select';
 import Editor from '@/components/editor/editor';
 import { getMoodEntries } from '@/db/mood-entries';
+import { moodRatingEnumType } from '@/db/schema';
 
 export default function MoodForm({
   params: { date, teamId, currentEntry },
@@ -34,12 +35,16 @@ export default function MoodForm({
   const teamsLoading = teamsQuery.isLoading;
 
   // Form state
-  const [selectedRating, setSelectedRating] = useState<
-    '1' | '2' | '3' | '4' | '5' | null
-  >(null);
-  const [comment, setComment] = useState('');
-  const [visibility, setVisibility] = useState<'public' | 'private'>('public');
-  const [allowContact, setAllowContact] = useState(true);
+  const [selectedRating, setSelectedRating] =
+    useState<moodRatingEnumType | null>(currentEntry?.rating || null);
+  const [comment, setComment] = useState(currentEntry?.comment || '');
+  const [visibility, setVisibility] = useState<'public' | 'private'>(
+    currentEntry?.visibility || 'public',
+  );
+  const [allowContact, setAllowContact] = useState<boolean>(
+    currentEntry?.allowContact || true,
+  );
+
   const [selectedTeam, setSelectedTeam] = useState<string>(teamId || '');
   const [error, setError] = useState<string | null>(null);
 
@@ -47,18 +52,6 @@ export default function MoodForm({
   const entryDate = date ? new Date(date) : new Date();
   const formattedDate = formatMoodDate(entryDate);
   const isoDate = entryDate.toISOString().split('T')[0];
-
-  // Initialize form with current entry data
-  useEffect(() => {
-    if (currentEntry) {
-      setSelectedRating(
-        String(currentEntry.rating) as '1' | '2' | '3' | '4' | '5',
-      );
-      setComment(currentEntry.comment || '');
-      setVisibility(currentEntry.visibility);
-      setAllowContact(currentEntry.allowContact);
-    }
-  }, [currentEntry]);
 
   // Select first team if none selected
   useEffect(() => {
@@ -211,9 +204,7 @@ export default function MoodForm({
                       <button
                         type="button"
                         onClick={() => {
-                          setSelectedRating(
-                            rating as '1' | '2' | '3' | '4' | '5',
-                          );
+                          setSelectedRating(rating as moodRatingEnumType);
                           setError(null);
                         }}
                         className={`transition-all duration-200 ${

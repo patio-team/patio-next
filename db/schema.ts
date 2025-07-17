@@ -228,3 +228,4 @@ export type MoodEntry = typeof moodEntries.$inferSelect;
 export type NewMoodEntry = typeof moodEntries.$inferInsert;
 export type TeamInvitation = typeof teamInvitations.$inferSelect;
 export type NewTeamInvitation = typeof teamInvitations.$inferInsert;
+export type moodRatingEnumType = MoodEntry['rating'];
