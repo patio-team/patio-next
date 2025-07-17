@@ -3,6 +3,7 @@ import './globals.css';
 import { latoFont, merriweatherFont } from '@/lib/fonts';
 import { Providers } from '@/components/providers';
 import { Toaster } from '@/components/ui/sonner';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
   title: 'Patio',
@@ -22,6 +23,7 @@ export default function RootLayout({
       <body className="antialiased">
         <Providers>{children}</Providers>
         <Toaster richColors />
+        <SpeedInsights />
       </body>
     </html>
   );
