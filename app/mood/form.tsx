@@ -2,11 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { Smile } from '@/components/smile';
 import { Button } from '@/components/ui/button';
-import { formatMoodDate } from '@/lib/types';
+import { formatMoodDate } from '@/lib/utils';
 import Link from 'next/link';
 import { LoadingSpinner } from '@/components/ui/loading';
 import { Select } from '@/components/ui/select';
@@ -25,7 +25,7 @@ export default function MoodForm({
   const router = useRouter();
 
   // Get user's teams
-  const teamsQuery = useQuery({
+  const teamsQuery = useSuspenseQuery({
     queryKey: ['user-teams'],
     queryFn: () => apiClient.getTeams(),
   });

@@ -128,3 +128,12 @@ export function getLastValidDate(pollDays: Team['pollDays']): DateTime {
 export async function awaitTimeout(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export function formatMoodDate(date: Date): string {
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+}

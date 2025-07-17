@@ -4,8 +4,18 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { getMoodEntries } from '@/db/mood-entries';
 import { getDateInTimezone } from '@/lib/utils';
+import { Suspense } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading';
 
 export const dynamic = 'force-dynamic';
+
+function LoadingSection() {
+  return (
+    <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+      <LoadingSpinner />
+    </div>
+  );
+}
 
 export default async function MoodPage({
   searchParams,
@@ -44,12 +54,14 @@ export default async function MoodPage({
   );
 
   return (
-    <MoodForm
-      params={{
-        date: dateParam,
-        teamId: teamParam,
-        currentEntry,
-      }}
-    />
+    <Suspense fallback={<LoadingSection />}>
+      <MoodForm
+        params={{
+          date: dateParam,
+          teamId: teamParam,
+          currentEntry,
+        }}
+      />
+    </Suspense>
   );
 }
