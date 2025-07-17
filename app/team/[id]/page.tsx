@@ -94,19 +94,9 @@ export default async function Home({
   const targetDayOfTheWeek = getDayOfWeek(getDateInTimezone(date));
 
   if (userTeam.team.pollDays?.[targetDayOfTheWeek] === false) {
-    return (
-      <div className={`min-h-screen bg-white`}>
-        <PageHeader
-          user={session.user}
-          userTeams={userTeams}
-          currentTeamId={userTeam.team.id}
-        />
-        <div className="p-4">
-          <p className="text-red-500">
-            Mood entries are not allowed on {targetDayOfTheWeek}.
-          </p>
-        </div>
-      </div>
+    const lastValidDate = getLastValidDate(userTeam.team.pollDays);
+    redirect(
+      `/team/${userTeam.team.id}/?date=${lastValidDate.toFormat('yyyy-MM-dd')}`,
     );
   }
 
