@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { getDateInTimezone, getPollDaysString } from '@/lib/utils';
 import { DayResult } from '@/components/day-result';
 import { getMoodEntries } from '@/db/mood-entries';
-import { DateTime } from 'luxon';
 import PollResults from '@/components/poll-result';
 import LeaveTeamButton from './leave-team-button';
 import { TeamMembersModal } from '@/components/team-members-modal';
@@ -17,8 +16,6 @@ export default async function MoodEntries({
   date: string;
   userId: string;
 }) {
-  const time = DateTime.fromISO(date);
-  console.log('from iso', time);
   const dateWithTimeZone = getDateInTimezone(date);
   const jsDate = dateWithTimeZone.toJSDate();
   const entries = await getMoodEntries(
@@ -27,15 +24,6 @@ export default async function MoodEntries({
     userTeam.team.id,
     userTeam.role === 'admin' ? undefined : 'public',
   );
-
-  console.log(
-    jsDate,
-    jsDate,
-    userTeam.team.id,
-    userTeam.role === 'admin' ? undefined : 'public',
-  );
-
-  console.log('MoodEntries', entries);
 
   const userVote = entries.find((entry) => entry.user?.id === userId);
 

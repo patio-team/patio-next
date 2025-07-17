@@ -35,13 +35,15 @@ export default async function PollResults({
   teamId,
   date,
 }: PollResultsProps) {
-  const jsDate = DateTime.fromISO(date).toJSDate();
+  const dateWithTimeZone = getDateInTimezone(date);
+
+  const jsDate = dateWithTimeZone.toJSDate();
   const results = await getMoodEntries(jsDate, jsDate, teamId);
 
   const maxValue = Math.max(...results.map((r) => r.rating));
 
-  const parsedStartDate = getDateInTimezone(date).minus({ days: 7 });
-  const parsedEndDate = getDateInTimezone(date);
+  const parsedStartDate = dateWithTimeZone.minus({ days: 7 });
+  const parsedEndDate = dateWithTimeZone.endOf('day');
 
   const stats = await participationStats(
     teamId,
