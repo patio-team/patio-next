@@ -57,7 +57,10 @@ export default function PageHeader({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {userTeams.map((userTeam) => (
-                <DropdownMenuItem key={userTeam.teamId}>
+                <DropdownMenuItem
+                  key={userTeam.teamId}
+                  asChild
+                  className="cursor-pointer">
                   <Link
                     href={`/team/${userTeam.teamId}`}
                     className="flex w-full items-center">
@@ -67,10 +70,10 @@ export default function PageHeader({
               ))}
 
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link
                   href="/new-team"
-                  className="text-muted-foreground flex items-center gap-2 text-sm">
+                  className="text-muted-foreground flex cursor-pointer items-center gap-2 text-sm">
                   <CirclePlus />
                   Create New Team
                 </Link>
