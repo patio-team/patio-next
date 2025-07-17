@@ -5,6 +5,8 @@ import { headers } from 'next/headers';
 import { getMoodEntries } from '@/db/mood-entries';
 import { getDateInTimezone } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
 export default async function MoodPage({
   searchParams,
 }: {
@@ -33,7 +35,7 @@ export default async function MoodPage({
 
   const entries = await getMoodEntries(
     targetDate.toJSDate(),
-    targetDate.plus({ days: 1 }).toJSDate(),
+    targetDate.endOf('day').toJSDate(),
     teamParam,
   );
 
