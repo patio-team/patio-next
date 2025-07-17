@@ -7,16 +7,20 @@ import { apiClient } from '@/lib/api-client';
 import { Smile } from '@/components/smile';
 import { Button } from '@/components/ui/button';
 import { formatMoodDate } from '@/lib/types';
-import { User } from 'better-auth';
 import Link from 'next/link';
 import { LoadingSpinner } from '@/components/ui/loading';
 import { Select } from '@/components/ui/select';
 import Editor from '@/components/editor/editor';
+import { getMoodEntries } from '@/db/mood-entries';
 
 export default function MoodForm({
-  params: { user, date, teamId },
+  params: { date, teamId, currentEntry },
 }: {
-  params: { user: User; date: string; teamId: string };
+  params: {
+    date: string;
+    teamId: string;
+    currentEntry?: Awaited<ReturnType<typeof getMoodEntries>>[0];
+  };
 }) {
   const router = useRouter();
 
@@ -44,30 +48,17 @@ export default function MoodForm({
   const formattedDate = formatMoodDate(entryDate);
   const isoDate = entryDate.toISOString().split('T')[0];
 
-  // Check if user has existing entry for this date
-  const { data: existingEntries, isLoading: entriesLoading } = useQuery({
-    queryKey: ['mood-entries', selectedTeam, isoDate],
-    queryFn: () =>
-      selectedTeam
-        ? apiClient.getMoodEntriesByDate(selectedTeam, isoDate)
-        : null,
-  });
-
-  const existingEntry = existingEntries?.data?.find(
-    (entry) => entry.userId === user?.id,
-  );
-
-  // Initialize form with existing entry data
+  // Initialize form with current entry data
   useEffect(() => {
-    if (existingEntry) {
+    if (currentEntry) {
       setSelectedRating(
-        String(existingEntry.rating) as '1' | '2' | '3' | '4' | '5',
+        String(currentEntry.rating) as '1' | '2' | '3' | '4' | '5',
       );
-      setComment(existingEntry.comment || '');
-      setVisibility(existingEntry.visibility);
-      setAllowContact(existingEntry.allowContact);
+      setComment(currentEntry.comment || '');
+      setVisibility(currentEntry.visibility);
+      setAllowContact(currentEntry.allowContact);
     }
-  }, [existingEntry]);
+  }, [currentEntry]);
 
   // Select first team if none selected
   useEffect(() => {
@@ -123,10 +114,10 @@ export default function MoodForm({
       return;
     }
 
-    if (existingEntry) {
+    if (currentEntry) {
       // Update existing entry
       updateMutation.mutate({
-        entryId: existingEntry.id,
+        entryId: currentEntry.id,
         rating: selectedRating,
         comment: comment || undefined,
         visibility,
@@ -145,7 +136,7 @@ export default function MoodForm({
     }
   };
 
-  const isLoading = teamsLoading || entriesLoading;
+  const isLoading = teamsLoading;
   const isMutating = createMutation.isPending || updateMutation.isPending;
 
   if (isLoading) {
@@ -164,7 +155,7 @@ export default function MoodForm({
         <div className="mx-auto max-w-3xl">
           <div className="mb-8 text-center">
             <h1 className="font-merriweather text-primary mb-2 text-3xl font-normal">
-              {existingEntry ? 'Update your mood' : 'Share your mood'}
+              {currentEntry ? 'Update your mood' : 'Share your mood'}
             </h1>
             <p className="text-[#948FB7]">{formattedDate}</p>
           </div>
@@ -243,7 +234,10 @@ export default function MoodForm({
               <label className="text-primary block text-base leading-[22px] font-medium">
                 Additional comments (optional)
               </label>
-              <Editor onChange={(value) => setComment(value)} />
+              <Editor
+                onChange={(value) => setComment(value)}
+                initialValue={comment}
+              />
             </div>
 
             {/* Visibility Settings */}
@@ -324,10 +318,10 @@ export default function MoodForm({
                 type="submit"
                 disabled={!selectedRating || !selectedTeam || isMutating}>
                 {isMutating
-                  ? existingEntry
+                  ? currentEntry
                     ? 'Updating...'
                     : 'Sharing...'
-                  : existingEntry
+                  : currentEntry
                     ? 'Update Mood'
                     : 'Share Mood'}
               </Button>

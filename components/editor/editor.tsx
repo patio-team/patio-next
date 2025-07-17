@@ -12,7 +12,12 @@ import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import PatioEditorTheme from './editor-theme';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
-import { $generateHtmlFromNodes } from '@lexical/html';
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
+import { $getRoot, $insertNodes } from 'lexical';
+import { useEffect } from 'react';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { ImageNode } from './image-node';
+import ImagePlugin from './image-plugin';
 
 function Placeholder() {
   return <div className="editor-placeholder">Enter some rich text...</div>;
@@ -20,6 +25,39 @@ function Placeholder() {
 
 function MyErrorBoundary({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
+}
+
+// Plugin to set initial HTML content
+function InitialValuePlugin({
+  initialValue,
+  onInitialized,
+}: {
+  initialValue?: string;
+  onInitialized?: () => void;
+}) {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    if (initialValue) {
+      editor.update(
+        () => {
+          const parser = new DOMParser();
+          const dom = parser.parseFromString(initialValue, 'text/html');
+          const nodes = $generateNodesFromDOM(editor, dom);
+          const root = $getRoot();
+          root.clear();
+          $insertNodes(nodes);
+        },
+        {
+          onUpdate: () => {
+            onInitialized?.();
+          },
+        },
+      );
+    }
+  }, [editor, initialValue, onInitialized]);
+
+  return null;
 }
 
 const editorConfig = {
@@ -40,13 +78,16 @@ const editorConfig = {
     TableRowNode,
     AutoLinkNode,
     LinkNode,
+    ImageNode,
   ],
 };
 
 export default function Editor({
   onChange,
+  initialValue,
 }: {
   onChange: (editorState: string) => void;
+  initialValue?: string;
 }) {
   return (
     <LexicalComposer initialConfig={editorConfig}>
@@ -62,6 +103,8 @@ export default function Editor({
           <AutoFocusPlugin />
           <ListPlugin />
           <LinkPlugin />
+          <ImagePlugin />
+          <InitialValuePlugin initialValue={initialValue} />
           <OnChangePlugin
             onChange={(editorState, editor) => {
               editorState.read(() => {

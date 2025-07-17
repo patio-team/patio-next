@@ -23,6 +23,7 @@ import {
 import { TOGGLE_LINK_COMMAND } from '@lexical/link';
 import { $setBlocksType } from '@lexical/selection';
 import { useCallback, useEffect, useState } from 'react';
+import { INSERT_IMAGE_COMMAND } from './image-plugin';
 import {
   Bold,
   Italic,
@@ -35,6 +36,7 @@ import {
   Quote,
   Link,
   Type,
+  ImageIcon,
 } from 'lucide-react';
 
 const LowPriority = 1;
@@ -205,6 +207,17 @@ export default function ToolbarPlugin() {
     }
   }, [editor, isLink]);
 
+  const insertImage = useCallback(() => {
+    const url = prompt('Enter the image URL:');
+    if (url) {
+      const altText = prompt('Enter alt text for the image:') || '';
+      editor.dispatchCommand(INSERT_IMAGE_COMMAND, {
+        src: url,
+        altText,
+      });
+    }
+  }, [editor]);
+
   return (
     <div className="toolbar flex items-center gap-2 border-b border-gray-200 bg-gray-50 p-2">
       {/* Text Formatting */}
@@ -278,6 +291,13 @@ export default function ToolbarPlugin() {
         onClick={insertLink}
         active={isLink}>
         <Link size={16} />
+      </ToolbarButton>
+
+      <div className="h-6 w-px bg-gray-300" />
+
+      {/* Image */}
+      <ToolbarButton onClick={insertImage}>
+        <ImageIcon size={16} />
       </ToolbarButton>
     </div>
   );

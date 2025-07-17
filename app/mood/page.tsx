@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import MoodForm from './form';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { getMoodEntries } from '@/db/mood-entries';
+import { getDateInTimezone } from '@/lib/utils';
 
 export default async function MoodPage({
   searchParams,
@@ -27,9 +29,25 @@ export default async function MoodPage({
     );
   }
 
+  const targetDate = getDateInTimezone(dateParam);
+
+  const entries = await getMoodEntries(
+    targetDate.toJSDate(),
+    targetDate.plus({ days: 1 }).toJSDate(),
+    teamParam,
+  );
+
+  const currentEntry = entries.find(
+    (entry) => entry.userId === session.user.id,
+  );
+
   return (
     <MoodForm
-      params={{ user: session.user, date: dateParam, teamId: teamParam }}
+      params={{
+        date: dateParam,
+        teamId: teamParam,
+        currentEntry,
+      }}
     />
   );
 }
