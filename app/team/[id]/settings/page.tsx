@@ -1,7 +1,7 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from 'lucide-react';
+import { User, X, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useSession } from '@/lib/auth-client';
@@ -12,10 +12,10 @@ import {
   useSendInvitations,
   useUpdateTeam,
   useUpdateMemberRole,
+  useDownloadTeamMoodEntriesCSV,
 } from '@/lib/hooks/use-teams';
 import { DaySelection } from '@/lib/api-types';
 import TeamForm from '@/components/team-form';
-import { X } from 'lucide-react';
 import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LoadingSpinner } from '@/components/ui/loading';
@@ -43,6 +43,7 @@ export default function ManageGroupPage({
   } = useTeam(teamId);
   const sendInvitationsMutation = useSendInvitations();
   const updateMemberRoleMutation = useUpdateMemberRole();
+  const downloadCSVMutation = useDownloadTeamMoodEntriesCSV();
 
   useEffect(() => {
     if (!sessionLoading && !session) {
@@ -163,6 +164,18 @@ export default function ManageGroupPage({
     }
   };
 
+  const handleDownloadCSV = async () => {
+    try {
+      await downloadCSVMutation.mutateAsync(teamId);
+      toast.success('CSV file downloaded successfully');
+    } catch (error) {
+      toast.error(
+        `Failed to download CSV: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+      console.error('Error downloading CSV:', error);
+    }
+  };
+
   // Show loading state
   if (sessionLoading || teamLoading) {
     return (
@@ -214,6 +227,23 @@ export default function ManageGroupPage({
                   submitLabel="Update team"
                   loadingLabel="Updating..."
                 />
+
+                {/* Download CSV button */}
+                <div className="mt-4">
+                  <Button
+                    onClick={handleDownloadCSV}
+                    disabled={downloadCSVMutation.isPending}
+                    variant="secondary"
+                    className="flex w-full items-center gap-2 sm:w-auto">
+                    <Download className="h-4 w-4" />
+                    {downloadCSVMutation.isPending
+                      ? 'Downloading...'
+                      : 'Download Mood Entries CSV'}
+                  </Button>
+                  <p className="text-sm text-[#948FB7]">
+                    Download all mood entries for this team as a CSV file
+                  </p>
+                </div>
               </div>
             </div>
           </TabsContent>
@@ -232,7 +262,6 @@ export default function ManageGroupPage({
                     </span>
                   </div>
                 </div>
-
                 {/* Members list */}
                 <div className="space-y-6">
                   {members.map((member) => (

@@ -235,6 +235,38 @@ class ApiClient {
       body: JSON.stringify({ role }),
     });
   }
+
+  // Download team mood entries as CSV (admin only)
+  async downloadTeamMoodEntriesCSV(teamId: string): Promise<Blob> {
+    const url = `${this.baseUrl}/teams/${teamId}/mood-entries/csv`;
+
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new ApiError({
+          message:
+            errorData.message || `HTTP error! status: ${response.status}`,
+          status: response.status,
+        });
+      }
+
+      return await response.blob();
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError({
+        message: 'Network error occurred',
+        status: 0,
+      });
+    }
+  }
 }
 
 // Custom error class
