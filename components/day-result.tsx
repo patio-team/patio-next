@@ -11,8 +11,6 @@ export async function DayResult({
   entries: Awaited<ReturnType<typeof getMoodEntries>>;
   teamId: string;
 }) {
-  console.log(entries);
-
   return (
     <div className="columns-3 gap-4">
       {entries.map((entry, index) => (

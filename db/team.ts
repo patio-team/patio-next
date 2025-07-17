@@ -17,8 +17,6 @@ export async function participationStats(
   startOfRange: Date,
   endOfRange: Date,
 ) {
-  console.log(startOfRange, endOfRange);
-
   const totalMembers = await totalMembersCount(teamId);
 
   const historicalEntries = await db.query.moodEntries.findMany({
