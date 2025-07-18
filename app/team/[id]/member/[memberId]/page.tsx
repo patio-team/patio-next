@@ -19,7 +19,7 @@ export default function MemberProfilePage() {
   const params = useParams<{ id: string; memberId: string }>();
   const searchParams = useSearchParams();
   const date = searchParams.get('date');
-  const dateQueryParam = date ? `/${date}` : '';
+  const dateParam = date ? `/${date}` : '';
 
   const teamId = params.id;
   const memberId = params.memberId;
@@ -71,7 +71,7 @@ export default function MemberProfilePage() {
             don&apos;t have permission to view their profile.
           </p>
           <Link
-            href={`/team/${teamId}${dateQueryParam}`}
+            href={`/team/${teamId}${dateParam}`}
             className="text-[#3FA2F7] underline hover:text-[#2563eb]">
             Go back to teams
           </Link>
@@ -100,7 +100,7 @@ export default function MemberProfilePage() {
       <div className="px-4 py-8 md:px-16">
         {/* Back Button */}
         <Link
-          href={`/team/${teamId}${dateQueryParam}`}
+          href={`/team/${teamId}${dateParam}`}
           className="mb-6 inline-flex items-center text-sm text-[#3FA2F7] hover:text-[#2563eb]">
           <svg
             className="mr-1 h-4 w-4"
