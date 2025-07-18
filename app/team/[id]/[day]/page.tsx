@@ -100,12 +100,16 @@ export default async function Home({
     );
   }
 
+  const lastValidDate = getLastValidDate(userTeam.team.pollDays);
+  const formattedLastValidDate = lastValidDate.toFormat('yyyy-MM-dd');
+
   return (
     <div>
       <PageHeader
         user={session.user}
         userTeams={userTeams}
         currentTeamId={userTeam.team.id}
+        lastValidDate={formattedLastValidDate}
       />
 
       {/* <VoteChart

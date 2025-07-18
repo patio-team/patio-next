@@ -28,9 +28,11 @@ export interface PageHeaderProps {
   user: Session['user'];
   userTeams: TeamMemberWithTeam[];
   currentTeamId?: string;
+  lastValidDate: string;
 }
 
 export default function PageHeader({
+  lastValidDate,
   user,
   userTeams,
   currentTeamId,
@@ -62,7 +64,7 @@ export default function PageHeader({
                   asChild
                   className="cursor-pointer">
                   <Link
-                    href={`/team/${userTeam.teamId}`}
+                    href={`/team/${userTeam.teamId}/${lastValidDate}`}
                     className="flex w-full items-center">
                     <span className="truncate">{userTeam.team.name}</span>
                   </Link>

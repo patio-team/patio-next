@@ -30,6 +30,7 @@ export default async function Home() {
         <PageHeader
           user={session.user}
           userTeams={userTeams}
+          lastValidDate=""
         />
         <NoTeams />
       </div>
