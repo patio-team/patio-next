@@ -1,6 +1,6 @@
 'use client';
 
-import { redirect } from 'next/navigation';
+import { redirect, useSearchParams } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
@@ -17,6 +17,9 @@ import { LoadingSpinner } from '@/components/ui/loading';
 export default function MemberProfilePage() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
   const params = useParams<{ id: string; memberId: string }>();
+  const searchParams = useSearchParams();
+  const date = searchParams.get('date');
+  const dateQueryParam = date ? `/${date}` : '';
 
   const teamId = params.id;
   const memberId = params.memberId;
@@ -68,7 +71,7 @@ export default function MemberProfilePage() {
             don&apos;t have permission to view their profile.
           </p>
           <Link
-            href="/team"
+            href={`/team/${teamId}${dateQueryParam}`}
             className="text-[#3FA2F7] underline hover:text-[#2563eb]">
             Go back to teams
           </Link>
@@ -97,7 +100,7 @@ export default function MemberProfilePage() {
       <div className="px-4 py-8 md:px-16">
         {/* Back Button */}
         <Link
-          href={`/team/${teamId}`}
+          href={`/team/${teamId}${dateQueryParam}`}
           className="mb-6 inline-flex items-center text-sm text-[#3FA2F7] hover:text-[#2563eb]">
           <svg
             className="mr-1 h-4 w-4"

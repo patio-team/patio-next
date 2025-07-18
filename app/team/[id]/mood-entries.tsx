@@ -45,7 +45,9 @@ export default async function MoodEntries({
                   Polls on {getPollDaysString(userTeam.team.pollDays)}
                 </p>
                 <div className="mt-4 flex gap-6">
-                  <TeamMembersModal teamId={userTeam.team.id}>
+                  <TeamMembersModal
+                    teamId={userTeam.team.id}
+                    date={date}>
                     <button className="cursor-pointer text-sm font-medium text-[#3FA2F7] transition-colors hover:text-[#2563eb]">
                       See members
                     </button>

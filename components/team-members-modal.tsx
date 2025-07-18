@@ -21,6 +21,7 @@ import { apiClient } from '@/lib/api-client';
 interface TeamMembersModalProps {
   teamId: string;
   children: React.ReactNode;
+  date: string;
 }
 
 interface LocalTeamMember
@@ -33,7 +34,11 @@ interface LocalTeamMember
   } | null;
 }
 
-export function TeamMembersModal({ teamId, children }: TeamMembersModalProps) {
+export function TeamMembersModal({
+  date,
+  teamId,
+  children,
+}: TeamMembersModalProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const {
@@ -144,7 +149,7 @@ export function TeamMembersModal({ teamId, children }: TeamMembersModalProps) {
 
                     {/* View Profile Button */}
                     <Link
-                      href={`/team/${teamId}/member/${member.userId}`}
+                      href={`/team/${teamId}/member/${member.userId}?date=${date}`}
                       className="rounded-md px-4 py-2 text-sm font-medium text-blue-600 transition-colors hover:bg-blue-50 hover:text-blue-800"
                       onClick={() => setIsOpen(false)}>
                       View Profile
