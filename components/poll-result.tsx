@@ -82,10 +82,13 @@ export default async function PollResults({
               </span>
             </div>
           </div>
-          <div className="mt-2 text-base text-[#948FB7]">
-            {Math.abs(stats.averageParticipation)}%{' '}
-            {stats.averageParticipation < 0 ? 'below' : 'above'} average
-          </div>
+
+          {!!entries.length && (
+            <div className="mt-2 text-base text-[#948FB7]">
+              {Math.abs(stats.averageParticipation)}%{' '}
+              {stats.averageParticipation < 0 ? 'below' : 'above'} average
+            </div>
+          )}
         </div>
 
         {/* Right side - Participation */}
