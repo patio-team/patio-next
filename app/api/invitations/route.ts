@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!session) {
-      return createErrorResponse('No autorized', 401);
+      return createErrorResponse('Not autorized', 401);
     }
 
     const userId = session.user.id;
@@ -31,11 +31,11 @@ export async function POST(request: NextRequest) {
     const { teamId, email } = body;
 
     if (!teamId || !email) {
-      return createErrorResponse('ID del equipo y email son requeridos', 400);
+      return createErrorResponse('Team ID and email are required', 400);
     }
 
     if (!isValidEmail(email)) {
-      return createErrorResponse('Email inválido', 400);
+      return createErrorResponse('Invalid email', 400);
     }
 
     // Check if user is admin of the team
