@@ -34,7 +34,7 @@ ChartJS.register(
 
 export interface VotePoint {
   votingId: string;
-  createdAt: string; // ISO timestamp
+  day: string; // ISO timestamp
   average: number;
   movingAverage: number;
 }
@@ -55,39 +55,6 @@ const colorForAvg = (avg: number): string => {
   return '#888888';
 };
 
-// const exampleData = [
-//   {
-//     votingId: 'v1',
-//     createdAt: '2025-06-01T12:00:00.000Z',
-//     average: 2.3,
-//     movingAverage: 2.1,
-//   },
-//   {
-//     votingId: 'v2',
-//     createdAt: '2025-06-05T12:00:00.000Z',
-//     average: 3.4,
-//     movingAverage: 2.8,
-//   },
-//   {
-//     votingId: 'v3',
-//     createdAt: '2025-06-10T12:00:00.000Z',
-//     average: 4.1,
-//     movingAverage: 3.2,
-//   },
-//   {
-//     votingId: 'v4',
-//     createdAt: '2025-06-15T12:00:00.000Z',
-//     average: 1.7,
-//     movingAverage: 2.4,
-//   },
-//   {
-//     votingId: 'v5',
-//     createdAt: '2025-06-20T12:00:00.000Z',
-//     average: 3.9,
-//     movingAverage: 3.4,
-//   },
-// ];
-
 export default function VoteChart({
   data,
   teamId,
@@ -99,7 +66,7 @@ export default function VoteChart({
 
   // Build the datasets, including per-point styling for the "selected" mark.
   const chartData = useMemo<ChartData<'line'>>(() => {
-    const labels = data.map((pt) => pt.createdAt);
+    const labels = data.map((pt) => pt.day);
     const avgData = data.map((pt) => pt.average);
     const movAvgData = data.map((pt) => pt.movingAverage);
 
@@ -185,8 +152,8 @@ export default function VoteChart({
                 type: 'line',
                 scaleID: 'x',
                 value:
-                  data.find((pt) => pt.votingId === selectedVotingId)
-                    ?.createdAt || '',
+                  data.find((pt) => pt.votingId === selectedVotingId)?.day ||
+                  '',
                 borderColor: '#34314C',
                 borderWidth: 2,
               },
@@ -199,9 +166,9 @@ export default function VoteChart({
         const idx = elements[0].index!;
         const point = data[idx];
 
-        // Format date as YYYY/MM/DD
-        const date = new Date(point.createdAt);
-        const formattedDate = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+        // Format date as YYYY-MM-DD
+        const date = new Date(point.day);
+        const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
         // Navigate to team day page
         router.push(`/team/${teamId}/${formattedDate}`);
