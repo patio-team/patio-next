@@ -1,5 +1,6 @@
 'use client';
 import React, { useRef, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Chart as ChartJS,
   LineElement,
@@ -40,25 +41,61 @@ export interface VotePoint {
 
 interface VoteChartProps {
   data: VotePoint[];
+  teamId: string;
   selectedVotingId?: string;
   onPointClick?: (votingId: string) => void;
 }
 
 const colorForAvg = (avg: number): string => {
-  if (avg > 0 && avg <= 1) return '#fe346e';
-  if (avg > 1 && avg <= 2) return '#ff7473';
-  if (avg > 2 && avg <= 3) return '#ffc952';
-  if (avg > 3 && avg <= 4) return '#98ddab';
-  if (avg > 4 && avg <= 5) return '#3fe3d2';
+  if (avg >= 4.5) return '#3fe3d2'; // 5
+  if (avg >= 3.5) return '#98ddab'; // 4
+  if (avg >= 2.5) return '#ffc952'; // 3
+  if (avg >= 1.5) return '#ff7473'; // 2
+  if (avg >= 0.5) return '#fe346e'; // 1
   return '#888888';
 };
 
+// const exampleData = [
+//   {
+//     votingId: 'v1',
+//     createdAt: '2025-06-01T12:00:00.000Z',
+//     average: 2.3,
+//     movingAverage: 2.1,
+//   },
+//   {
+//     votingId: 'v2',
+//     createdAt: '2025-06-05T12:00:00.000Z',
+//     average: 3.4,
+//     movingAverage: 2.8,
+//   },
+//   {
+//     votingId: 'v3',
+//     createdAt: '2025-06-10T12:00:00.000Z',
+//     average: 4.1,
+//     movingAverage: 3.2,
+//   },
+//   {
+//     votingId: 'v4',
+//     createdAt: '2025-06-15T12:00:00.000Z',
+//     average: 1.7,
+//     movingAverage: 2.4,
+//   },
+//   {
+//     votingId: 'v5',
+//     createdAt: '2025-06-20T12:00:00.000Z',
+//     average: 3.9,
+//     movingAverage: 3.4,
+//   },
+// ];
+
 export default function VoteChart({
   data,
+  teamId,
   selectedVotingId,
   onPointClick,
 }: VoteChartProps) {
   const chartRef = useRef<ChartJS<'line'>>(null);
+  const router = useRouter();
 
   // Build the datasets, including per-point styling for the "selected" mark.
   const chartData = useMemo<ChartData<'line'>>(() => {
@@ -71,8 +108,13 @@ export default function VoteChart({
       pt.votingId === selectedVotingId ? 9 : 4,
     );
     const pointColors = data.map((pt) =>
-      pt.votingId === selectedVotingId ? colorForAvg(pt.average) : '#34314C',
+      pt.votingId === selectedVotingId
+        ? colorForAvg(pt.average)
+        : colorForAvg(pt.average),
     );
+
+    // Create segment colors for the line based on average values
+    const segmentColors = data.map((pt) => colorForAvg(pt.average));
 
     return {
       labels,
@@ -83,7 +125,12 @@ export default function VoteChart({
           fill: false,
           tension: 0.3,
           borderWidth: 4,
-          borderColor: '#34314C',
+          segment: {
+            borderColor: (ctx) => {
+              const index = ctx.p0DataIndex;
+              return segmentColors[index] || '#34314C';
+            },
+          },
           pointRadius: pointRadii,
           pointBackgroundColor: pointColors,
           pointBorderColor: '#ffffff',
@@ -110,8 +157,17 @@ export default function VoteChart({
     scales: {
       x: {
         type: 'time',
-        time: { tooltipFormat: 'LLL dd, yyyy' },
+        time: {
+          tooltipFormat: 'LLL dd, yyyy',
+          displayFormats: {
+            day: 'LLL dd',
+          },
+        },
         title: { display: true, text: 'Date' },
+        ticks: {
+          source: 'data',
+          autoSkip: false,
+        },
       },
       y: {
         min: 1,
@@ -133,17 +189,27 @@ export default function VoteChart({
                     ?.createdAt || '',
                 borderColor: '#34314C',
                 borderWidth: 2,
-                // label: { enabled: false },
               },
             ]
           : [],
       },
     },
     onClick: (evt: ChartEvent, elements: ActiveElement[]) => {
-      if (elements.length && onPointClick) {
+      if (elements.length) {
         const idx = elements[0].index!;
-        const id = data[idx].votingId;
-        onPointClick(id);
+        const point = data[idx];
+
+        // Format date as YYYY/MM/DD
+        const date = new Date(point.createdAt);
+        const formattedDate = `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+
+        // Navigate to team day page
+        router.push(`/team/${teamId}/${formattedDate}`);
+
+        // Also call the original onPointClick if provided
+        if (onPointClick) {
+          onPointClick(point.votingId);
+        }
       }
     },
   };

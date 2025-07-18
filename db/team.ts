@@ -28,6 +28,7 @@ export async function participationStats(
     columns: {
       userId: true,
       entryDate: true,
+      rating: true,
     },
   });
 
@@ -51,13 +52,18 @@ export async function participationStats(
         dailyParticipationCounts.length
       : 0;
 
-  const averageParticipationRate =
-    totalMembers > 0 ? (averageParticipation / totalMembers) * 100 : 0;
+  const averageRating =
+    historicalEntries.length > 0
+      ? historicalEntries.reduce(
+          (sum, entry) => sum + Number(entry.rating),
+          0,
+        ) / historicalEntries.length || 0
+      : 0;
 
   return {
     totalMembers,
+    averageRating,
     averageParticipation: Math.round(averageParticipation * 100) / 100,
-    averageParticipationRate: Math.round(averageParticipationRate * 100) / 100,
     totalDays: dailyParticipationCounts.length,
     dailyParticipationCounts,
   };

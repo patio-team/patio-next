@@ -63,6 +63,9 @@ export default async function PollResults({
       };
     });
 
+  const percentageHistoricalAverage =
+    ((dayScore.averageScore - stats.averageRating) / stats.averageRating) * 100;
+
   return (
     <div className="relative max-w-[644px] bg-white p-4">
       {/* Score Section with Participation */}
@@ -85,8 +88,8 @@ export default async function PollResults({
 
           {!!entries.length && (
             <div className="mt-2 text-base text-[#948FB7]">
-              {Math.abs(stats.averageParticipation)}%{' '}
-              {stats.averageParticipation < 0 ? 'below' : 'above'} average
+              {Math.round(percentageHistoricalAverage)}%{' '}
+              {percentageHistoricalAverage < 0 ? 'below' : 'above'} average
             </div>
           )}
         </div>

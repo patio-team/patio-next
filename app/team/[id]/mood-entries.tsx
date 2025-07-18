@@ -6,6 +6,40 @@ import { getMoodEntries } from '@/db/mood-entries';
 import PollResults from '@/components/poll-result';
 import LeaveTeamButton from './leave-team-button';
 import { TeamMembersModal } from '@/components/team-members-modal';
+import VoteChart from '@/components/vote-chart';
+
+const exampleData = [
+  {
+    votingId: 'v1',
+    createdAt: '2025-06-01T12:00:00.000Z',
+    average: 2.3,
+    movingAverage: 2.1,
+  },
+  {
+    votingId: 'v2',
+    createdAt: '2025-06-05T12:00:00.000Z',
+    average: 3.4,
+    movingAverage: 2.8,
+  },
+  {
+    votingId: 'v3',
+    createdAt: '2025-06-10T12:00:00.000Z',
+    average: 4.1,
+    movingAverage: 3.2,
+  },
+  {
+    votingId: 'v4',
+    createdAt: '2025-06-15T12:00:00.000Z',
+    average: 1.7,
+    movingAverage: 2.4,
+  },
+  {
+    votingId: 'v5',
+    createdAt: '2025-06-20T12:00:00.000Z',
+    average: 3.9,
+    movingAverage: 3.4,
+  },
+];
 
 export default async function MoodEntries({
   userTeam,
@@ -84,165 +118,12 @@ export default async function MoodEntries({
             </div>
 
             {/* Chart Container */}
-            <div className="rounded-xl bg-white p-6 shadow-sm">
-              {/* Chart Legend */}
-              <div className="mb-6 flex justify-end gap-8">
-                <div className="flex items-center gap-2">
-                  <div className="h-0.5 w-8 bg-[#948FB7]"></div>
-                  <span className="text-sm text-[#948FB7]">Results</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="h-0.5 w-8 bg-[#948FB7] opacity-50"></div>
-                  <span className="text-sm text-[#948FB7]">Avg.</span>
-                </div>
-              </div>
-
-              {/* Chart Area */}
-              <div className="relative h-64 md:h-80">
-                <svg
-                  className="h-full w-full"
-                  viewBox="0 0 1000 300"
-                  preserveAspectRatio="xMidYMid meet">
-                  {/* Grid Lines */}
-                  <defs>
-                    <pattern
-                      id="grid"
-                      width="100"
-                      height="60"
-                      patternUnits="userSpaceOnUse">
-                      <path
-                        d="M 100 0 L 0 0 0 60"
-                        fill="none"
-                        stroke="#E9EBF1"
-                        strokeWidth="1"
-                      />
-                    </pattern>
-                  </defs>
-                  <rect
-                    width="100%"
-                    height="100%"
-                    fill="url(#grid)"
-                  />
-
-                  {/* Y-axis labels */}
-                  <g className="fill-primary text-xs">
-                    <text
-                      x="20"
-                      y="60"
-                      textAnchor="middle">
-                      5
-                    </text>
-                    <text
-                      x="20"
-                      y="120"
-                      textAnchor="middle">
-                      4
-                    </text>
-                    <text
-                      x="20"
-                      y="180"
-                      textAnchor="middle">
-                      3
-                    </text>
-                    <text
-                      x="20"
-                      y="240"
-                      textAnchor="middle">
-                      2
-                    </text>
-                    <text
-                      x="20"
-                      y="280"
-                      textAnchor="middle">
-                      1
-                    </text>
-                  </g>
-
-                  {/* Chart Line */}
-                  <path
-                    d="M50 250 Q150 200 250 180 Q350 120 450 100 Q550 140 650 160 Q750 120 850 80 Q900 70 950 75"
-                    fill="none"
-                    stroke="url(#gradient)"
-                    strokeWidth="4"
-                    strokeLinecap="round"
-                  />
-
-                  {/* Gradient Definition */}
-                  <defs>
-                    <linearGradient
-                      id="gradient"
-                      x1="0%"
-                      y1="0%"
-                      x2="100%"
-                      y2="0%">
-                      <stop
-                        offset="0%"
-                        stopColor="#3FE3D2"
-                      />
-                      <stop
-                        offset="40%"
-                        stopColor="#98DDAB"
-                      />
-                      <stop
-                        offset="70%"
-                        stopColor="#FFC952"
-                      />
-                      <stop
-                        offset="100%"
-                        stopColor="#FF7473"
-                      />
-                    </linearGradient>
-                  </defs>
-
-                  {/* Data Points */}
-                  <circle
-                    cx="950"
-                    cy="75"
-                    r="8"
-                    fill="white"
-                    stroke="#98DDAB"
-                    strokeWidth="3"
-                    className="drop-shadow-lg"
-                  />
-
-                  {/* Mood indicators on y-axis */}
-                  <circle
-                    cx="8"
-                    cy="60"
-                    r="8"
-                    fill="#3FE3D2"
-                    opacity="0.5"
-                  />
-                  <circle
-                    cx="8"
-                    cy="120"
-                    r="8"
-                    fill="#98DDAB"
-                    opacity="0.5"
-                  />
-                  <circle
-                    cx="8"
-                    cy="180"
-                    r="8"
-                    fill="#FFC952"
-                    opacity="0.5"
-                  />
-                  <circle
-                    cx="8"
-                    cy="240"
-                    r="8"
-                    fill="#FF7473"
-                    opacity="0.5"
-                  />
-                  <circle
-                    cx="8"
-                    cy="280"
-                    r="8"
-                    fill="#FE346E"
-                    opacity="0.5"
-                  />
-                </svg>
-              </div>
+            <div className="rounded-xl p-4 shadow-sm">
+              <VoteChart
+                data={exampleData}
+                teamId={userTeam.team.id}
+                selectedVotingId="v3"
+              />
             </div>
           </div>
 
