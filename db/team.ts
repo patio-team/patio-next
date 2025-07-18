@@ -1,6 +1,6 @@
 import { moodEntries, teamMembers } from './schema';
 import { db } from '.';
-import { eq, and, gte, lt, count, desc } from 'drizzle-orm';
+import { eq, and, gte, lt, count, desc, lte } from 'drizzle-orm';
 import { getMoodEntries } from './mood-entries';
 
 export async function totalMembersCount(teamId: string) {
@@ -139,4 +139,66 @@ export async function getTeamMembersWithLastVote(teamId: string) {
   );
 
   return membersWithLastVote;
+}
+
+export async function getDailyAverageWithMovingAverage(
+  teamId: string,
+  startOfRange: Date,
+  endOfRange: Date,
+  movingAverageDays: number = 7,
+) {
+  const historicalEntries = await db.query.moodEntries.findMany({
+    where: and(
+      eq(moodEntries.teamId, teamId),
+      gte(moodEntries.entryDate, startOfRange),
+      lte(moodEntries.entryDate, endOfRange),
+    ),
+    columns: {
+      entryDate: true,
+      rating: true,
+    },
+    orderBy: desc(moodEntries.entryDate),
+  });
+
+  console.log(historicalEntries);
+
+  // Group entries by date and calculate daily averages
+  const dailyData: Record<string, { ratings: number[]; average: number }> = {};
+
+  historicalEntries.forEach((entry) => {
+    const dateKey = entry.entryDate.toISOString().split('T')[0];
+    if (!dailyData[dateKey]) {
+      dailyData[dateKey] = { ratings: [], average: 0 };
+    }
+    dailyData[dateKey].ratings.push(Number(entry.rating));
+  });
+
+  // Calculate daily averages
+  Object.keys(dailyData).forEach((dateKey) => {
+    const ratings = dailyData[dateKey].ratings;
+    dailyData[dateKey].average =
+      ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+  });
+
+  // Sort dates and create final result with moving averages
+  const sortedDates = Object.keys(dailyData).sort();
+  const result = sortedDates.map((date, index) => {
+    // Calculate moving average using the specified number of days
+    const startIndex = Math.max(0, index - movingAverageDays + 1);
+    const relevantDates = sortedDates.slice(startIndex, index + 1);
+
+    const movingAverageSum = relevantDates.reduce(
+      (sum, d) => sum + dailyData[d].average,
+      0,
+    );
+    const movingAverage = movingAverageSum / relevantDates.length;
+
+    return {
+      day: date,
+      average: Math.round(dailyData[date].average * 10) / 10,
+      movingAverage: Math.round(movingAverage * 10) / 10,
+    };
+  });
+
+  return result;
 }

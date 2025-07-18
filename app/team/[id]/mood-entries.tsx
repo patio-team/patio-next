@@ -6,40 +6,7 @@ import { getMoodEntries } from '@/db/mood-entries';
 import PollResults from '@/components/poll-result';
 import LeaveTeamButton from './leave-team-button';
 import { TeamMembersModal } from '@/components/team-members-modal';
-import VoteChart from '@/components/vote-chart';
-
-const exampleData = [
-  {
-    votingId: 'v1',
-    createdAt: '2025-06-01T12:00:00.000Z',
-    average: 2.3,
-    movingAverage: 2.1,
-  },
-  {
-    votingId: 'v2',
-    createdAt: '2025-06-05T12:00:00.000Z',
-    average: 3.4,
-    movingAverage: 2.8,
-  },
-  {
-    votingId: 'v3',
-    createdAt: '2025-06-10T12:00:00.000Z',
-    average: 4.1,
-    movingAverage: 3.2,
-  },
-  {
-    votingId: 'v4',
-    createdAt: '2025-06-15T12:00:00.000Z',
-    average: 1.7,
-    movingAverage: 2.4,
-  },
-  {
-    votingId: 'v5',
-    createdAt: '2025-06-20T12:00:00.000Z',
-    average: 3.9,
-    movingAverage: 3.4,
-  },
-];
+import { Chart } from './chart';
 
 export default async function MoodEntries({
   userTeam,
@@ -119,10 +86,9 @@ export default async function MoodEntries({
 
             {/* Chart Container */}
             <div className="rounded-xl p-4 shadow-sm">
-              <VoteChart
-                data={exampleData}
+              <Chart
                 teamId={userTeam.team.id}
-                selectedVotingId="v3"
+                day={date}
               />
             </div>
           </div>
