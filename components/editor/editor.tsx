@@ -3,7 +3,6 @@ import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
-import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { HeadingNode, QuoteNode } from '@lexical/rich-text';
 import { TableCellNode, TableNode, TableRowNode } from '@lexical/table';
 import { ListItemNode, ListNode } from '@lexical/list';
@@ -14,7 +13,7 @@ import PatioEditorTheme from './editor-theme';
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from '@lexical/html';
 import { $getRoot, $insertNodes } from 'lexical';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { ImageNode } from './image-node';
 import ImagePlugin from './image-plugin';
@@ -28,34 +27,23 @@ function MyErrorBoundary({ children }: { children: React.ReactNode }) {
 }
 
 // Plugin to set initial HTML content
-function InitialValuePlugin({
-  initialValue,
-  onInitialized,
-}: {
-  initialValue?: string;
-  onInitialized?: () => void;
-}) {
+function InitialValuePlugin({ initialValue }: { initialValue?: string }) {
   const [editor] = useLexicalComposerContext();
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   useEffect(() => {
-    if (initialValue) {
-      editor.update(
-        () => {
-          const parser = new DOMParser();
-          const dom = parser.parseFromString(initialValue, 'text/html');
-          const nodes = $generateNodesFromDOM(editor, dom);
-          const root = $getRoot();
-          root.clear();
-          $insertNodes(nodes);
-        },
-        {
-          onUpdate: () => {
-            onInitialized?.();
-          },
-        },
-      );
+    if (initialValue && !hasInitialized) {
+      editor.update(() => {
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(initialValue, 'text/html');
+        const nodes = $generateNodesFromDOM(editor, dom);
+        const root = $getRoot();
+        root.clear();
+        $insertNodes(nodes);
+      });
+      setHasInitialized(true);
     }
-  }, [editor, initialValue, onInitialized]);
+  }, [editor, initialValue, hasInitialized]);
 
   return null;
 }
@@ -100,7 +88,6 @@ export default function Editor({
             ErrorBoundary={MyErrorBoundary}
           />
           <HistoryPlugin />
-          <AutoFocusPlugin />
           <ListPlugin />
           <LinkPlugin />
           <ImagePlugin />
