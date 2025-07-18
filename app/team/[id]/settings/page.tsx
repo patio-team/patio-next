@@ -197,7 +197,7 @@ export default function ManageGroupPage({
   return (
     <div className={`relative min-h-screen`}>
       <Link
-        href="/"
+        href={`/team/${teamId}`}
         className="absolute top-8 right-8">
         <X />
       </Link>
