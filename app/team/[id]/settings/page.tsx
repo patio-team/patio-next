@@ -302,7 +302,7 @@ export default function ManageGroupPage({
                                 <option
                                   key={role}
                                   value={role}>
-                                  {role === 'admin' ? 'Admin' : 'Miembro'}
+                                  {role === 'admin' ? 'Admin' : 'member'}
                                 </option>
                               ))}
                             </Select>

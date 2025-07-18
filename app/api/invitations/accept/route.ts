@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingMembership) {
-      return createErrorResponse('Ya eres miembro de este equipo', 409);
+      return createErrorResponse('You are already a member of this team', 409);
     }
 
     // Add user to team
