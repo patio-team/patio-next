@@ -202,3 +202,12 @@ export async function getDailyAverageWithMovingAverage(
 
   return result;
 }
+
+export function getUserTeam(userId: string, teamId: string) {
+  return db.query.teamMembers.findFirst({
+    where: and(eq(teamMembers.userId, userId), eq(teamMembers.teamId, teamId)),
+    with: {
+      team: true,
+    },
+  });
+}

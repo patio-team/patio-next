@@ -1,10 +1,8 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { db } from '@/db';
-import { teamMembers } from '@/db/schema';
-import { eq } from 'drizzle-orm';
 import { getLastValidDate } from '@/lib/utils';
+import { getUserTeam } from '@/db/team';
 
 export default async function Home({
   params,
@@ -19,16 +17,8 @@ export default async function Home({
     redirect('/login');
   }
 
-  const userTeams = await db.query.teamMembers.findMany({
-    where: eq(teamMembers.userId, session.user.id),
-    with: {
-      team: true,
-    },
-  });
-
   const { id } = await params;
-
-  const userTeam = userTeams.find((tm) => tm.team.id === id);
+  const userTeam = await getUserTeam(session.user.id, id);
 
   if (!userTeam) {
     redirect('/');
