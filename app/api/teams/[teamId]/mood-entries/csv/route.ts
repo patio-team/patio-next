@@ -77,17 +77,19 @@ export async function GET(
       'Updated At',
     ];
 
-    const csvRows = entries.map((entry) => [
-      entry.id,
-      entry.userName,
-      entry.userEmail,
-      entry.rating,
-      entry.comment || '',
-      entry.visibility,
-      entry.allowContact.toString(),
-      entry.entryDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-      entry.updatedAt.toISOString(),
-    ]);
+    const csvRows = entries.map((entry) => {
+      return [
+        entry.id,
+        entry.userName,
+        entry.userEmail,
+        entry.rating,
+        (entry.comment || '').replace(/(<([^>]+)>)/gi, ''),
+        entry.visibility,
+        entry.allowContact.toString(),
+        entry.entryDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
+        entry.updatedAt.toISOString(),
+      ];
+    });
 
     // Escape CSV values that contain commas, quotes, or newlines
     const escapeCsvValue = (value: string) => {
