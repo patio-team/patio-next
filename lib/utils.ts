@@ -107,8 +107,9 @@ export function formatDateForDB(date: DateTime): Date {
   return date.toJSDate();
 }
 
-export function todayDate(): string {
-  return DateTime.now().toFormat('yyyy-MM-dd');
+export function todayDate(timezone?: string): string {
+  const tz = timezone || getTimezone();
+  return DateTime.now().setZone(tz).toFormat('yyyy-MM-dd');
 }
 
 export function getLastValidDate(pollDays: Team['pollDays']): DateTime {
@@ -136,4 +137,10 @@ export function formatMoodDate(date: Date): string {
     month: 'long',
     day: 'numeric',
   }).format(date);
+}
+
+export function transformToDateTime(jsDate: Date): DateTime {
+  const formatted = jsDate.toISOString().split('T')[0];
+
+  return DateTime.fromISO(formatted);
 }

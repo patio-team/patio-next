@@ -12,7 +12,7 @@ import {
 import Link from 'next/link';
 import { DateTime } from 'luxon';
 import { TeamMemberWithLastVote } from '@/lib/api-types';
-import { LoadingSpinner } from './ui/loading';
+import { LoadingSpinner } from './ui/loading-spinner';
 import { Mood, Smile } from './smile';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { User } from 'lucide-react';

@@ -5,17 +5,17 @@ import {
   createResponse,
   createErrorResponse,
   getRequestBody,
-  getTodayInTimezone,
-  getDateInTimezone,
   canPostOnDate,
   formatDateForDB,
   generateId,
   getDayOfWeek,
+  transformToDateTime,
 } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { getMoodEntries } from '@/db/mood-entries';
+import { DateTime } from 'luxon';
 
 // POST /api/mood-entries - Create new mood entry
 export async function POST(request: NextRequest) {
@@ -37,7 +37,6 @@ export async function POST(request: NextRequest) {
       comment,
       visibility = 'public',
       allowContact = true,
-      entryDate, // Optional: if not provided, defaults to today
     } = body;
 
     if (!teamId || !rating) {
@@ -63,29 +62,22 @@ export async function POST(request: NextRequest) {
       return createErrorResponse('You are not a member of this team', 403);
     }
 
-    // Handle entry date
-    let targetDate;
-    if (entryDate) {
-      try {
-        targetDate = getDateInTimezone(entryDate);
-        if (!canPostOnDate(targetDate)) {
-          return createErrorResponse(
-            'Cannot create entries for future dates',
-            400,
-          );
-        }
-      } catch {
-        return createErrorResponse('Invalid date format. Use YYYY-MM-DD', 400);
-      }
-    } else {
-      targetDate = getTodayInTimezone();
-    }
-
+    const targetDate = DateTime.fromISO(body.entryDate);
     const targetDayOfTheWeek = getDayOfWeek(targetDate);
 
     if (membership?.team.pollDays?.[targetDayOfTheWeek] === false) {
       return createErrorResponse(
         `Mood entries are not allowed on ${targetDayOfTheWeek}`,
+        400,
+      );
+    }
+
+    // Check if the target date is not older than the team creation date
+    const teamCreationDate = transformToDateTime(membership.team.createdAt);
+
+    if (targetDate < teamCreationDate) {
+      return createErrorResponse(
+        'Cannot create mood entries for dates before the team was created',
         400,
       );
     }
@@ -166,12 +158,34 @@ export async function PUT(request: NextRequest) {
       return createErrorResponse('You can only edit your own entries', 403);
     }
 
+    // Check team membership and get team data
+    const membership = await db.query.teamMembers.findFirst({
+      where: and(
+        eq(teamMembers.userId, userId),
+        eq(teamMembers.teamId, existingEntry.teamId),
+      ),
+      with: {
+        team: true,
+      },
+    });
+
+    if (!membership) {
+      return createErrorResponse('You are not a member of this team', 403);
+    }
+
     // Check if the entry date allows editing (not future date)
-    const entryDate = getDateInTimezone(
-      existingEntry.entryDate.toISOString().split('T')[0],
-    );
+    const entryDate = transformToDateTime(existingEntry.entryDate);
     if (!canPostOnDate(entryDate)) {
       return createErrorResponse('Cannot edit entries for future dates', 400);
+    }
+
+    // Check if the entry date is not older than the team creation date
+    const teamCreationDate = transformToDateTime(membership.team.createdAt);
+    if (entryDate < teamCreationDate) {
+      return createErrorResponse(
+        'Cannot edit mood entries for dates before the team was created',
+        400,
+      );
     }
 
     // Update the entry
@@ -280,14 +294,8 @@ export async function GET(request: NextRequest) {
       return createErrorResponse('You are not a member of this team', 403);
     }
 
-    // Validate date format and parse dates
-    let parsedStartDate, parsedEndDate;
-    try {
-      parsedStartDate = getDateInTimezone(startDate);
-      parsedEndDate = getDateInTimezone(endDate);
-    } catch {
-      return createErrorResponse('Invalid date format. Use YYYY-MM-DD', 400);
-    }
+    const parsedStartDate = DateTime.fromISO(startDate);
+    const parsedEndDate = DateTime.fromISO(endDate);
 
     // Ensure start date is not after end date
     if (parsedStartDate > parsedEndDate) {

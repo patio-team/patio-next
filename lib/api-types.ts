@@ -90,7 +90,6 @@ export interface MoodEntry {
   entryDate: string; // ISO date string
   createdAt: string;
   updatedAt: string;
-  mentions?: MoodEntryMention[];
   user: {
     id: string;
     name: string;
@@ -99,39 +98,6 @@ export interface MoodEntry {
   };
 }
 
-export interface MoodEntryMention {
-  id: string;
-  moodEntryId: string;
-  mentionedUserId: string;
-  mentionedByUserId: string;
-  createdAt: string;
-  mentionedUser: {
-    id: string;
-    name: string;
-    email: string;
-    image?: string;
-  };
-}
-
-export interface ParticipationStats {
-  totalEntries: number;
-  uniqueParticipants: number;
-  totalMembers: number;
-  participationRate: number; // percentage
-}
-
-export interface ParticipationAnalyticsResponse {
-  teamId: string;
-  startDate: string; // ISO date string (YYYY-MM-DD)
-  endDate: string; // ISO date string (YYYY-MM-DD)
-  totalMembers: number;
-  averageParticipation: number;
-  averageParticipationRate: number;
-  totalDays: number;
-  dailyParticipationCounts: number[];
-}
-
-// Request types
 export interface CreateMoodEntryRequest {
   teamId: string;
   rating: '1' | '2' | '3' | '4' | '5';
@@ -151,30 +117,6 @@ export interface UpdateMoodEntryRequest {
   mentionedUserIds?: string[];
 }
 
-// Validation schemas
-export const createMoodEntrySchema = z.object({
-  teamId: z.string().min(1, 'Team ID is required'),
-  rating: z.enum(['1', '2', '3', '4', '5']),
-  comment: z.string().optional(),
-  visibility: z.enum(['public', 'private']).default('private'),
-  allowContact: z.boolean().default(true),
-  mentionedUserIds: z.array(z.string()).default([]),
-  entryDate: z.string().optional(), // ISO date string validation
-});
-
-export const updateMoodEntrySchema = z.object({
-  entryId: z.string().min(1, 'Entry ID is required'),
-  rating: z.enum(['1', '2', '3', '4', '5']).optional(),
-  comment: z.string().optional(),
-  visibility: z.enum(['public', 'private']).optional(),
-  allowContact: z.boolean().optional(),
-  mentionedUserIds: z.array(z.string()).optional(),
-});
-
-export type CreateMoodEntryFormData = z.infer<typeof createMoodEntrySchema>;
-export type UpdateMoodEntryFormData = z.infer<typeof updateMoodEntrySchema>;
-
-// API Response types
 export interface Team {
   id: string;
   name: string;

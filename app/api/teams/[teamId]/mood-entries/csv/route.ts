@@ -54,7 +54,6 @@ export async function GET(
         visibility: moodEntries.visibility,
         allowContact: moodEntries.allowContact,
         entryDate: moodEntries.entryDate,
-        createdAt: moodEntries.createdAt,
         updatedAt: moodEntries.updatedAt,
         userName: users.name,
         userEmail: users.email,
@@ -62,7 +61,7 @@ export async function GET(
       .from(moodEntries)
       .innerJoin(users, eq(moodEntries.userId, users.id))
       .where(eq(moodEntries.teamId, teamId))
-      .orderBy(desc(moodEntries.entryDate), desc(moodEntries.createdAt));
+      .orderBy(desc(moodEntries.entryDate));
 
     // Convert to CSV format
     const csvHeaders = [
@@ -87,7 +86,6 @@ export async function GET(
       entry.visibility,
       entry.allowContact.toString(),
       entry.entryDate.toISOString().split('T')[0], // Format as YYYY-MM-DD
-      entry.createdAt.toISOString(),
       entry.updatedAt.toISOString(),
     ]);
 

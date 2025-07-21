@@ -1,12 +1,15 @@
 import { TeamMemberWithTeam } from '@/db/schema';
 import Link from 'next/link';
-import { getDateInTimezone, getPollDaysString } from '@/lib/utils';
+import { getPollDaysString } from '@/lib/utils';
 import { DayResult } from '@/components/day-result';
 import { getMoodEntries } from '@/db/mood-entries';
 import PollResults from '@/components/poll-result';
 import LeaveTeamButton from './leave-team-button';
 import { TeamMembersModal } from '@/components/team-members-modal';
 import { Chart } from './chart';
+import { DateTime } from 'luxon';
+import { Suspense } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export default async function MoodEntries({
   userTeam,
@@ -17,8 +20,8 @@ export default async function MoodEntries({
   date: string;
   userId: string;
 }) {
-  const dateWithTimeZone = getDateInTimezone(date);
-  const jsDate = dateWithTimeZone.toJSDate();
+  const dateTime = DateTime.fromISO(date);
+  const jsDate = dateTime.toJSDate();
   const entries = await getMoodEntries(
     jsDate,
     jsDate,
@@ -85,21 +88,25 @@ export default async function MoodEntries({
             </div>
 
             {/* Chart Container */}
-            <div className="rounded-xl p-4 shadow-sm">
-              <Chart
-                teamId={userTeam.team.id}
-                day={date}
-              />
-            </div>
+            <Suspense fallback={<LoadingSpinner />}>
+              <div className="rounded-xl p-4 shadow-sm">
+                <Chart
+                  teamId={userTeam.team.id}
+                  day={date}
+                />
+              </div>
+            </Suspense>
           </div>
 
-          <PollResults
-            entries={entries}
-            userHasVoted={!!userVote}
-            teamId={userTeam.team.id}
-            date={date}
-            pollDays={userTeam.team.pollDays}
-          />
+          <Suspense fallback={<LoadingSpinner />}>
+            <PollResults
+              entries={entries}
+              userHasVoted={!!userVote}
+              teamId={userTeam.team.id}
+              date={date}
+              pollDays={userTeam.team.pollDays}
+            />
+          </Suspense>
         </div>
 
         {/* Team Member Cards Grid */}

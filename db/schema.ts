@@ -10,21 +10,7 @@ import {
 import { relations } from 'drizzle-orm';
 
 export const moodRatingEnum = pgEnum('mood_rating', ['1', '2', '3', '4', '5']);
-export const dayOfWeekEnum = pgEnum('day_of_week', [
-  'monday',
-  'tuesday',
-  'wednesday',
-  'thursday',
-  'friday',
-  'saturday',
-  'sunday',
-]);
 export const userRoleEnum = pgEnum('user_role', ['member', 'admin']);
-export const notificationTypeEnum = pgEnum('notification_type', [
-  'mention',
-  'team_invite',
-  'team_update',
-]);
 
 export const visibilityEnum = pgEnum('visibility', ['public', 'private']);
 
@@ -36,12 +22,8 @@ export const users = pgTable('user', {
     .$defaultFn(() => false)
     .notNull(),
   image: text('image'),
-  createdAt: timestamp('created_at')
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
-  updatedAt: timestamp('updated_at')
-    .$defaultFn(() => /* @__PURE__ */ new Date())
-    .notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const session = pgTable('session', {
@@ -80,12 +62,8 @@ export const verification = pgTable('verification', {
   identifier: text('identifier').notNull(),
   value: text('value').notNull(),
   expiresAt: timestamp('expires_at').notNull(),
-  createdAt: timestamp('created_at').$defaultFn(
-    () => /* @__PURE__ */ new Date(),
-  ),
-  updatedAt: timestamp('updated_at').$defaultFn(
-    () => /* @__PURE__ */ new Date(),
-  ),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 // Teams table

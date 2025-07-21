@@ -143,7 +143,7 @@ export default function VoteChart({
       },
     },
     plugins: {
-      legend: { position: 'top' },
+      legend: { display: false },
       tooltip: { mode: 'nearest', intersect: false },
       annotation: {
         annotations: selectedVotingId

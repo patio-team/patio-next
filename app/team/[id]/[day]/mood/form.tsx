@@ -1,18 +1,19 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 import { Smile } from '@/components/smile';
 import { Button } from '@/components/ui/button';
 import { formatMoodDate } from '@/lib/utils';
 import Link from 'next/link';
-import { LoadingSpinner } from '@/components/ui/loading';
-import { Select } from '@/components/ui/select';
 import Editor from '@/components/editor/editor';
-import { getMoodEntries } from '@/db/mood-entries';
+import { getMoodEntryByUser } from '@/db/mood-entries';
 import { moodRatingEnumType } from '@/db/schema';
+import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 
 export default function MoodForm({
   params: { date, teamId, currentEntry },
@@ -20,19 +21,10 @@ export default function MoodForm({
   params: {
     date: string;
     teamId: string;
-    currentEntry?: Awaited<ReturnType<typeof getMoodEntries>>[0];
+    currentEntry?: Awaited<ReturnType<typeof getMoodEntryByUser>>;
   };
 }) {
   const router = useRouter();
-
-  // Get user's teams
-  const teamsQuery = useSuspenseQuery({
-    queryKey: ['user-teams'],
-    queryFn: () => apiClient.getTeams(),
-  });
-
-  const teams = teamsQuery.data?.data;
-  const teamsLoading = teamsQuery.isLoading;
 
   // Form state
   const [selectedRating, setSelectedRating] =
@@ -45,21 +37,12 @@ export default function MoodForm({
     currentEntry?.allowContact || true,
   );
 
-  const [selectedTeam, setSelectedTeam] = useState<string>(teamId || '');
   const [error, setError] = useState<string | null>(null);
 
   // Parse date or use today
-  const entryDate = date ? new Date(date) : new Date();
+  const entryDate = new Date(date);
   const formattedDate = formatMoodDate(entryDate);
   const isoDate = entryDate.toISOString().split('T')[0];
-
-  // Select first team if none selected
-  useEffect(() => {
-    if (teams && teams.length > 0 && !selectedTeam) {
-      setSelectedTeam(teams[0].id);
-    }
-  }, [teams, selectedTeam]);
-
   // Create mood entry mutation
   const createMutation = useMutation({
     mutationFn: (data: {
@@ -72,7 +55,7 @@ export default function MoodForm({
     }) => apiClient.createMoodEntry(data),
     onSuccess: () => {
       setError(null);
-      router.push(`/team/${selectedTeam}/${isoDate}`);
+      router.push(`/team/${teamId}/${isoDate}`);
     },
     onError: (error) => {
       console.error('Error creating mood entry:', error);
@@ -91,7 +74,7 @@ export default function MoodForm({
     }) => apiClient.updateMoodEntry(data),
     onSuccess: () => {
       setError(null);
-      router.push(`/team/${selectedTeam}/${isoDate}`);
+      router.push(`/team/${teamId}/${isoDate}`);
     },
     onError: (error) => {
       console.error('Error updating mood entry:', error);
@@ -102,8 +85,8 @@ export default function MoodForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedRating || !selectedTeam) {
-      alert('Please select a mood rating and team');
+    if (!selectedRating) {
+      alert('Please select a mood rating');
       return;
     }
 
@@ -119,7 +102,7 @@ export default function MoodForm({
     } else {
       // Create new entry
       createMutation.mutate({
-        teamId: selectedTeam,
+        teamId: teamId,
         rating: selectedRating,
         comment: comment || undefined,
         visibility,
@@ -129,18 +112,7 @@ export default function MoodForm({
     }
   };
 
-  const isLoading = teamsLoading;
   const isMutating = createMutation.isPending || updateMutation.isPending;
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner />
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div>
@@ -160,24 +132,6 @@ export default function MoodForm({
             {error && (
               <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700">
                 {error}
-              </div>
-            )}
-
-            {/* Team Selection */}
-            {teams && teams.length > 1 && (
-              <div className="space-y-3">
-                <Select
-                  value={selectedTeam}
-                  onChange={(e) => setSelectedTeam(e.target.value)}
-                  label="Team">
-                  {teams.map((team) => (
-                    <option
-                      key={team.id}
-                      value={team.id}>
-                      {team.name}
-                    </option>
-                  ))}
-                </Select>
               </div>
             )}
 
@@ -238,58 +192,38 @@ export default function MoodForm({
               </label>
 
               <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="radio"
-                    id="public"
-                    name="visibility"
-                    value="public"
-                    checked={visibility === 'public'}
-                    onChange={(e) =>
-                      setVisibility(e.target.value as 'public' | 'private')
-                    }
-                    className="h-4 w-4 border-gray-300 text-[#3FE3D2] focus:ring-[#3FE3D2]"
-                  />
-                  <label
-                    htmlFor="public"
-                    className="text-primary text-sm">
-                    Public - visible to all team members
-                  </label>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="radio"
-                    id="private"
-                    name="visibility"
-                    value="private"
-                    checked={visibility === 'private'}
-                    onChange={(e) =>
-                      setVisibility(e.target.value as 'public' | 'private')
-                    }
-                    className="h-4 w-4 border-gray-300 text-[#3FE3D2] focus:ring-[#3FE3D2]"
-                  />
-                  <label
-                    htmlFor="private"
-                    className="text-primary text-sm">
-                    Private - only visible to team admins
-                  </label>
-                </div>
+                <RadioGroup
+                  defaultValue={visibility}
+                  onValueChange={(value) =>
+                    setVisibility(value as 'public' | 'private')
+                  }>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="public"
+                      id="public"
+                    />
+                    <Label htmlFor="public">
+                      Public - visible to all team members
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem
+                      value="private"
+                      id="private"
+                    />
+                    <Label htmlFor="private">
+                      Private - only visible to team admins
+                    </Label>
+                  </div>
+                </RadioGroup>
               </div>
 
               <div className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  id="allowContact"
+                <Checkbox
                   checked={allowContact}
-                  onChange={(e) => setAllowContact(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-[#3FE3D2] focus:ring-[#3FE3D2]"
+                  label="Allow team members to reach out for support"
+                  onClick={() => setAllowContact(!allowContact)}
                 />
-                <label
-                  htmlFor="allowContact"
-                  className="text-primary text-sm">
-                  Allow team members to reach out for support
-                </label>
               </div>
             </div>
 
@@ -301,13 +235,13 @@ export default function MoodForm({
                 variant="secondary">
                 <Link
                   className="text-center"
-                  href={`/team/${selectedTeam}/${isoDate}`}>
+                  href={`/team/${teamId}/${isoDate}`}>
                   Cancel
                 </Link>
               </Button>
               <Button
                 type="submit"
-                disabled={!selectedRating || !selectedTeam || isMutating}>
+                disabled={!selectedRating || isMutating}>
                 {isMutating
                   ? currentEntry
                     ? 'Updating...'

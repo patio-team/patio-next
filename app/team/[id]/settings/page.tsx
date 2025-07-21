@@ -18,7 +18,7 @@ import { DaySelection } from '@/lib/api-types';
 import TeamForm from '@/components/team-form';
 import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LoadingSpinner } from '@/components/ui/loading';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { toast } from 'sonner';
 import { Select } from '@/components/ui/select';
 

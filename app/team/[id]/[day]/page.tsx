@@ -5,16 +5,12 @@ import PageHeader from '@/components/layout/page-header';
 import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import {
-  getDateInTimezone,
-  getDayOfWeek,
-  getLastValidDate,
-  todayDate,
-} from '@/lib/utils';
+import { getDayOfWeek, getLastValidDate, todayDate } from '@/lib/utils';
 
 import MoodEntries from '../mood-entries';
 import { Suspense } from 'react';
-import { LoadingSpinner } from '@/components/ui/loading';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { DateTime } from 'luxon';
 
 function LoadingSection() {
   return (
@@ -23,8 +19,6 @@ function LoadingSection() {
     </div>
   );
 }
-
-export const dynamic = 'force-dynamic';
 
 export default async function Home({
   params,
@@ -54,7 +48,7 @@ export default async function Home({
     redirect('/');
   }
 
-  const targetDayOfTheWeek = getDayOfWeek(getDateInTimezone(day));
+  const targetDayOfTheWeek = getDayOfWeek(DateTime.fromISO(day));
 
   if (
     userTeam.team.pollDays?.[targetDayOfTheWeek] === false ||

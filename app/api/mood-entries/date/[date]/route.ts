@@ -1,15 +1,12 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
-import {
-  createResponse,
-  createErrorResponse,
-  getDateInTimezone,
-} from '@/lib/utils';
+import { createResponse, createErrorResponse } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { getMoodEntries } from '@/db/mood-entries';
+import { DateTime } from 'luxon';
 
 // GET /api/mood-entries/date/[date] - Get mood entries for a specific date
 export async function GET(
@@ -47,12 +44,7 @@ export async function GET(
     }
     const dateParam = (await params).date;
     // Parse and validate the date
-    let targetDate;
-    try {
-      targetDate = getDateInTimezone(dateParam);
-    } catch {
-      return createErrorResponse('Invalid date format. Use YYYY-MM-DD', 400);
-    }
+    const targetDate = DateTime.fromISO(dateParam);
 
     // Get entries for the specified date
     const entries = await getMoodEntries(

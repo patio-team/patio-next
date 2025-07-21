@@ -12,7 +12,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { apiClient } from '@/lib/api-client';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { LoadingSpinner } from '@/components/ui/loading';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export default function MemberProfilePage() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();

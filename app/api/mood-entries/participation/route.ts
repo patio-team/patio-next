@@ -1,15 +1,12 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
-import {
-  createResponse,
-  createErrorResponse,
-  getDateInTimezone,
-} from '@/lib/utils';
+import { createResponse, createErrorResponse } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { participationStats } from '@/db/team';
+import { DateTime } from 'luxon';
 
 // GET /api/mood-entries/participation - Get average participation stats for a team within a date range
 export async function GET(request: NextRequest) {
@@ -52,14 +49,8 @@ export async function GET(request: NextRequest) {
       return createErrorResponse('You do not have access to this team', 403);
     }
 
-    // Parse and validate the dates
-    let startDateObj, endDateObj;
-    try {
-      startDateObj = getDateInTimezone(startDate);
-      endDateObj = getDateInTimezone(endDate);
-    } catch {
-      return createErrorResponse('Invalid date format. Use YYYY-MM-DD', 400);
-    }
+    const startDateObj = DateTime.fromISO(startDate);
+    const endDateObj = DateTime.fromISO(endDate);
 
     // Validate date range
     if (startDateObj >= endDateObj) {

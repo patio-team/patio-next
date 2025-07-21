@@ -17,13 +17,6 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Logo from '../ui/logo';
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  image: string;
-}
-
 export interface PageHeaderProps {
   user: Session['user'];
   userTeams: TeamMemberWithTeam[];

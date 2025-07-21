@@ -6,7 +6,7 @@ import { useCreateTeam } from '@/lib/hooks/use-teams';
 import { useSession } from '@/lib/auth-client';
 import { DaySelection } from '@/lib/api-types';
 import TeamForm from '@/components/team-form';
-import { LoadingSpinner } from '@/components/ui/loading';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export default function NewTeamPage() {
   const router = useRouter();

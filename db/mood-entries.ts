@@ -37,3 +37,23 @@ export async function getMoodEntries(
     },
   }));
 }
+
+export async function getMoodEntryByUser(
+  userId: string,
+  date: Date,
+  teamId: string,
+) {
+  const result = await db
+    .select()
+    .from(moodEntries)
+    .where(
+      and(
+        eq(moodEntries.userId, userId),
+        eq(moodEntries.teamId, teamId),
+        eq(moodEntries.entryDate, date),
+      ),
+    )
+    .limit(1);
+
+  return result[0] || null;
+}

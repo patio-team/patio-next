@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon';
 import { Mood, Smile } from './smile';
 import { dateScore, participationStats } from '@/db/team';
-import { getDateInTimezone } from '@/lib/utils';
 import { Button } from './ui/button';
 import Link from 'next/link';
 import { Team } from '@/db/schema';
@@ -37,7 +36,7 @@ export default async function PollResults({
   date,
   entries,
 }: PollResultsProps) {
-  const dateWithTimeZone = getDateInTimezone(date);
+  const dateWithTimeZone = DateTime.fromISO(date);
 
   const maxValue = Math.max(...entries.map((r) => Number(r.rating)));
 
@@ -123,7 +122,7 @@ export default async function PollResults({
             asChild>
             <Link
               className="text-center"
-              href={`/mood?team=${teamId}&date=${date}`}>
+              href={`/team/${teamId}/${date}/mood`}>
               {userHasVoted ? 'Edit your mood' : 'Share your mood'}
             </Link>
           </Button>
