@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
-import { createResponse, createErrorResponse } from '@/lib/utils';
+import { createResponse, createErrorResponse, getUTCTime } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
       return createErrorResponse('You do not have access to this team', 403);
     }
 
-    const startDateObj = DateTime.fromISO(startDate);
-    const endDateObj = DateTime.fromISO(endDate);
+    const startDateObj = getUTCTime(startDate);
+    const endDateObj = getUTCTime(endDate);
 
     // Validate date range
     if (startDateObj >= endDateObj) {

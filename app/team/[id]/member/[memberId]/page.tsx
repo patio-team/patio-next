@@ -13,6 +13,7 @@ import { apiClient } from '@/lib/api-client';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { getUTCTime } from '@/lib/utils';
 
 export default function MemberProfilePage() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth();
@@ -88,11 +89,11 @@ export default function MemberProfilePage() {
   const allMoodEntries = data.pages.flatMap((page) => page.moodEntries);
 
   const formatDateForDisplay = (date: string) => {
-    return DateTime.fromISO(date).toFormat('EEEE, MMMM dd, yyyy');
+    return getUTCTime(date).toFormat('EEEE, MMMM dd, yyyy');
   };
 
   const formatRelativeDate = (date: string) => {
-    return DateTime.fromISO(date).toRelative();
+    return getUTCTime(date).toRelative();
   };
 
   return (
@@ -142,7 +143,7 @@ export default function MemberProfilePage() {
               <div className="mt-3 flex items-center space-x-4">
                 <span className="text-sm text-[#948FB7] capitalize">
                   {member.role} • Joined{' '}
-                  {DateTime.fromISO(member.joinedAt).toFormat('MMMM yyyy')}
+                  {getUTCTime(member.joinedAt).toFormat('MMMM yyyy')}
                 </span>
                 {allMoodEntries.length > 0 && (
                   <span className="text-sm text-[#948FB7]">

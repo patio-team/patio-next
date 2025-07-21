@@ -8,6 +8,7 @@ export async function getMoodEntries(
   teamId: string,
   visibility?: 'public' | 'private',
 ) {
+  console.log(startDate, endDate);
   const result = await db
     .select({
       mood_entries: moodEntries,
@@ -29,6 +30,8 @@ export async function getMoodEntries(
     )
     .leftJoin(users, eq(moodEntries.userId, users.id))
     .orderBy(moodEntries.entryDate, desc(moodEntries.createdAt));
+
+  console.log(result);
 
   return result.map((entry) => ({
     ...entry.mood_entries,

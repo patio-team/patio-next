@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import Link from 'next/link';
 import { Team } from '@/db/schema';
 import type { getMoodEntries } from '@/db/mood-entries';
+import { getUTCTime } from '@/lib/utils';
 
 interface PollResultsProps {
   userHasVoted: boolean;
@@ -36,7 +37,7 @@ export default async function PollResults({
   date,
   entries,
 }: PollResultsProps) {
-  const dateWithTimeZone = DateTime.fromISO(date);
+  const dateWithTimeZone = getUTCTime(date);
 
   const maxValue = Math.max(...entries.map((r) => Number(r.rating)));
 
@@ -50,7 +51,7 @@ export default async function PollResults({
   );
 
   const dayScore = await dateScore(entries);
-  const formattedDate = DateTime.fromISO(date).toFormat('cccc, MMMM d, yyyy');
+  const formattedDate = getUTCTime(date).toFormat('cccc, MMMM d, yyyy');
   const scoreVotes = Object.entries(dayScore.scoreVotes)
     .toSorted(([a], [b]) => {
       return Number(b) - Number(a);

@@ -5,7 +5,12 @@ import PageHeader from '@/components/layout/page-header';
 import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { getDayOfWeek, getLastValidDate, todayDate } from '@/lib/utils';
+import {
+  getDayOfWeek,
+  getLastValidDate,
+  getUTCTime,
+  todayDate,
+} from '@/lib/utils';
 
 import MoodEntries from '../mood-entries';
 import { Suspense } from 'react';
@@ -48,7 +53,7 @@ export default async function Home({
     redirect('/');
   }
 
-  const targetDayOfTheWeek = getDayOfWeek(DateTime.fromISO(day));
+  const targetDayOfTheWeek = getDayOfWeek(getUTCTime(day));
 
   if (
     userTeam.team.pollDays?.[targetDayOfTheWeek] === false ||

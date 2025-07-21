@@ -1,13 +1,12 @@
 import { TeamMemberWithTeam } from '@/db/schema';
 import Link from 'next/link';
-import { getPollDaysString } from '@/lib/utils';
+import { getPollDaysString, getUTCTime } from '@/lib/utils';
 import { DayResult } from '@/components/day-result';
 import { getMoodEntries } from '@/db/mood-entries';
 import PollResults from '@/components/poll-result';
 import LeaveTeamButton from './leave-team-button';
 import { TeamMembersModal } from '@/components/team-members-modal';
 import { Chart } from './chart';
-import { DateTime } from 'luxon';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
@@ -20,7 +19,7 @@ export default async function MoodEntries({
   date: string;
   userId: string;
 }) {
-  const dateTime = DateTime.fromISO(date);
+  const dateTime = getUTCTime(date);
   const jsDate = dateTime.toJSDate();
   const entries = await getMoodEntries(
     jsDate,

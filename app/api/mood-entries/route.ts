@@ -10,6 +10,7 @@ import {
   generateId,
   getDayOfWeek,
   transformToDateTime,
+  getUTCTime,
 } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
       return createErrorResponse('You are not a member of this team', 403);
     }
 
-    const targetDate = DateTime.fromISO(body.entryDate);
+    const targetDate = transformToDateTime(body.entryDate);
     const targetDayOfTheWeek = getDayOfWeek(targetDate);
 
     if (membership?.team.pollDays?.[targetDayOfTheWeek] === false) {
@@ -294,8 +295,8 @@ export async function GET(request: NextRequest) {
       return createErrorResponse('You are not a member of this team', 403);
     }
 
-    const parsedStartDate = DateTime.fromISO(startDate);
-    const parsedEndDate = DateTime.fromISO(endDate);
+    const parsedStartDate = getUTCTime(startDate);
+    const parsedEndDate = getUTCTime(endDate);
 
     // Ensure start date is not after end date
     if (parsedStartDate > parsedEndDate) {

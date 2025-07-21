@@ -62,26 +62,13 @@ export function getPollDaysString(pollDays: Record<string, boolean>): string {
   return days.join(', ');
 }
 
-// Date and timezone utilities
 export function getTimezone(): string {
-  return process.env.TIMEZONE || 'UTC';
+  return 'UTC';
 }
 
 export function getTodayInTimezone(timezone?: string): DateTime {
   const tz = timezone || getTimezone();
   return DateTime.now().setZone(tz).startOf('day');
-}
-
-export function getDateInTimezone(
-  dateStr: string,
-  timezone?: string,
-): DateTime {
-  const tz = timezone || getTimezone();
-  const date = DateTime.fromISO(dateStr).setZone(tz).startOf('day');
-  if (!date.isValid) {
-    throw new Error('Invalid date format');
-  }
-  return date;
 }
 
 export function getDayOfWeek(date: Date | DateTime) {
@@ -113,7 +100,7 @@ export function todayDate(timezone?: string): string {
 }
 
 export function getLastValidDate(pollDays: Team['pollDays']): DateTime {
-  const date = getDateInTimezone(todayDate());
+  const date = getUTCTime(todayDate());
   const dayOfWeek = getDayOfWeek(date);
   if (pollDays[dayOfWeek]) {
     return date;
@@ -142,5 +129,9 @@ export function formatMoodDate(date: Date): string {
 export function transformToDateTime(jsDate: Date): DateTime {
   const formatted = jsDate.toISOString().split('T')[0];
 
-  return DateTime.fromISO(formatted);
+  return getUTCTime(formatted);
+}
+
+export function getUTCTime(date: string): DateTime {
+  return DateTime.fromISO(date, { zone: getTimezone() });
 }

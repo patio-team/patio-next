@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import { db } from '@/db';
 import { teamMembers } from '@/db/schema';
-import { createResponse, createErrorResponse } from '@/lib/utils';
+import { createResponse, createErrorResponse, getUTCTime } from '@/lib/utils';
 import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
@@ -44,7 +44,7 @@ export async function GET(
     }
     const dateParam = (await params).date;
     // Parse and validate the date
-    const targetDate = DateTime.fromISO(dateParam);
+    const targetDate = getUTCTime(dateParam);
 
     // Get entries for the specified date
     const entries = await getMoodEntries(

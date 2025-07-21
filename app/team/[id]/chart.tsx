@@ -1,9 +1,9 @@
 import VoteChart from '@/components/vote-chart';
 import { getDailyAverageWithMovingAverage } from '@/db/team';
-import { DateTime } from 'luxon';
+import { getUTCTime } from '@/lib/utils';
 
 export async function Chart({ teamId, day }: { teamId: string; day: string }) {
-  const dateTime = DateTime.fromISO(day);
+  const dateTime = getUTCTime(day);
   const data = await getDailyAverageWithMovingAverage(
     teamId,
     dateTime.minus({ days: 7 }).toJSDate(),
@@ -11,7 +11,7 @@ export async function Chart({ teamId, day }: { teamId: string; day: string }) {
     7,
   );
   const finalData = data.map((point) => {
-    const dayWithTimeZone = DateTime.fromISO(point.day);
+    const dayWithTimeZone = getUTCTime(point.day);
     return {
       ...point,
       votingId: point.day,
