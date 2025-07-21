@@ -3,7 +3,6 @@
 import { redirect, useSearchParams } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { DateTime } from 'luxon';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { User } from 'lucide-react';

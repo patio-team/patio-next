@@ -6,7 +6,6 @@ import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { participationStats } from '@/db/team';
-import { DateTime } from 'luxon';
 
 // GET /api/mood-entries/participation - Get average participation stats for a team within a date range
 export async function GET(request: NextRequest) {

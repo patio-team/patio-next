@@ -6,7 +6,6 @@ import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { getMoodEntries } from '@/db/mood-entries';
-import { DateTime } from 'luxon';
 
 // GET /api/mood-entries/date/[date] - Get mood entries for a specific date
 export async function GET(

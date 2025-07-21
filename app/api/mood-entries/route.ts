@@ -16,7 +16,6 @@ import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { getMoodEntries } from '@/db/mood-entries';
-import { DateTime } from 'luxon';
 
 // POST /api/mood-entries - Create new mood entry
 export async function POST(request: NextRequest) {
@@ -63,7 +62,7 @@ export async function POST(request: NextRequest) {
       return createErrorResponse('You are not a member of this team', 403);
     }
 
-    const targetDate = transformToDateTime(body.entryDate);
+    const targetDate = getUTCTime(body.entryDate);
     const targetDayOfTheWeek = getDayOfWeek(targetDate);
 
     if (membership?.team.pollDays?.[targetDayOfTheWeek] === false) {
