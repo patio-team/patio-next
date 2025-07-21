@@ -3,6 +3,7 @@ import { db } from '.';
 import { eq, and, gte, lt, count, desc, lte } from 'drizzle-orm';
 import { getMoodEntries } from './mood-entries';
 import { DateTime } from 'luxon';
+import { transformToDateTime } from '@/lib/utils';
 
 export async function totalMembersCount(teamId: string) {
   const result = await db
@@ -165,7 +166,7 @@ export async function getDailyAverageWithMovingAverage(
   const dailyData: Record<string, { ratings: number[]; average: number }> = {};
 
   historicalEntries.forEach((entry) => {
-    const dateKey = DateTime.fromJSDate(entry.entryDate).toFormat('yyyy-MM-dd');
+    const dateKey = transformToDateTime(entry.entryDate).toFormat('yyyy-MM-dd');
     if (!dailyData[dateKey]) {
       dailyData[dateKey] = { ratings: [], average: 0 };
     }

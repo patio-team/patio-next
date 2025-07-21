@@ -23,7 +23,7 @@ export default async function MoodEntries({
   const jsDate = dateTime.toJSDate();
   const entries = await getMoodEntries(
     jsDate,
-    jsDate,
+    dateTime.endOf('day').toJSDate(),
     userTeam.team.id,
     userTeam.role === 'admin' ? undefined : 'public',
   );
