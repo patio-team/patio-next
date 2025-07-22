@@ -21,7 +21,7 @@ import {
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 
-import { and, eq } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 import z from 'zod';
 import { sendTeamInvitationEmail } from '@/lib/email';
 
@@ -398,5 +398,103 @@ export async function sendInvites(
 
   return {
     success: true,
+  };
+}
+
+export async function changeMemberRole(
+  teamId: string,
+  memberId: string,
+  newRole: 'member' | 'admin',
+) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return {
+      errors: { userId: 'Not authorized' },
+      success: false,
+    };
+  }
+
+  // Check if the user is an admin of the team
+  const adminMembership = await db.query.teamMembers.findFirst({
+    where: and(
+      eq(teamMembers.userId, session.user.id),
+      eq(teamMembers.teamId, teamId),
+      eq(teamMembers.role, 'admin'),
+    ),
+  });
+
+  if (!adminMembership) {
+    return {
+      errors: { userId: 'Not authorized' },
+      success: false,
+    };
+  }
+
+  // Get the member to update
+  const memberToUpdate = await db.query.teamMembers.findFirst({
+    where: and(
+      eq(teamMembers.userId, memberId),
+      eq(teamMembers.teamId, teamId),
+    ),
+  });
+
+  if (!memberToUpdate) {
+    return {
+      errors: { memberId: 'Member not found' },
+      success: false,
+    };
+  }
+
+  // If trying to demote current user from admin to member, check if there are other admins
+  if (
+    session.user.id === memberId &&
+    memberToUpdate.role === 'admin' &&
+    newRole === 'member'
+  ) {
+    const adminCount = await db
+      .select({ count: count() })
+      .from(teamMembers)
+      .where(
+        and(eq(teamMembers.teamId, teamId), eq(teamMembers.role, 'admin')),
+      );
+
+    if (adminCount[0].count <= 1) {
+      return {
+        errors: {
+          userId:
+            'Cannot demote yourself. There must be at least one admin in the team.',
+        },
+        success: false,
+      };
+    }
+  }
+
+  // Update the member role
+  await db
+    .update(teamMembers)
+    .set({
+      role: newRole,
+    })
+    .where(
+      and(eq(teamMembers.userId, memberId), eq(teamMembers.teamId, teamId)),
+    );
+
+  // Get updated member data
+  const updatedMember = await db.query.teamMembers.findFirst({
+    where: and(
+      eq(teamMembers.userId, memberId),
+      eq(teamMembers.teamId, teamId),
+    ),
+    with: {
+      user: true,
+    },
+  });
+
+  return {
+    success: true,
+    data: updatedMember,
   };
 }

@@ -179,34 +179,6 @@ class ApiClient {
     }>(`/teams/${teamId}/members/${memberId}?${params.toString()}`);
   }
 
-  async updateMemberRole(
-    teamId: string,
-    memberId: string,
-    role: 'member' | 'admin',
-  ) {
-    return this.request<
-      ApiResponse<{
-        message: string;
-        member: {
-          id: string;
-          userId: string;
-          teamId: string;
-          role: 'member' | 'admin';
-          joinedAt: string;
-          user: {
-            id: string;
-            name: string;
-            email: string;
-            image?: string;
-          };
-        };
-      }>
-    >(`/teams/${teamId}/members/${memberId}`, {
-      method: 'PUT',
-      body: JSON.stringify({ role }),
-    });
-  }
-
   // Download team mood entries as CSV (admin only)
   async downloadTeamMoodEntriesCSV(teamId: string): Promise<Blob> {
     const url = `${this.baseUrl}/teams/${teamId}/mood-entries/csv`;

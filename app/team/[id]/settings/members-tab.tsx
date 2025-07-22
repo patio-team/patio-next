@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { useActionState, useState } from 'react';
-import { useUpdateMemberRole } from '@/lib/hooks/use-teams';
 import { toast } from 'sonner';
 import { Select } from '@/components/ui/select';
 import type { getTeam } from '@/db/team';
-import { sendInvites } from '@/app/actions';
+import { changeMemberRole, sendInvites } from '@/app/actions';
 
 export default function MembersTab({
   userId,
@@ -23,7 +22,6 @@ export default function MembersTab({
   const [emailInput, setEmailInput] = useState('');
 
   const handleSendInvites = async () => {
-    console.log('Sending invites for:', emailInput);
     const emails = emailInput
       .split(',')
       .map((email) => email.trim())
@@ -46,9 +44,10 @@ export default function MembersTab({
     router.refresh();
   };
 
-  const [, formActions, pending] = useActionState(handleSendInvites, undefined);
-
-  const updateMemberRoleMutation = useUpdateMemberRole();
+  const [, formActions, pendingInvite] = useActionState(
+    handleSendInvites,
+    undefined,
+  );
 
   // Count admins in the team
   const adminCount = team?.members.filter(
@@ -78,22 +77,16 @@ export default function MembersTab({
       return;
     }
 
-    try {
-      await updateMemberRoleMutation.mutateAsync({
-        teamId: team.id,
-        memberId,
-        role: newRole,
-      });
+    const result = await changeMemberRole(team.id, memberId, newRole);
 
-      // If current user demoted themselves, redirect to team page
-      if (memberId === userId && newRole === 'member') {
-        router.push(`/team/${team.id}`);
-      }
-    } catch (error) {
+    if (result.success) {
+      toast.success('Member role updated successfully');
+      router.refresh();
+    } else {
       toast.error(
-        `Failed to change role: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        `Failed to update member role: ${result.errors?.userId || 'Unknown error'}`,
       );
-      console.error('Error updating member role:', error);
+      console.error('Error updating member role:', result.errors);
     }
   };
 
@@ -210,14 +203,14 @@ export default function MembersTab({
               placeholder="e.g. username@mail.com, userpetname@mail.com"
               value={emailInput}
               onChange={(e) => setEmailInput(e.target.value)}
-              disabled={pending}
+              disabled={pendingInvite}
             />
           </div>
 
           <Button
             type="submit"
-            disabled={!emailInput.trim() || pending}>
-            {pending ? 'Sending...' : 'Send invites'}
+            disabled={!emailInput.trim() || pendingInvite}>
+            {pendingInvite ? 'Sending...' : 'Send invites'}
           </Button>
         </div>
       </form>
