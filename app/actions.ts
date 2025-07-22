@@ -6,16 +6,24 @@ import {
   createTeamSchema,
   moodEntries,
   NewTeam,
+  teamInvitations,
   teamMembers,
   teams,
+  users,
   type NewMoodEntry,
 } from '@/db/schema';
-import { generateId, getDayOfWeek, transformToDateTime } from '@/lib/utils';
+import {
+  generateId,
+  generateToken,
+  getDayOfWeek,
+  transformToDateTime,
+} from '@/lib/utils';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 
 import { and, eq } from 'drizzle-orm';
 import z from 'zod';
+import { sendTeamInvitationEmail } from '@/lib/email';
 
 export async function createMoodEntry(
   moodEntry: Omit<NewMoodEntry, 'id' | 'userId'>,
@@ -299,5 +307,96 @@ export async function updateTeam(teamData: NewTeam) {
   return {
     success: true,
     data: updatedTeam,
+  };
+}
+
+export async function sendInvites(
+  userId: string,
+  teamId: string,
+  emails: string[],
+): Promise<{ success: boolean; errors?: Record<string, string> }> {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return {
+      errors: { userId: 'Not authorized' },
+      success: false,
+    };
+  }
+
+  const emailValidation = z.array(z.email()).safeParse(emails);
+
+  if (!emailValidation.success) {
+    return {
+      errors: { emails: 'Invalid email addresses' },
+      success: false,
+    };
+  }
+
+  // Check if user is admin of the team
+  const adminMembership = await db.query.teamMembers.findFirst({
+    where: and(
+      eq(teamMembers.userId, userId),
+      eq(teamMembers.teamId, teamId),
+      eq(teamMembers.role, 'admin'),
+    ),
+  });
+
+  if (!adminMembership) {
+    return {
+      errors: { userId: 'Not authorized' },
+      success: false,
+    };
+  }
+
+  // Get team and inviter info
+  const team = await db.query.teams.findFirst({
+    where: eq(teams.id, teamId),
+  });
+
+  const inviter = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+  });
+
+  if (!team || !inviter) {
+    return {
+      errors: { userId: 'User or team not found' },
+      success: false,
+    };
+  }
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7); // Expires in 7 days
+
+  // Create invitations
+  const invitations = emailValidation.data.map((email) => {
+    const token = generateToken();
+
+    return {
+      id: generateId(),
+      teamId,
+      email,
+      invitedBy: userId,
+      token,
+      expiresAt,
+    };
+  });
+
+  await db.insert(teamInvitations).values(invitations).onConflictDoNothing();
+
+  // Send invitation emails
+  invitations.forEach((invitation) => {
+    sendTeamInvitationEmail(
+      invitation.email,
+      team.name,
+      inviter.name,
+      invitation.token,
+    );
+  });
+
+  return {
+    success: true,
   };
 }

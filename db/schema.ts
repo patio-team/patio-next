@@ -6,6 +6,7 @@ import {
   boolean,
   json,
   pgEnum,
+  unique,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { createInsertSchema } from 'drizzle-zod';
@@ -128,21 +129,25 @@ export const moodEntries = pgTable('mood_entries', {
 });
 
 // Team invitations table
-export const teamInvitations = pgTable('team_invitations', {
-  id: text('id').primaryKey(),
-  teamId: text('team_id')
-    .notNull()
-    .references(() => teams.id, { onDelete: 'cascade' }),
-  invitedBy: text('invited_by')
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  email: varchar('email', { length: 255 }).notNull(),
-  token: varchar('token', { length: 255 }).unique().notNull(),
-  expiresAt: timestamp('expires_at').notNull(),
-  acceptedAt: timestamp('accepted_at'),
-  rejectedAt: timestamp('rejected_at'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-});
+export const teamInvitations = pgTable(
+  'team_invitations',
+  {
+    id: text('id').primaryKey(),
+    teamId: text('team_id')
+      .notNull()
+      .references(() => teams.id, { onDelete: 'cascade' }),
+    invitedBy: text('invited_by')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    email: varchar('email', { length: 255 }).notNull(),
+    token: varchar('token', { length: 255 }).unique().notNull(),
+    expiresAt: timestamp('expires_at').notNull(),
+    acceptedAt: timestamp('accepted_at'),
+    rejectedAt: timestamp('rejected_at'),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
+  },
+  (t) => [unique().on(t.email, t.teamId)],
+);
 
 export const accountsRelations = relations(account, ({ one }) => ({
   user: one(users, {

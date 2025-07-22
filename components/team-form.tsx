@@ -71,8 +71,6 @@ export default function TeamForm({
     }
 
     router.push(`/team/${team.data.id}`);
-
-    return;
   };
 
   const [, formActions, pending] = useActionState(handleSubmit, undefined);

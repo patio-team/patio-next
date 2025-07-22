@@ -5,11 +5,12 @@ import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useSendInvitations, useUpdateMemberRole } from '@/lib/hooks/use-teams';
+import { useActionState, useState } from 'react';
+import { useUpdateMemberRole } from '@/lib/hooks/use-teams';
 import { toast } from 'sonner';
 import { Select } from '@/components/ui/select';
 import type { getTeam } from '@/db/team';
+import { sendInvites } from '@/app/actions';
 
 export default function MembersTab({
   userId,
@@ -19,12 +20,34 @@ export default function MembersTab({
   team: NonNullable<Awaited<ReturnType<typeof getTeam>>>;
 }) {
   const router = useRouter();
-
-  // State for email input
   const [emailInput, setEmailInput] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const sendInvitationsMutation = useSendInvitations();
+  const handleSendInvites = async () => {
+    console.log('Sending invites for:', emailInput);
+    const emails = emailInput
+      .split(',')
+      .map((email) => email.trim())
+      .filter((email) => email.length > 0);
+
+    if (emails.length === 0) return;
+
+    const result = await sendInvites(userId, team.id, emails);
+
+    if (result.success) {
+      toast.success('Invites sent successfully');
+      setEmailInput('');
+    } else {
+      toast.error(
+        `Failed to send invites: ${result.errors?.emails || 'Unknown error'}`,
+      );
+      console.error('Error sending invites:', result.errors);
+    }
+
+    router.refresh();
+  };
+
+  const [, formActions, pending] = useActionState(handleSendInvites, undefined);
+
   const updateMemberRoleMutation = useUpdateMemberRole();
 
   // Count admins in the team
@@ -71,37 +94,6 @@ export default function MembersTab({
         `Failed to change role: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
       console.error('Error updating member role:', error);
-    }
-  };
-
-  const handleSendInvites = async () => {
-    if (!emailInput.trim()) return;
-
-    setIsSubmitting(true);
-
-    // Parse emails from input (comma-separated)
-    const emails = emailInput
-      .split(',')
-      .map((email) => email.trim())
-      .filter((email) => email.length > 0);
-
-    if (emails.length === 0) {
-      setIsSubmitting(false);
-      return;
-    }
-
-    try {
-      await sendInvitationsMutation.mutateAsync({
-        teamId: team.id,
-        emails,
-      });
-
-      // Clear input on success
-      setEmailInput('');
-    } catch (error) {
-      console.error('Error sending invitations:', error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -205,29 +197,30 @@ export default function MembersTab({
       </div>
 
       {/* Right section - Invite members */}
-      <div className="max-w-2xl flex-1 space-y-6">
-        <h2 className="font-merriweather text-primary text-2xl leading-[30px] font-normal">
-          Invite new members
-        </h2>
+      <form action={formActions}>
+        <div className="max-w-2xl flex-1 space-y-6">
+          <h2 className="font-merriweather text-primary text-2xl leading-[30px] font-normal">
+            Invite new members
+          </h2>
+          <div className="space-y-3">
+            <label className="text-primary block text-base leading-[22px] font-medium">
+              Enter multiple email addresses separated by comma.
+            </label>
+            <Input
+              placeholder="e.g. username@mail.com, userpetname@mail.com"
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              disabled={pending}
+            />
+          </div>
 
-        <div className="space-y-3">
-          <label className="text-primary block text-base leading-[22px] font-medium">
-            Enter multiple email addresses separated by comma.
-          </label>
-          <Input
-            placeholder="e.g. username@mail.com, userpetname@mail.com"
-            value={emailInput}
-            onChange={(e) => setEmailInput(e.target.value)}
-            disabled={isSubmitting}
-          />
+          <Button
+            type="submit"
+            disabled={!emailInput.trim() || pending}>
+            {pending ? 'Sending...' : 'Send invites'}
+          </Button>
         </div>
-
-        <Button
-          onClick={handleSendInvites}
-          disabled={!emailInput.trim() || isSubmitting}>
-          {isSubmitting ? 'Sending...' : 'Send invites'}
-        </Button>
-      </div>
+      </form>
     </div>
   );
 }

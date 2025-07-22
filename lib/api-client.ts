@@ -97,28 +97,6 @@ class ApiClient {
     >(`/teams/${teamId}/members/with-votes`);
   }
 
-  // Invitations API methods
-  async sendInvitations(data: { teamId: string; emails: string[] }) {
-    const results = [];
-    for (const email of data.emails) {
-      try {
-        const result = await this.request<
-          ApiResponse<{
-            message: string;
-            invitation: { id: string; email: string; expiresAt: string };
-          }>
-        >('/invitations', {
-          method: 'POST',
-          body: JSON.stringify({ teamId: data.teamId, email: email.trim() }),
-        });
-        results.push({ email, success: true, result });
-      } catch (error) {
-        results.push({ email, success: false, error });
-      }
-    }
-    return results;
-  }
-
   async getMoodEntriesByDate(teamId: string, date: string) {
     return this.request<ApiResponse<MoodEntry[]>>(
       `/mood-entries/date/${date}?teamId=${teamId}`,
