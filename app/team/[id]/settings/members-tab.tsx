@@ -5,7 +5,12 @@ import { User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
-import { useActionState, useState } from 'react';
+import {
+  useActionState,
+  useState,
+  useOptimistic,
+  startTransition,
+} from 'react';
 import { toast } from 'sonner';
 import { Select } from '@/components/ui/select';
 import type { getTeam } from '@/db/team';
@@ -21,6 +26,47 @@ export default function MembersTab({
   const router = useRouter();
   const [emailInput, setEmailInput] = useState('');
 
+  // Optimistic state for team data
+  const [optimisticTeam, updateOptimisticTeam] = useOptimistic(
+    team,
+    (
+      state,
+      action:
+        | { type: 'addInvitations'; emails: string[] }
+        | { type: 'updateRole'; memberId: string; newRole: 'member' | 'admin' },
+    ) => {
+      if (action.type === 'addInvitations') {
+        return {
+          ...state,
+          invitations: [
+            ...state.invitations,
+            ...action.emails.map((email, index) => ({
+              id: `temp-${Date.now()}-${index}`,
+              email,
+              teamId: state.id,
+              invitedBy: userId,
+              token: `temp-token-${Date.now()}-${index}`,
+              expiresAt: new Date(), // Fake date for optimistic update
+              acceptedAt: null,
+              rejectedAt: null,
+              createdAt: new Date(),
+            })),
+          ],
+        };
+      } else if (action.type === 'updateRole') {
+        return {
+          ...state,
+          members: state.members.map((member) =>
+            member.userId === action.memberId
+              ? { ...member, role: action.newRole }
+              : member,
+          ),
+        };
+      }
+      return state;
+    },
+  );
+
   const handleSendInvites = async () => {
     const emails = emailInput
       .split(',')
@@ -29,19 +75,23 @@ export default function MembersTab({
 
     if (emails.length === 0) return;
 
+    // Optimistically add invitations
+    updateOptimisticTeam({ type: 'addInvitations', emails });
+    setEmailInput('');
+
     const result = await sendInvites(userId, team.id, emails);
 
     if (result.success) {
       toast.success('Invites sent successfully');
-      setEmailInput('');
+      router.refresh();
     } else {
       toast.error(
         `Failed to send invites: ${result.errors?.emails || 'Unknown error'}`,
       );
       console.error('Error sending invites:', result.errors);
+      // Revert optimistic update on error
+      router.refresh();
     }
-
-    router.refresh();
   };
 
   const [, formActions, pendingInvite] = useActionState(
@@ -50,7 +100,7 @@ export default function MembersTab({
   );
 
   // Count admins in the team
-  const adminCount = team?.members.filter(
+  const adminCount = optimisticTeam?.members.filter(
     (member) => member.role === 'admin',
   ).length;
 
@@ -59,7 +109,7 @@ export default function MembersTab({
     memberId: string,
     newRole: 'member' | 'admin',
   ) => {
-    const memberToUpdate = team.members.find(
+    const memberToUpdate = optimisticTeam.members.find(
       (member) => member.userId === memberId,
     );
     if (!memberToUpdate) return;
@@ -77,6 +127,9 @@ export default function MembersTab({
       return;
     }
 
+    // Optimistically update the role
+    updateOptimisticTeam({ type: 'updateRole', memberId, newRole });
+
     const result = await changeMemberRole(team.id, memberId, newRole);
 
     if (result.success) {
@@ -87,6 +140,8 @@ export default function MembersTab({
         `Failed to update member role: ${result.errors?.userId || 'Unknown error'}`,
       );
       console.error('Error updating member role:', result.errors);
+      // Revert optimistic update on error
+      router.refresh();
     }
   };
 
@@ -101,13 +156,13 @@ export default function MembersTab({
               Members:
             </span>
             <span className="text-base leading-[22px] font-medium text-[#948FB7]">
-              {team.members.length}
+              {optimisticTeam.members.length}
             </span>
           </div>
         </div>
         {/* Members list */}
         <div className="space-y-6">
-          {team.members.map((member) => (
+          {optimisticTeam.members.map((member) => (
             <div
               key={member.id}
               className="flex items-center gap-4">
@@ -135,9 +190,11 @@ export default function MembersTab({
                     <Select
                       value={member.role}
                       onChange={(e) =>
-                        handleRoleChange(
-                          member.userId,
-                          e.target.value as 'member' | 'admin',
+                        startTransition(() =>
+                          handleRoleChange(
+                            member.userId,
+                            e.target.value as 'member' | 'admin',
+                          ),
                         )
                       }
                       label="Role">
@@ -162,14 +219,14 @@ export default function MembersTab({
               Waiting:
             </span>
             <span className="text-base leading-[22px] font-medium text-[#948FB7]">
-              {team.invitations.length}
+              {optimisticTeam.invitations.length}
             </span>
           </div>
         </div>
 
         {/* Waiting members */}
         <div className="space-y-6">
-          {team.invitations.map((member) => (
+          {optimisticTeam.invitations.map((member) => (
             <div
               key={member.id}
               className="flex items-center gap-4">
