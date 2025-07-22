@@ -10,11 +10,9 @@ import { use, useEffect, useState } from 'react';
 import {
   useTeam,
   useSendInvitations,
-  useUpdateTeam,
   useUpdateMemberRole,
   useDownloadTeamMoodEntriesCSV,
 } from '@/lib/hooks/use-teams';
-import { DaySelection } from '@/lib/api-types';
 import TeamForm from '@/components/team-form';
 import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -65,7 +63,6 @@ export default function ManageGroupPage({
   const members = teamResponse?.data?.members || [];
   const invitations = teamResponse?.data?.invitations || [];
   const teamData = teamResponse?.data;
-  const updateTeamMutation = useUpdateTeam();
 
   // Count admins in the team
   const adminCount = members.filter((member) => member.role === 'admin').length;
@@ -108,29 +105,6 @@ export default function ManageGroupPage({
       );
       console.error('Error updating member role:', error);
     }
-  };
-
-  const handleUpdateTeam = (data: {
-    name: string;
-    description?: string;
-    pollDays: DaySelection;
-  }) => {
-    updateTeamMutation.mutate(
-      {
-        teamId,
-        name: data.name,
-        description: data.description,
-        pollDays: data.pollDays,
-      },
-      {
-        onSuccess: () => {
-          router.push(`/team/${teamId}`);
-        },
-        onError: (error) => {
-          console.error('Failed to update team:', error);
-        },
-      },
-    );
   };
 
   const handleSendInvites = async () => {
@@ -222,8 +196,6 @@ export default function ManageGroupPage({
                 <TeamForm
                   mode="edit"
                   initialData={teamData}
-                  onSubmit={handleUpdateTeam}
-                  isLoading={updateTeamMutation.isPending}
                   submitLabel="Update team"
                   loadingLabel="Updating..."
                 />

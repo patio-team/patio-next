@@ -1,24 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { createTeamSchema, Team, DaySelection } from '@/lib/api-types';
-import { ZodError } from 'zod';
+import { Team, DaySelection } from '@/lib/api-types';
+import { useRouter } from 'next/navigation';
+import { createTeam, updateTeam } from '@/app/actions';
 
 export type { DaySelection };
 
 interface TeamFormProps {
   mode: 'create' | 'edit';
   initialData?: Team;
-  onSubmit: (data: {
-    name: string;
-    description?: string;
-    pollDays: DaySelection;
-  }) => void;
-  isLoading?: boolean;
-  onCancel?: () => void;
   cancelLabel?: string;
   submitLabel?: string;
   loadingLabel?: string;
@@ -27,13 +21,11 @@ interface TeamFormProps {
 export default function TeamForm({
   mode,
   initialData,
-  onSubmit,
-  isLoading = false,
-  onCancel,
   cancelLabel = 'Cancel',
   submitLabel = mode === 'create' ? 'Create team' : 'Update team',
   loadingLabel = mode === 'create' ? 'Creating...' : 'Updating...',
 }: TeamFormProps) {
+  const router = useRouter();
   const [formData, setFormData] = useState<{
     name: string;
     description: string;
@@ -52,7 +44,37 @@ export default function TeamForm({
     },
   });
 
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const handleSubmit = async () => {
+    let team:
+      | Awaited<ReturnType<typeof createTeam | typeof updateTeam>>
+      | undefined;
+
+    if (initialData) {
+      team = await updateTeam({
+        id: initialData?.id,
+        name: formData.name,
+        description: formData.description || undefined,
+        pollDays: formData.pollDays,
+      });
+    } else {
+      team = await createTeam({
+        name: formData.name,
+        description: formData.description || undefined,
+        pollDays: formData.pollDays,
+      });
+    }
+
+    if (!team.success || !team.data) {
+      console.error('Error creating team:', team.errors);
+      return;
+    }
+
+    router.push(`/team/${team.data.id}`);
+
+    return;
+  };
+
+  const [, formActions, pending] = useActionState(handleSubmit, undefined);
 
   // Update form data when initialData changes (for edit mode)
   useEffect(() => {
@@ -75,53 +97,13 @@ export default function TeamForm({
     }));
   };
 
-  const validateForm = () => {
-    try {
-      createTeamSchema.parse({
-        ...formData,
-        description: formData.description || undefined,
-      });
-      setErrors({});
-      return true;
-    } catch (error) {
-      if (error instanceof ZodError) {
-        const newErrors: Record<string, string> = {};
-        error.issues.forEach((issue) => {
-          newErrors[issue.path.join('.')] = issue.message;
-        });
-        setErrors(newErrors);
-      }
-      return false;
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    try {
-      await onSubmit({
-        name: formData.name,
-        description: formData.description || undefined,
-        pollDays: formData.pollDays,
-      });
-    } catch (error) {
-      console.error(
-        `Error ${mode === 'create' ? 'creating' : 'updating'} team:`,
-        error,
-      );
-      setErrors({
-        submit: `Failed to ${mode === 'create' ? 'create' : 'update'} team. Please try again.`,
-      });
-    }
+  const onCancel = () => {
+    router.push('/');
   };
 
   return (
     <form
-      onSubmit={handleSubmit}
+      action={formActions}
       className="space-y-8">
       {/* Team name input */}
       <div>
@@ -135,9 +117,6 @@ export default function TeamForm({
           placeholder="Team name..."
           required
         />
-        {errors.name && (
-          <p className="mt-1 text-sm text-red-500">{errors.name}</p>
-        )}
       </div>
 
       {/* Description input */}
@@ -154,9 +133,6 @@ export default function TeamForm({
           }
           placeholder="Team description..."
         />
-        {errors.description && (
-          <p className="mt-1 text-sm text-red-500">{errors.description}</p>
-        )}
       </div>
 
       {/* Poll days section */}
@@ -204,25 +180,18 @@ export default function TeamForm({
         </div>
       </div>
 
-      {/* Error message */}
-      {errors.submit && (
-        <div className="text-sm text-red-500">{errors.submit}</div>
-      )}
-
       {/* Action buttons */}
       <div className="flex flex-col gap-6 pt-8 sm:flex-row">
-        {onCancel && (
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onCancel}>
-            {cancelLabel}
-          </Button>
-        )}
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onCancel}>
+          {cancelLabel}
+        </Button>
         <Button
           type="submit"
-          disabled={isLoading}>
-          {isLoading ? loadingLabel : submitLabel}
+          disabled={pending}>
+          {pending ? loadingLabel : submitLabel}
         </Button>
       </div>
     </form>

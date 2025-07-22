@@ -3,8 +3,11 @@
 import { db } from '@/db';
 import {
   createMoodSchema,
+  createTeamSchema,
   moodEntries,
+  NewTeam,
   teamMembers,
+  teams,
   type NewMoodEntry,
 } from '@/db/schema';
 import { generateId, getDayOfWeek, transformToDateTime } from '@/lib/utils';
@@ -206,5 +209,95 @@ export async function updateMoodEntry(moodEntry: Omit<NewMoodEntry, 'userId'>) {
   return {
     success: true,
     data: updatedEntry,
+  };
+}
+
+export async function createTeam(team: Omit<NewTeam, 'id'>) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return {
+      errors: { userId: 'Not authorized' },
+      success: false,
+    };
+  }
+
+  const newTeamData: NewTeam = {
+    id: generateId(),
+    ...team,
+  };
+
+  const { success, error, data } = createTeamSchema.safeParse(newTeamData);
+  if (!success) {
+    return {
+      errors: z.treeifyError(error),
+      success: false,
+    };
+  }
+
+  const [newTeam] = await db.insert(teams).values(data).returning();
+
+  // Add creator as admin
+  await db.insert(teamMembers).values({
+    id: generateId(),
+    userId: session.user.id,
+    teamId: data.id,
+    role: 'admin',
+  });
+
+  return {
+    success: true,
+    data: newTeam,
+  };
+}
+
+export async function updateTeam(teamData: NewTeam) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return {
+      errors: { userId: 'Not authorized' },
+      success: false,
+    };
+  }
+
+  const { success, error, data } = createTeamSchema.safeParse(teamData);
+
+  if (!success) {
+    return {
+      errors: z.treeifyError(error),
+      success: false,
+    };
+  }
+
+  // Check if the user is an admin of the team
+  const membership = await db.query.teamMembers.findFirst({
+    where: and(
+      eq(teamMembers.userId, session.user.id),
+      eq(teamMembers.teamId, data.id),
+      eq(teamMembers.role, 'admin'),
+    ),
+  });
+
+  if (!membership) {
+    return {
+      errors: { teamId: 'You are not an admin of this team' },
+      success: false,
+    };
+  }
+
+  const [updatedTeam] = await db
+    .update(teams)
+    .set(data)
+    .where(eq(teams.id, data.id))
+    .returning();
+
+  return {
+    success: true,
+    data: updatedTeam,
   };
 }

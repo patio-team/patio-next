@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
-import { CreateTeamFormData, DaySelection } from '@/lib/api-types';
 
 // Query keys
 export const teamKeys = {
@@ -10,21 +9,6 @@ export const teamKeys = {
   details: () => [...teamKeys.all, 'detail'] as const,
   detail: (id: string) => [...teamKeys.details(), id] as const,
 };
-
-// Create team mutation
-export function useCreateTeam() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (
-      data: Pick<CreateTeamFormData, 'name' | 'description' | 'pollDays'>,
-    ) => apiClient.createTeam(data),
-    onSuccess: () => {
-      // Invalidate and refetch teams
-      queryClient.invalidateQueries({ queryKey: teamKeys.all });
-    },
-  });
-}
 
 // Get single team query
 export function useTeam(teamId: string) {
@@ -47,32 +31,6 @@ export function useSendInvitations() {
       queryClient.invalidateQueries({
         queryKey: teamKeys.detail(variables.teamId),
       });
-    },
-  });
-}
-
-// Update team mutation
-export function useUpdateTeam() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: {
-      teamId: string;
-      name: string;
-      description?: string;
-      pollDays: DaySelection;
-    }) =>
-      apiClient.updateTeam(data.teamId, {
-        name: data.name,
-        description: data.description,
-        pollDays: data.pollDays,
-      }),
-    onSuccess: (_, variables) => {
-      // Invalidate team details and teams list to refresh data
-      queryClient.invalidateQueries({
-        queryKey: teamKeys.detail(variables.teamId),
-      });
-      queryClient.invalidateQueries({ queryKey: teamKeys.all });
     },
   });
 }

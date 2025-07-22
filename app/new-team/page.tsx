@@ -1,52 +1,17 @@
-'use client';
+'use server';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCreateTeam } from '@/lib/hooks/use-teams';
-import { useSession } from '@/lib/auth-client';
-import { DaySelection } from '@/lib/api-types';
+import { redirect } from 'next/navigation';
 import TeamForm from '@/components/team-form';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
 
-export default function NewTeamPage() {
-  const router = useRouter();
-  const createTeamMutation = useCreateTeam();
-  const { data: session, isPending: sessionLoading } = useSession();
+export default async function NewTeamPage() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!sessionLoading && !session) {
-      router.push('/login');
-    }
-  }, [session, sessionLoading, router]);
-
-  const handleSubmit = async (data: {
-    name: string;
-    description?: string;
-    pollDays: DaySelection;
-  }) => {
-    const response = await createTeamMutation.mutateAsync({
-      name: data.name,
-      description: data.description || undefined,
-      pollDays: data.pollDays,
-    });
-
-    const team = response.data;
-    router.push(`/team/${team.id}`);
-  };
-
-  // Show loading screen while checking session
-  if (sessionLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <LoadingSpinner />
-      </div>
-    );
-  }
-
-  // Show nothing if not authenticated (useEffect will redirect)
   if (!session) {
-    return null;
+    redirect('/login');
   }
 
   return (
@@ -60,9 +25,6 @@ export default function NewTeamPage() {
 
         <TeamForm
           mode="create"
-          onSubmit={handleSubmit}
-          isLoading={createTeamMutation.isPending}
-          onCancel={() => router.push('/')}
           cancelLabel="Cancel"
         />
       </div>

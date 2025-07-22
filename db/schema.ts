@@ -210,3 +210,4 @@ export type NewTeamInvitation = typeof teamInvitations.$inferInsert;
 export type moodRatingEnumType = MoodEntry['rating'];
 
 export const createMoodSchema = createInsertSchema(moodEntries);
+export const createTeamSchema = createInsertSchema(teams);
