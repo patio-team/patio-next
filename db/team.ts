@@ -1,8 +1,9 @@
-import { moodEntries, teamMembers } from './schema';
+import { moodEntries, teamInvitations, teamMembers, teams } from './schema';
 import { db } from '.';
-import { eq, and, gte, lt, count, desc, lte } from 'drizzle-orm';
+import { eq, and, gte, lt, count, desc, lte, isNull } from 'drizzle-orm';
 import { getMoodEntries } from './mood-entries';
 import { transformToDateTime } from '@/lib/utils';
+import { email } from 'zod';
 
 export async function totalMembersCount(teamId: string) {
   const result = await db
@@ -207,6 +208,34 @@ export function getUserTeam(userId: string, teamId: string) {
     where: and(eq(teamMembers.userId, userId), eq(teamMembers.teamId, teamId)),
     with: {
       team: true,
+    },
+  });
+}
+
+export function getTeamMembers(teamId: string) {
+  return db.query.teamMembers.findMany({
+    where: eq(teamMembers.teamId, teamId),
+    with: {
+      user: true,
+    },
+  });
+}
+
+export function getTeam(teamId: string) {
+  return db.query.teams.findFirst({
+    where: eq(teams.id, teamId),
+    with: {
+      members: {
+        with: {
+          user: true,
+        },
+      },
+      invitations: {
+        where: and(
+          isNull(teamInvitations.acceptedAt),
+          isNull(teamInvitations.rejectedAt),
+        ),
+      },
     },
   });
 }

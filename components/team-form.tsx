@@ -4,9 +4,10 @@ import { useState, useEffect, useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { Team, DaySelection } from '@/lib/api-types';
+import { DaySelection } from '@/lib/api-types';
 import { useRouter } from 'next/navigation';
 import { createTeam, updateTeam } from '@/app/actions';
+import { Team } from '@/db/schema';
 
 export type { DaySelection };
 
