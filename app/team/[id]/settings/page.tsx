@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { getTeam, getUserTeam } from '@/db/team';
-import SettingsForm from './settings-form';
+import Settings from './settings';
 
 export default async function SettingsPage({
   params,
@@ -31,7 +31,7 @@ export default async function SettingsPage({
   }
 
   return (
-    <SettingsForm
+    <Settings
       userId={userTeam.userId}
       team={team}
     />
