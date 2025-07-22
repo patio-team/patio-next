@@ -20,14 +20,6 @@ export default async function MoodPage({
 
   const { id, day } = await params;
 
-  if (!day || !id) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <p className="text-gray-500">Missing date or team parameters.</p>
-      </div>
-    );
-  }
-
   const targetDate = getUTCTime(day);
 
   const entry = await getMoodEntryByUser(

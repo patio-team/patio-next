@@ -49,7 +49,7 @@ export default async function Home({
   const userTeam = userTeams.find((tm) => tm.team.id === id);
 
   if (!userTeam) {
-    redirect('/');
+    redirect('/404');
   }
 
   const targetDayOfTheWeek = getDayOfWeek(getUTCTime(day));

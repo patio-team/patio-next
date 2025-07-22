@@ -11,14 +11,6 @@ export const teamKeys = {
   detail: (id: string) => [...teamKeys.details(), id] as const,
 };
 
-// Get teams query
-export function useTeams() {
-  return useQuery({
-    queryKey: teamKeys.lists(),
-    queryFn: () => apiClient.getTeams(),
-  });
-}
-
 // Create team mutation
 export function useCreateTeam() {
   const queryClient = useQueryClient();

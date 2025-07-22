@@ -8,6 +8,7 @@ import {
   pgEnum,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+import { createInsertSchema } from 'drizzle-zod';
 
 export const moodRatingEnum = pgEnum('mood_rating', ['1', '2', '3', '4', '5']);
 export const userRoleEnum = pgEnum('user_role', ['member', 'admin']);
@@ -207,3 +208,5 @@ export type NewMoodEntry = typeof moodEntries.$inferInsert;
 export type TeamInvitation = typeof teamInvitations.$inferSelect;
 export type NewTeamInvitation = typeof teamInvitations.$inferInsert;
 export type moodRatingEnumType = MoodEntry['rating'];
+
+export const createMoodSchema = createInsertSchema(moodEntries);

@@ -1,12 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { apiClient } from '@/lib/api-client';
+import { useActionState, useState } from 'react';
 import { Smile } from '@/components/smile';
 import { Button } from '@/components/ui/button';
-import { formatMoodDate } from '@/lib/utils';
+import { formatMoodDate, getUTCTime } from '@/lib/utils';
 import Link from 'next/link';
 import Editor from '@/components/editor/editor';
 import { getMoodEntryByUser } from '@/db/mood-entries';
@@ -14,6 +12,7 @@ import { moodRatingEnumType } from '@/db/schema';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { createMoodEntry, updateMoodEntry } from '@/app/actions';
 
 export default function MoodForm({
   params: { date, teamId, currentEntry },
@@ -39,80 +38,49 @@ export default function MoodForm({
 
   const [error, setError] = useState<string | null>(null);
 
+  const handleSubmit = async () => {
+    let result:
+      | Awaited<ReturnType<typeof createMoodEntry | typeof updateMoodEntry>>
+      | undefined;
+
+    if (currentEntry) {
+      result = await updateMoodEntry({
+        id: currentEntry.id,
+        teamId,
+        rating: selectedRating as moodRatingEnumType,
+        comment: comment || '',
+        visibility,
+        allowContact,
+        entryDate: getUTCTime(date).toJSDate(),
+      });
+    } else {
+      result = await createMoodEntry({
+        teamId,
+        rating: selectedRating as moodRatingEnumType,
+        comment: comment || '',
+        visibility,
+        allowContact,
+        entryDate: getUTCTime(date).toJSDate(),
+      });
+    }
+
+    if (result.success) {
+      router.push(`/team/${teamId}/${date}`);
+    }
+
+    if (result.errors) {
+      console.error('Error creating mood entry:', result.errors);
+      setError('An error occurred');
+      return;
+    }
+  };
+
+  const [, formActions, pending] = useActionState(handleSubmit, undefined);
+
   // Parse date or use today
   const entryDate = new Date(date);
   const formattedDate = formatMoodDate(entryDate);
   const isoDate = entryDate.toISOString().split('T')[0];
-  // Create mood entry mutation
-  const createMutation = useMutation({
-    mutationFn: (data: {
-      teamId: string;
-      rating: '1' | '2' | '3' | '4' | '5';
-      comment?: string;
-      visibility: 'public' | 'private';
-      allowContact: boolean;
-      entryDate: string;
-    }) => apiClient.createMoodEntry(data),
-    onSuccess: () => {
-      setError(null);
-      router.push(`/team/${teamId}/${isoDate}`);
-    },
-    onError: (error) => {
-      console.error('Error creating mood entry:', error);
-      setError('Failed to create mood entry. Please try again.');
-    },
-  });
-
-  // Update mood entry mutation
-  const updateMutation = useMutation({
-    mutationFn: (data: {
-      entryId: string;
-      rating?: '1' | '2' | '3' | '4' | '5';
-      comment?: string;
-      visibility?: 'public' | 'private';
-      allowContact?: boolean;
-    }) => apiClient.updateMoodEntry(data),
-    onSuccess: () => {
-      setError(null);
-      router.push(`/team/${teamId}/${isoDate}`);
-    },
-    onError: (error) => {
-      console.error('Error updating mood entry:', error);
-      setError('Failed to update mood entry. Please try again.');
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!selectedRating) {
-      alert('Please select a mood rating');
-      return;
-    }
-
-    if (currentEntry) {
-      // Update existing entry
-      updateMutation.mutate({
-        entryId: currentEntry.id,
-        rating: selectedRating,
-        comment: comment || undefined,
-        visibility,
-        allowContact,
-      });
-    } else {
-      // Create new entry
-      createMutation.mutate({
-        teamId: teamId,
-        rating: selectedRating,
-        comment: comment || undefined,
-        visibility,
-        allowContact,
-        entryDate: isoDate,
-      });
-    }
-  };
-
-  const isMutating = createMutation.isPending || updateMutation.isPending;
 
   return (
     <div>
@@ -126,7 +94,7 @@ export default function MoodForm({
           </div>
 
           <form
-            onSubmit={handleSubmit}
+            action={formActions}
             className="space-y-8">
             {/* Error Message */}
             {error && (
@@ -241,8 +209,8 @@ export default function MoodForm({
               </Button>
               <Button
                 type="submit"
-                disabled={!selectedRating || isMutating}>
-                {isMutating
+                disabled={!selectedRating || pending}>
+                {pending
                   ? currentEntry
                     ? 'Updating...'
                     : 'Sharing...'
