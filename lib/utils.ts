@@ -3,7 +3,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import crypto from 'crypto';
 import { DateTime } from 'luxon';
-import { Team } from './api-types';
+import { PollDaysType } from '@/db/schema';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -82,7 +82,7 @@ export function getDayOfWeek(date: Date | DateTime) {
     'friday',
     'saturday',
   ];
-  return dayNames[dt.weekday % 7] as keyof Team['pollDays'];
+  return dayNames[dt.weekday % 7] as keyof PollDaysType;
 }
 
 export function canPostOnDate(date: DateTime): boolean {
@@ -99,7 +99,7 @@ export function todayDate(timezone?: string): string {
   return DateTime.now().setZone(tz).toFormat('yyyy-MM-dd');
 }
 
-export function getLastValidDate(pollDays: Team['pollDays']): DateTime {
+export function getLastValidDate(pollDays: PollDaysType): DateTime {
   const date = getUTCTime(todayDate());
   const dayOfWeek = getDayOfWeek(date);
   if (pollDays[dayOfWeek]) {

@@ -1,11 +1,4 @@
-import {
-  ApiResponse,
-  Team,
-  DaySelection,
-  MoodEntry,
-  CreateMoodEntryRequest,
-  UpdateMoodEntryRequest,
-} from './api-types';
+import { ApiResponse } from './api-types';
 
 class ApiClient {
   private baseUrl = '/api';
@@ -48,40 +41,6 @@ class ApiClient {
     }
   }
 
-  // Teams API methods
-  async createTeam(data: {
-    name: string;
-    description?: string;
-    pollDays: DaySelection;
-  }) {
-    return this.request<ApiResponse<Team>>('/teams', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async getTeams() {
-    return this.request<ApiResponse<Team[]>>('/teams');
-  }
-
-  async getTeam(teamId: string) {
-    return this.request<ApiResponse<Team>>(`/teams/${teamId}`);
-  }
-
-  async updateTeam(
-    teamId: string,
-    data: {
-      name: string;
-      description?: string;
-      pollDays: DaySelection;
-    },
-  ) {
-    return this.request<ApiResponse<Team>>(`/teams/${teamId}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  }
-
   async leaveTeam(teamId: string) {
     return this.request<ApiResponse<{ message: string }>>(
       `/teams/${teamId}/leave`,
@@ -95,35 +54,6 @@ class ApiClient {
     return this.request<
       ApiResponse<import('./api-types').TeamMemberWithLastVote[]>
     >(`/teams/${teamId}/members/with-votes`);
-  }
-
-  async getMoodEntriesByDate(teamId: string, date: string) {
-    return this.request<ApiResponse<MoodEntry[]>>(
-      `/mood-entries/date/${date}?teamId=${teamId}`,
-    );
-  }
-
-  async createMoodEntry(data: CreateMoodEntryRequest) {
-    return this.request<ApiResponse<MoodEntry>>('/mood-entries', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async updateMoodEntry(data: UpdateMoodEntryRequest) {
-    return this.request<ApiResponse<MoodEntry>>('/mood-entries', {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async deleteMoodEntry(entryId: string) {
-    return this.request<ApiResponse<{ message: string }>>(
-      `/mood-entries?entryId=${entryId}`,
-      {
-        method: 'DELETE',
-      },
-    );
   }
 
   // Member API methods

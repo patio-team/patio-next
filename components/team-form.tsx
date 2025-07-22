@@ -4,12 +4,9 @@ import { useState, useEffect, useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
-import { DaySelection } from '@/lib/api-types';
 import { useRouter } from 'next/navigation';
 import { createTeam, updateTeam } from '@/app/actions';
-import { Team } from '@/db/schema';
-
-export type { DaySelection };
+import { PollDaysType, Team } from '@/db/schema';
 
 interface TeamFormProps {
   mode: 'create' | 'edit';
@@ -30,7 +27,7 @@ export default function TeamForm({
   const [formData, setFormData] = useState<{
     name: string;
     description: string;
-    pollDays: DaySelection;
+    pollDays: PollDaysType;
   }>({
     name: initialData?.name || '',
     description: initialData?.description || '',
@@ -86,7 +83,7 @@ export default function TeamForm({
     }
   }, [initialData]);
 
-  const handleDayToggle = (day: keyof DaySelection) => {
+  const handleDayToggle = (day: keyof PollDaysType) => {
     setFormData((prev) => ({
       ...prev,
       pollDays: {

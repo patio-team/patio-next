@@ -8,7 +8,7 @@ import { formatMoodDate, getUTCTime } from '@/lib/utils';
 import Link from 'next/link';
 import Editor from '@/components/editor/editor';
 import { getMoodEntryByUser } from '@/db/mood-entries';
-import { moodRatingEnumType } from '@/db/schema';
+import { MoodRatingEnumType } from '@/db/schema';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
@@ -27,7 +27,7 @@ export default function MoodForm({
 
   // Form state
   const [selectedRating, setSelectedRating] =
-    useState<moodRatingEnumType | null>(currentEntry?.rating || null);
+    useState<MoodRatingEnumType | null>(currentEntry?.rating || null);
   const [comment, setComment] = useState(currentEntry?.comment || '');
   const [visibility, setVisibility] = useState<'public' | 'private'>(
     currentEntry?.visibility || 'public',
@@ -47,7 +47,7 @@ export default function MoodForm({
       result = await updateMoodEntry({
         id: currentEntry.id,
         teamId,
-        rating: selectedRating as moodRatingEnumType,
+        rating: selectedRating as MoodRatingEnumType,
         comment: comment || '',
         visibility,
         allowContact,
@@ -56,7 +56,7 @@ export default function MoodForm({
     } else {
       result = await createMoodEntry({
         teamId,
-        rating: selectedRating as moodRatingEnumType,
+        rating: selectedRating as MoodRatingEnumType,
         comment: comment || '',
         visibility,
         allowContact,
@@ -126,7 +126,7 @@ export default function MoodForm({
                       <button
                         type="button"
                         onClick={() => {
-                          setSelectedRating(rating as moodRatingEnumType);
+                          setSelectedRating(rating as MoodRatingEnumType);
                           setError(null);
                         }}
                         className={`transition-all duration-200 ${

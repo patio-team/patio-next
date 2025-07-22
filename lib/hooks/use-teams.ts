@@ -1,23 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
-
-// Query keys
-export const teamKeys = {
-  all: ['teams'] as const,
-  lists: () => [...teamKeys.all, 'list'] as const,
-  list: (filters: string) => [...teamKeys.lists(), { filters }] as const,
-  details: () => [...teamKeys.all, 'detail'] as const,
-  detail: (id: string) => [...teamKeys.details(), id] as const,
-};
-
-// Get single team query
-export function useTeam(teamId: string) {
-  return useQuery({
-    queryKey: teamKeys.detail(teamId),
-    queryFn: () => apiClient.getTeam(teamId),
-    enabled: !!teamId,
-  });
-}
 
 // Leave team mutation
 export function useLeaveTeam() {
@@ -27,7 +9,7 @@ export function useLeaveTeam() {
     mutationFn: (teamId: string) => apiClient.leaveTeam(teamId),
     onSuccess: () => {
       // Invalidate teams list to remove the left team
-      queryClient.invalidateQueries({ queryKey: teamKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['teams'] });
     },
   });
 }
