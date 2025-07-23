@@ -6,7 +6,7 @@ export async function Chart({ teamId, day }: { teamId: string; day: string }) {
   const dateTime = getUTCTime(day);
   const data = await getDailyAverageWithMovingAverage(
     teamId,
-    dateTime.minus({ days: 7 }).toJSDate(),
+    dateTime.minus({ days: 10 }).toJSDate(),
     dateTime.endOf('day').toJSDate(),
     7,
   );

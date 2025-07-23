@@ -5,6 +5,7 @@ import { db } from '@/db';
 import { teamMembers, moodEntries } from '@/db/schema';
 import { eq, and, desc, lt } from 'drizzle-orm';
 import { z } from 'zod';
+import { MembersPagination } from '@/lib/api-types';
 
 const getMemberDataSchema = z.object({
   teamId: z.string(),
@@ -105,7 +106,7 @@ export async function GET(
       ? entries[entries.length - 1].createdAt.toISOString()
       : null;
 
-    return NextResponse.json({
+    const response: MembersPagination = {
       member: {
         id: member.id,
         userId: member.userId,
@@ -131,7 +132,9 @@ export async function GET(
         hasMore,
         nextCursor,
       },
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Error fetching member data:', error);
     return NextResponse.json(

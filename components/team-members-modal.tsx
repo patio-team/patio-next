@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/dialog';
 import Link from 'next/link';
 import { DateTime } from 'luxon';
-import { TeamMemberWithLastVote } from '@/lib/api-types';
 import { LoadingSpinner } from './ui/loading-spinner';
 import { Mood, Smile } from './smile';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -22,16 +21,6 @@ interface TeamMembersModalProps {
   teamId: string;
   children: React.ReactNode;
   date: string;
-}
-
-interface LocalTeamMember
-  extends Omit<TeamMemberWithLastVote, 'joinedAt' | 'lastVote'> {
-  joinedAt: Date;
-  lastVote: {
-    date: Date;
-    rating: number;
-    comment?: string;
-  } | null;
 }
 
 export function TeamMembersModal({
@@ -51,7 +40,7 @@ export function TeamMembersModal({
     enabled: isOpen, // Only fetch when modal is open
   });
 
-  const members: LocalTeamMember[] =
+  const members =
     membersResponse?.data.map((member) => ({
       ...member,
       joinedAt: new Date(member.joinedAt),

@@ -1,18 +1,5 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
-
-// Leave team mutation
-export function useLeaveTeam() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (teamId: string) => apiClient.leaveTeam(teamId),
-    onSuccess: () => {
-      // Invalidate teams list to remove the left team
-      queryClient.invalidateQueries({ queryKey: ['teams'] });
-    },
-  });
-}
 
 // Download team mood entries CSV mutation
 export function useDownloadTeamMoodEntriesCSV() {

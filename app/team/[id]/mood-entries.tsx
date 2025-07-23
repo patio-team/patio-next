@@ -9,7 +9,6 @@ import { TeamMembersModal } from '@/components/team-members-modal';
 import { Chart } from './chart';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-
 export default async function MoodEntries({
   userTeam,
   date,
@@ -31,7 +30,7 @@ export default async function MoodEntries({
   const userVote = entries.find((entry) => entry.user?.id === userId);
 
   return (
-    <div>
+    <>
       {/* Main Content */}
       <div className="px-4 py-8 md:px-16">
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
@@ -57,6 +56,10 @@ export default async function MoodEntries({
                   </TeamMembersModal>
                   <LeaveTeamButton teamId={userTeam.team.id} />
                 </div>
+                <p className="mt-4 text-sm text-[#948FB7]">
+                  {/* Polls on Mondays, Tuesdays, Wednesdays, Thursdays and Fridays  */}
+                  Polls on {getPollDaysString(userTeam.team.pollDays)}
+                </p>
               </div>
               {userTeam.role === 'admin' && (
                 <Link
@@ -88,12 +91,10 @@ export default async function MoodEntries({
 
             {/* Chart Container */}
             <Suspense fallback={<LoadingSpinner />}>
-              <div className="rounded-xl p-4 shadow-sm">
-                <Chart
-                  teamId={userTeam.team.id}
-                  day={date}
-                />
-              </div>
+              <Chart
+                teamId={userTeam.team.id}
+                day={date}
+              />
             </Suspense>
           </div>
 
@@ -116,6 +117,6 @@ export default async function MoodEntries({
           />
         </div>
       </div>
-    </div>
+    </>
   );
 }

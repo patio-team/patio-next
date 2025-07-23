@@ -12,7 +12,7 @@ export async function DayResult({
   teamId: string;
 }) {
   return (
-    <div className="columns-3 gap-4">
+    <div className="columns-4 gap-4">
       {entries.map((entry, index) => (
         <div
           key={index}

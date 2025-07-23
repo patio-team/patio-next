@@ -1,33 +1,36 @@
+import {
+  MoodEntry,
+  NewTeam,
+  NewUser,
+  TeamMember as DbTeamMember,
+} from '@/db/schema';
+
+export interface TeamMember extends Omit<DbTeamMember, 'joinedAt'> {
+  user: NewUser;
+  joinedAt: string;
+}
+
 export interface TeamMemberWithLastVote extends TeamMember {
   lastVote: {
-    date: string;
-    rating: number;
-    comment?: string;
+    date: MoodEntry['entryDate'];
+    rating: MoodEntry['rating'];
+    comment: MoodEntry['comment'];
   } | null;
 }
 
-export interface TeamMember {
-  id: string;
-  userId: string;
-  teamId: string;
-  role: 'member' | 'admin';
-  joinedAt: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    image?: string;
+export interface MembersPagination {
+  member: TeamMember;
+  team: NewTeam;
+  moodEntries: (Omit<MoodEntry, 'entryDate' | 'createdAt' | 'updatedAt'> & {
+    entryDate: string;
+    createdAt: string;
+    updatedAt: string;
+  })[];
+  pagination: {
+    hasMore: boolean;
+    nextCursor: string | null;
   };
 }
-
-export interface TeamMemberWithLastVote extends TeamMember {
-  lastVote: {
-    date: string;
-    rating: number;
-    comment?: string;
-  } | null;
-}
-
 export interface ApiResponse<T> {
   data: T;
   success: boolean;

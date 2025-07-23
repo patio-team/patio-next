@@ -3,7 +3,6 @@ import { db } from '.';
 import { eq, and, gte, lt, count, desc, lte, isNull } from 'drizzle-orm';
 import { getMoodEntries } from './mood-entries';
 import { transformToDateTime } from '@/lib/utils';
-import { email } from 'zod';
 
 export async function totalMembersCount(teamId: string) {
   const result = await db
@@ -102,6 +101,7 @@ export async function dateScore(
 }
 
 export async function getTeamMembersWithLastVote(teamId: string) {
+  console.log('sdfsdf');
   const members = await db.query.teamMembers.findMany({
     where: eq(teamMembers.teamId, teamId),
     with: {

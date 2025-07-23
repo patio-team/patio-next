@@ -1,9 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { startTransition, useActionState, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useLeaveTeam } from '@/lib/hooks/use-teams';
-import { ApiError } from '@/lib/api-client';
 import {
   Dialog,
   DialogContent,
@@ -13,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { leaveTeam } from '@/app/actions';
 
 interface LeaveTeamButtonProps {
   teamId: string;
@@ -20,35 +19,31 @@ interface LeaveTeamButtonProps {
 
 export default function LeaveTeamButton({ teamId }: LeaveTeamButtonProps) {
   const router = useRouter();
-  const leaveTeamMutation = useLeaveTeam();
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogState, setDialogState] = useState<'confirm' | 'error'>(
+    'confirm',
+  );
 
   const handleLeaveTeam = async () => {
-    try {
-      await leaveTeamMutation.mutateAsync(teamId);
+    const result = await leaveTeam(teamId);
+
+    if (result.success) {
+      setShowDialog(false);
       router.push('/');
-    } catch (error: unknown) {
-      console.error('Error leaving team:', error);
-      if (
-        error instanceof ApiError &&
-        error.message.includes('último administrador')
-      ) {
-        setShowErrorDialog(true);
-      } else {
-        // Handle other errors - could be network errors, etc.
-        const errorMessage =
-          error instanceof ApiError
-            ? error.message
-            : 'Error al abandonar el equipo. Por favor, inténtelo de nuevo.';
-        alert(errorMessage);
-      }
-      setShowConfirmDialog(false);
+    } else {
+      setDialogState('error');
     }
   };
 
+  const [, action, pending] = useActionState(handleLeaveTeam, undefined);
+
   const handleLeaveClick = () => {
-    setShowConfirmDialog(true);
+    setDialogState('confirm');
+    setShowDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setShowDialog(false);
   };
 
   return (
@@ -60,48 +55,39 @@ export default function LeaveTeamButton({ teamId }: LeaveTeamButtonProps) {
         Leave team
       </button>
 
-      {/* Leave Team Confirmation Dialog */}
       <Dialog
-        open={showConfirmDialog}
-        onOpenChange={setShowConfirmDialog}>
+        open={showDialog}
+        onOpenChange={handleDialogClose}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Leave Team</DialogTitle>
+            <DialogTitle>
+              {dialogState === 'confirm' ? 'Leave Team' : 'Cannot Leave Team'}
+            </DialogTitle>
           </DialogHeader>
           <DialogDescription>
-            Are you sure you want to leave this team? You will no longer have
-            access to the team&apos;s polls and results.
+            {dialogState === 'confirm'
+              ? "Are you sure you want to leave this team? You will no longer have access to the team's polls and results."
+              : 'You are the last admin of this team. Please assign another admin before you can leave the team.'}
           </DialogDescription>
-          <DialogFooter className="sm:justify-between">
-            <Button
-              variant="secondary"
-              onClick={() => setShowConfirmDialog(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleLeaveTeam}
-              disabled={leaveTeamMutation.isPending}>
-              {leaveTeamMutation.isPending ? 'Leaving...' : 'Leave Team'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Error Dialog for Last Admin */}
-      <Dialog
-        open={showErrorDialog}
-        onOpenChange={setShowErrorDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Cannot Leave Team</DialogTitle>
-          </DialogHeader>
-          <DialogDescription>
-            You are the last admin of this team. Please assign another admin
-            before you can leave the team.
-          </DialogDescription>
-          <DialogFooter>
-            <Button onClick={() => setShowErrorDialog(false)}>Okay</Button>
+          <DialogFooter
+            className={dialogState === 'confirm' ? 'sm:justify-between' : ''}>
+            {dialogState === 'confirm' ? (
+              <>
+                <Button
+                  variant="secondary"
+                  onClick={handleDialogClose}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => startTransition(action)}
+                  disabled={pending}>
+                  {pending ? 'Leaving...' : 'Leave Team'}
+                </Button>
+              </>
+            ) : (
+              <Button onClick={handleDialogClose}>Okay</Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

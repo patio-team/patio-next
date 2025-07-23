@@ -498,3 +498,53 @@ export async function changeMemberRole(
     data: updatedMember,
   };
 }
+
+export async function leaveTeam(teamId: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return {
+      errors: { userId: 'Not authorized' },
+      success: false,
+    };
+  }
+
+  const userId = session.user.id;
+
+  // Check if user is member of the team
+  const membership = await db.query.teamMembers.findFirst({
+    where: and(eq(teamMembers.userId, userId), eq(teamMembers.teamId, teamId)),
+  });
+
+  if (!membership) {
+    return {
+      errors: { teamId: 'You are not a member of this team' },
+      success: false,
+    };
+  }
+
+  // If user is admin, check if they are the last admin
+  if (membership.role === 'admin') {
+    const adminMembers = await db.query.teamMembers.findMany({
+      where: and(eq(teamMembers.teamId, teamId), eq(teamMembers.role, 'admin')),
+    });
+
+    if (adminMembers.length <= 1) {
+      return {
+        errors: { userId: 'You cannot leave the team as the last admin' },
+        success: false,
+      };
+    }
+  }
+
+  // Remove user from team
+  await db
+    .delete(teamMembers)
+    .where(and(eq(teamMembers.userId, userId), eq(teamMembers.teamId, teamId)));
+
+  return {
+    success: true,
+  };
+}

@@ -1,4 +1,8 @@
-import { ApiResponse } from './api-types';
+import {
+  ApiResponse,
+  MembersPagination,
+  TeamMemberWithLastVote,
+} from './api-types';
 
 class ApiClient {
   private baseUrl = '/api';
@@ -41,19 +45,10 @@ class ApiClient {
     }
   }
 
-  async leaveTeam(teamId: string) {
-    return this.request<ApiResponse<{ message: string }>>(
-      `/teams/${teamId}/leave`,
-      {
-        method: 'POST',
-      },
-    );
-  }
-
   async getTeamMembersWithVotes(teamId: string) {
-    return this.request<
-      ApiResponse<import('./api-types').TeamMemberWithLastVote[]>
-    >(`/teams/${teamId}/members/with-votes`);
+    return this.request<ApiResponse<TeamMemberWithLastVote[]>>(
+      `/teams/${teamId}/members/with-votes`,
+    );
   }
 
   // Member API methods
@@ -71,42 +66,9 @@ class ApiClient {
       params.append('cursor', cursor);
     }
 
-    return this.request<{
-      member: {
-        id: string;
-        userId: string;
-        teamId: string;
-        role: 'member' | 'admin';
-        joinedAt: string;
-        user: {
-          id: string;
-          name: string;
-          email: string;
-          image?: string;
-        };
-      };
-      team: {
-        id: string;
-        name: string;
-        description?: string;
-      };
-      moodEntries: Array<{
-        id: string;
-        userId: string;
-        teamId: string;
-        rating: string;
-        comment?: string;
-        visibility: 'public' | 'private';
-        allowContact: boolean;
-        entryDate: string;
-        createdAt: string;
-        updatedAt: string;
-      }>;
-      pagination: {
-        hasMore: boolean;
-        nextCursor: string | null;
-      };
-    }>(`/teams/${teamId}/members/${memberId}?${params.toString()}`);
+    return this.request<MembersPagination>(
+      `/teams/${teamId}/members/${memberId}?${params.toString()}`,
+    );
   }
 
   // Download team mood entries as CSV (admin only)

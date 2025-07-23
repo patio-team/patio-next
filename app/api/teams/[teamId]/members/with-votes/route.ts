@@ -6,6 +6,7 @@ import { eq, and } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { auth } from '@/lib/auth';
 import { getTeamMembersWithLastVote } from '@/db/team';
+import { TeamMemberWithLastVote } from '@/lib/api-types';
 
 interface Context {
   params: Promise<{ teamId: string }>;
@@ -37,7 +38,12 @@ export async function GET(request: NextRequest, { params }: Context) {
       return createErrorResponse('You do not have access to this team', 403);
     }
 
-    const membersWithVotes = await getTeamMembersWithLastVote(teamId);
+    const membersWithVotes: TeamMemberWithLastVote[] = (
+      await getTeamMembersWithLastVote(teamId)
+    ).map((member) => ({
+      ...member,
+      joinedAt: member.joinedAt.toISOString(),
+    }));
 
     return createResponse(membersWithVotes);
   } catch (error) {
