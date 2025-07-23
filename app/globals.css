@@ -82,6 +82,9 @@
   --color-mood2: #ff7473;
   --color-mood1: #fe346e;
 
+  --color-link: #3fa2f7;
+  --color-link-hover: #2563eb;
+
   --font-merriweather: var(--font-merriweather-next);
   --font-lato: var(--font-lato-next);
 

@@ -1,6 +1,6 @@
 import { TeamMemberWithTeam } from '@/db/schema';
 import Link from 'next/link';
-import { getPollDaysString, getUTCTime } from '@/lib/utils';
+import { getLastValidDate, getPollDaysString, getUTCTime } from '@/lib/utils';
 import { DayResult } from '@/components/day-result';
 import { getMoodEntries } from '@/db/mood-entries';
 import PollResults from '@/components/poll-result';
@@ -9,6 +9,7 @@ import { TeamMembersModal } from '@/components/team-members-modal';
 import { Chart } from './chart';
 import { Suspense } from 'react';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { ArrowRight } from 'lucide-react';
 export default async function MoodEntries({
   userTeam,
   date,
@@ -28,6 +29,8 @@ export default async function MoodEntries({
   );
 
   const userVote = entries.find((entry) => entry.user?.id === userId);
+
+  const lastValidDate = getLastValidDate(userTeam.team.pollDays);
 
   return (
     <>
@@ -50,7 +53,7 @@ export default async function MoodEntries({
                   <TeamMembersModal
                     teamId={userTeam.team.id}
                     date={date}>
-                    <button className="cursor-pointer text-sm font-medium text-[#3FA2F7] transition-colors hover:text-[#2563eb]">
+                    <button className="text-link hover:text-link-hover cursor-pointer text-sm font-medium transition-colors">
                       See members
                     </button>
                   </TeamMembersModal>
@@ -96,6 +99,17 @@ export default async function MoodEntries({
                 day={date}
               />
             </Suspense>
+
+            {lastValidDate > dateTime && (
+              <div className="flex justify-end">
+                <Link
+                  href={`/team/${userTeam.team.id}/${lastValidDate.toFormat('yyyy-MM-dd')}`}
+                  className="text-link hover:text-link-hover flex items-center gap-2 text-lg transition-colors">
+                  Go to last poll
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            )}
           </div>
 
           <Suspense fallback={<LoadingSpinner />}>

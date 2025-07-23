@@ -101,7 +101,6 @@ export async function dateScore(
 }
 
 export async function getTeamMembersWithLastVote(teamId: string) {
-  console.log('sdfsdf');
   const members = await db.query.teamMembers.findMany({
     where: eq(teamMembers.teamId, teamId),
     with: {
