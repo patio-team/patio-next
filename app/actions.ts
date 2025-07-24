@@ -1,6 +1,7 @@
 'use server';
 
 import { db } from '@/db';
+import crypto from 'crypto';
 import {
   createMoodSchema,
   createTeamSchema,
@@ -12,12 +13,7 @@ import {
   users,
   type NewMoodEntry,
 } from '@/db/schema';
-import {
-  generateId,
-  generateToken,
-  getDayOfWeek,
-  transformToDateTime,
-} from '@/lib/utils';
+import { generateId, getDayOfWeek, transformToDateTime } from '@/lib/utils';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 
@@ -417,7 +413,7 @@ export async function sendInvites(
 
   // Create invitations
   const invitations = emailValidation.data.map((email) => {
-    const token = generateToken();
+    const token = crypto.randomBytes(32).toString('hex');
 
     return {
       id: generateId(),

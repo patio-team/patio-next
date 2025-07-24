@@ -50,11 +50,6 @@ export function generateId(): string {
   return crypto.randomUUID();
 }
 
-// Generate token for invitations
-export function generateToken(): string {
-  return crypto.randomBytes(32).toString('hex');
-}
-
 export function getPollDaysString(pollDays: Record<string, boolean>): string {
   const days = Object.entries(pollDays)
     .filter(([, value]) => value)
