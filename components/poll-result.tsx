@@ -85,7 +85,7 @@ export default async function PollResults({
             </div>
           </div>
 
-          {!!entries.length && (
+          {!!entries.length && percentageHistoricalAverage !== 0 && (
             <div className="mt-2 text-base text-[#948FB7]">
               {Math.round(percentageHistoricalAverage)}%{' '}
               {percentageHistoricalAverage < 0 ? 'below' : 'above'} average
