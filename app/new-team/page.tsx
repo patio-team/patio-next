@@ -1,5 +1,3 @@
-'use server';
-
 import { redirect } from 'next/navigation';
 import TeamForm from '@/components/team-form';
 import { auth } from '@/lib/auth';

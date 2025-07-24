@@ -1,5 +1,3 @@
-'use client';
-
 import Image from 'next/image';
 import Logo from '@/components/ui/logo';
 import GoogleSignInButton from '@/components/ui/google-sign-in-button';

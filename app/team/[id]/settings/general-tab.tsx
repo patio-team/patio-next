@@ -4,6 +4,7 @@ import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useDownloadTeamMoodEntriesCSV } from '@/lib/hooks/use-teams';
 import TeamForm from '@/components/team-form';
+import DeleteTeamButton from '@/components/delete-team-button';
 import { toast } from 'sonner';
 import type { getTeam } from '@/db/team';
 
@@ -54,6 +55,24 @@ export default function GeneralTab({
           <p className="text-sm text-[#948FB7]">
             Download all mood entries for this team as a CSV file
           </p>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="mt-12 border-t border-red-200 pt-8">
+          <h3 className="mb-4 text-lg font-semibold text-red-600">
+            Danger Zone
+          </h3>
+          <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+            <h4 className="mb-2 font-medium text-red-800">Delete Team</h4>
+            <p className="mb-4 text-sm text-red-700">
+              Permanently delete this team and all associated data. This action
+              cannot be undone.
+            </p>
+            <DeleteTeamButton
+              teamId={team.id}
+              teamName={team.name}
+            />
+          </div>
         </div>
       </div>
     </div>

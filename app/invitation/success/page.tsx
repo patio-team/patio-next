@@ -1,13 +1,14 @@
-'use client';
-
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Logo from '@/components/ui/logo';
 
-export default function InvitationSuccessPage() {
-  const searchParams = useSearchParams();
-  const teamName = searchParams.get('teamName') || 'the team';
-  const teamId = searchParams.get('teamId');
+export default async function InvitationSuccessPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ teamName: string; teamId: string }>;
+}) {
+  const params = await searchParams;
+  const teamName = params.teamName;
+  const teamId = params.teamId;
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-center py-8">
@@ -31,21 +32,17 @@ export default function InvitationSuccessPage() {
         </p>
 
         <div className="space-y-3">
-          {teamId && (
-            <Link
-              href={`/team/${teamId}`}
-              className="inline-block rounded bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700">
-              Go to Team Dashboard
-            </Link>
-          )}
+          <Link
+            href={`/team/${teamId}`}
+            className="inline-block rounded bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700">
+            Go to Team Dashboard
+          </Link>
 
-          {!teamId && (
-            <Link
-              href="/"
-              className="inline-block rounded bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700">
-              Go to Dashboard
-            </Link>
-          )}
+          <Link
+            href="/"
+            className="inline-block rounded bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700">
+            Go to Dashboard
+          </Link>
         </div>
       </div>
     </div>

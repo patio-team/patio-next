@@ -1,14 +1,15 @@
-'use client';
-
-import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Logo from '@/components/ui/logo';
 import GoogleSignInButton from '@/components/ui/google-sign-in-button';
 
-export default function LoginPage() {
-  const searchParams = useSearchParams();
-  const invitationToken = searchParams.get('invitation');
-  const returnTo = searchParams.get('returnTo');
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ invitation?: string; returnTo?: string }>;
+}) {
+  const params = await searchParams;
+  const invitationToken = params.invitation;
+  const returnTo = params.returnTo;
 
   // Determine callback URL based on invitation context
   let callbackURL = '/';

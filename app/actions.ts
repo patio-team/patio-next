@@ -310,6 +310,51 @@ export async function updateTeam(teamData: NewTeam) {
   };
 }
 
+export async function deleteTeam(teamId: string) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    return {
+      errors: { userId: 'Not authorized' },
+      success: false,
+    };
+  }
+
+  // Check if the user is an admin of the team
+  const membership = await db.query.teamMembers.findFirst({
+    where: and(
+      eq(teamMembers.userId, session.user.id),
+      eq(teamMembers.teamId, teamId),
+      eq(teamMembers.role, 'admin'),
+    ),
+  });
+
+  if (!membership) {
+    return {
+      errors: { teamId: 'You are not an admin of this team' },
+      success: false,
+    };
+  }
+
+  try {
+    // Delete the team (cascade will handle related records)
+    await db.delete(teams).where(eq(teams.id, teamId));
+
+    return {
+      success: true,
+      data: { teamId },
+    };
+  } catch (error) {
+    console.error('Error deleting team:', error);
+    return {
+      errors: { teamId: 'Failed to delete team' },
+      success: false,
+    };
+  }
+}
+
 export async function sendInvites(
   userId: string,
   teamId: string,

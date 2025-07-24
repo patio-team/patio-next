@@ -6,12 +6,14 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import InvitationPage from './components';
 
-interface Props {
-  params: { token: string };
+interface InvitationPageProps {
+  params: Promise<{ token: string }>;
 }
 
-export default async function InvitationTokenPage({ params }: Props) {
-  const { token } = params;
+export default async function InvitationTokenPage({
+  params,
+}: InvitationPageProps) {
+  const { token } = await params;
 
   // Find invitation
   const invitation = await db.query.teamInvitations.findFirst({
