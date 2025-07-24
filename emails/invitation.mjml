@@ -1,0 +1,78 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Lato, sans-serif" />
+      <mj-text
+        font-size="16px"
+        color="#34314C" />
+      <mj-button
+        padding="0"
+        border-radius="5px"
+        inner-padding="10px 20px"
+        background-color="#007bff"
+        color="#ffffff" />
+    </mj-attributes>
+  </mj-head>
+
+  <mj-body background-color="#f6f6f6">
+    <mj-section padding-top="20px"></mj-section>
+    <mj-wrapper
+      css-class="main-wrapper"
+      background-color="#ffffff"
+      padding="20px"
+      border-radius="20px">
+      <mj-section>
+        <mj-column>
+          <mj-image
+            src="#{frontUrl}/patio.png"
+            alt="Patio"
+            padding="0" />
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding-top="20px">
+        <mj-column>
+          <mj-text
+            font-size="24px"
+            font-weight="700"
+            padding-top="24px">
+            Has sido invitado a unirte al equipo "#{teamName}"
+          </mj-text>
+
+          <mj-text padding-top="24px">
+            #{inviterName} te ha invitado a unirte a su equipo en Patio.
+          </mj-text>
+
+          <mj-text padding-top="16px">
+            Haz clic en el siguiente enlace para aceptar la invitación:
+          </mj-text>
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding-top="24px">
+        <mj-column>
+          <mj-button href="#{inviteUrl}">
+            Aceptar invitación
+          </mj-button>
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding-top="20px">
+        <mj-column>
+          <mj-text padding-top="16px">
+            Si no puedes hacer clic en el enlace, copia y pega esta URL en tu navegador:
+          </mj-text>
+
+          <mj-text
+            padding-top="8px"
+            font-family="monospace"
+            font-size="14px"
+            color="#666666">
+            #{inviteUrl}
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <mj-section padding-top="20px"></mj-section>
+  </mj-body>
+</mjml>

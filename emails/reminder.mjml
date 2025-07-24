@@ -1,0 +1,93 @@
+<mjml>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Lato, sans-serif" />
+      <mj-text
+        font-size="16px"
+        color="#34314C" />
+      <mj-button
+        padding="0"
+        border-radius="2px"
+        inner-padding="0" />
+    </mj-attributes>
+  </mj-head>
+
+  <mj-body background-color="#f6f6f6">
+    <mj-section padding-top="20px"></mj-section>
+    <mj-wrapper
+      css-class="main-wrapper"
+      background-color="#ffffff"
+      padding="20px"
+      border-radius="20px">
+      <mj-section>
+        <mj-column>
+          <mj-image
+            src="#{frontUrl}/patio.png"
+            alt="Patio"
+            padding="0" />
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding-top="20px">
+        <mj-column>
+          <mj-text padding-top="24px">#{greetings}</mj-text>
+          <mj-text padding-top="24px">#{today}</mj-text>
+          <mj-text
+            font-size="24px"
+            font-weight="700"
+            padding-top="24px"
+            >#{question}</mj-text
+          >
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding-top="24px">
+        <mj-group>
+          <mj-column>
+            <mj-image
+              width="50px"
+              href="#{link}?vote=1"
+              src="#{frontUrl}/mood1.png"
+              alt="Mood 1" />
+          </mj-column>
+          <mj-column>
+            <mj-image
+              width="50px"
+              href="#{link}?vote=2"
+              src="#{frontUrl}/mood2.png"
+              alt="Mood 2" />
+          </mj-column>
+          <mj-column>
+            <mj-image
+              width="50px"
+              href="#{link}?vote=3"
+              src="#{frontUrl}/mood3.png"
+              alt="Mood 3" />
+          </mj-column>
+          <mj-column>
+            <mj-image
+              width="50px"
+              href="#{link}?vote=4"
+              src="#{frontUrl}/mood4.png"
+              alt="Mood 4" />
+          </mj-column>
+          <mj-column>
+            <mj-image
+              width="50px"
+              href="#{link}?vote=5"
+              src="#{frontUrl}/mood5.png"
+              alt="Mood 5" />
+          </mj-column>
+        </mj-group>
+      </mj-section>
+
+      <mj-section padding-top="20px">
+        <mj-column>
+          <mj-text padding-top="24px">#{thanks}</mj-text>
+          <mj-text padding-top="24px">#{disclaimer}</mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <mj-section padding-top="20px"></mj-section>
+  </mj-body>
+</mjml>

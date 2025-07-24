@@ -1,4 +1,7 @@
 import nodemailer from 'nodemailer';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { todayDate } from './utils';
 
 const transporter = nodemailer.createTransport({
   host: process.env['SMTP_HOST'],
@@ -18,41 +21,79 @@ export async function sendTeamInvitationEmail(
 ) {
   const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/invitations/accept?token=${inviteToken}`;
 
+  const templatePath = join(process.cwd(), 'emails', 'invitation.html');
+  const template = readFileSync(templatePath, 'utf8');
+
+  const html = applyTemplatePlaceholders(template, {
+    frontUrl: process.env.NEXT_PUBLIC_APP_URL || '',
+    teamName,
+    inviterName,
+    inviteUrl,
+  });
+
   const mailOptions = {
     from: process.env.FROM_EMAIL,
     to: email,
-    subject: `Invitación a unirte al equipo ${teamName}`,
-    html: `
-      <h2>Has sido invitado a unirte al equipo "${teamName}"</h2>
-      <p>${inviterName} te ha invitado a unirte a su equipo en Patio.</p>
-      <p>Haz clic en el siguiente enlace para aceptar la invitación:</p>
-      <a href="${inviteUrl}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Aceptar invitación</a>
-      <p>Si no puedes hacer clic en el enlace, copia y pega esta URL en tu navegador:</p>
-      <p>${inviteUrl}</p>
-    `,
+    subject: `Invitación a unirte al equipo ${teamName} en Patio`,
+    html,
   };
 
   return await transporter.sendMail(mailOptions);
 }
 
-export async function sendMentionNotificationEmail(
-  email: string,
-  mentionerName: string,
-  teamName: string,
-  comment: string,
-) {
+interface ReminderEmailData {
+  email: string;
+  name: string;
+  teamId: string;
+  teamName: string;
+}
+
+function applyTemplatePlaceholders(
+  template: string,
+  data: Record<string, string>,
+): string {
+  return Object.entries(data).reduce(
+    (result, [key, value]) =>
+      result.replace(new RegExp(`#{${key}}`, 'g'), value),
+    template,
+  );
+}
+
+export async function sendReminderEmail({
+  email,
+  name,
+  teamId,
+  teamName,
+}: ReminderEmailData) {
+  const templatePath = join(process.cwd(), 'emails', 'reminder.html');
+  const template = readFileSync(templatePath, 'utf8');
+
+  // Create the voting link
+  const voteLink = `${process.env.NEXT_PUBLIC_APP_URL}/team/${teamId}/${todayDate()}/mood`;
+
+  const date = new Date().toLocaleDateString('es-ES', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  const html = applyTemplatePlaceholders(template, {
+    frontUrl: process.env.NEXT_PUBLIC_APP_URL || '',
+    greetings: `¡Hola ${name}!`,
+    today: `Hoy es ${date}`,
+    question: `¿Estás feliz en ${teamName}?`,
+    link: voteLink,
+    thanks: 'Gracias por votar!',
+    disclaimer:
+      'Recibes este correo porque formas parte de un equipo de patio.',
+  });
+
   const mailOptions = {
     from: process.env.FROM_EMAIL,
     to: email,
-    subject: `Te han mencionado en ${teamName}`,
-    html: `
-      <h2>Te han mencionado en el equipo "${teamName}"</h2>
-      <p>${mentionerName} te ha mencionado en un comentario:</p>
-      <blockquote style="border-left: 4px solid #007bff; padding-left: 16px; margin: 16px 0;">
-        ${comment}
-      </blockquote>
-      <p>Ve a la aplicación para ver más detalles.</p>
-    `,
+    subject: `Hoy es ${date}. ¿Estás feliz en ${teamName}?`,
+    html,
   };
 
   return await transporter.sendMail(mailOptions);

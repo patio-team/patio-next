@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useActionState, useState } from 'react';
 import { Smile } from '@/components/smile';
 import { Button } from '@/components/ui/button';
@@ -24,10 +24,15 @@ export default function MoodForm({
   };
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const defaultVote = searchParams.get('vote') as MoodRatingEnumType | null;
 
   // Form state
   const [selectedRating, setSelectedRating] =
-    useState<MoodRatingEnumType | null>(currentEntry?.rating || null);
+    useState<MoodRatingEnumType | null>(
+      currentEntry?.rating || defaultVote || null,
+    );
   const [comment, setComment] = useState(currentEntry?.comment || '');
   const [visibility, setVisibility] = useState<'public' | 'private'>(
     currentEntry?.visibility || 'public',
