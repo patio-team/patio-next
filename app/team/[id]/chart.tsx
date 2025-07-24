@@ -1,6 +1,8 @@
-import VoteChart from '@/components/vote-chart';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { getDailyAverageWithMovingAverage } from '@/db/team';
 import { getUTCTime } from '@/lib/utils';
+import { lazy, Suspense } from 'react';
+const VoteChart = lazy(() => import('@/components/vote-chart'));
 
 export async function Chart({ teamId, day }: { teamId: string; day: string }) {
   const dateTime = getUTCTime(day);
@@ -20,10 +22,12 @@ export async function Chart({ teamId, day }: { teamId: string; day: string }) {
   });
 
   return (
-    <VoteChart
-      data={finalData}
-      teamId={teamId}
-      selectedVotingId={finalData.at(-1)?.votingId}
-    />
+    <Suspense fallback={<LoadingSpinner />}>
+      <VoteChart
+        data={finalData}
+        teamId={teamId}
+        selectedVotingId={finalData.at(-1)?.votingId}
+      />
+    </Suspense>
   );
 }
