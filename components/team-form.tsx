@@ -94,7 +94,11 @@ export default function TeamForm({
   };
 
   const onCancel = () => {
-    router.push('/');
+    if (mode === 'edit' && initialData) {
+      router.push(`/team/${initialData.id}`);
+    } else {
+      router.push('/');
+    }
   };
 
   return (
