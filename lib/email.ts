@@ -19,7 +19,7 @@ export async function sendTeamInvitationEmail(
   inviterName: string,
   inviteToken: string,
 ) {
-  const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/invitations/accept?token=${inviteToken}`;
+  const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invitation/${inviteToken}`;
 
   const templatePath = join(process.cwd(), 'emails', 'invitation.html');
   const template = readFileSync(templatePath, 'utf8');

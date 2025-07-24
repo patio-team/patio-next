@@ -30,7 +30,13 @@ export async function GET(request: NextRequest) {
     });
 
     if (!invitation) {
-      return createErrorResponse('Invalid or expired invitation', 404);
+      const errorUrl = new URL('/invitation/error', request.url);
+      errorUrl.searchParams.set('error', 'Invalid Invitation');
+      errorUrl.searchParams.set(
+        'description',
+        'This invitation link is invalid, expired, or has already been used.',
+      );
+      return NextResponse.redirect(errorUrl);
     }
 
     // Check if user exists
@@ -40,8 +46,8 @@ export async function GET(request: NextRequest) {
 
     // redirect to login if user does not exist
     if (!user) {
-      const loginUrl = new URL('/login', request.url);
-      return NextResponse.redirect(loginUrl);
+      const invitationUrl = new URL(`/invitation/${token}`, request.url);
+      return NextResponse.redirect(invitationUrl);
     }
 
     // Check if user is already a member
@@ -53,7 +59,9 @@ export async function GET(request: NextRequest) {
     });
 
     if (existingMembership) {
-      return createErrorResponse('You are already a member of this team', 409);
+      // Redirect to the team page since they're already a member
+      const teamUrl = new URL(`/team/${invitation.teamId}`, request.url);
+      return NextResponse.redirect(teamUrl);
     }
 
     // Add user to team
@@ -72,12 +80,11 @@ export async function GET(request: NextRequest) {
       })
       .where(eq(teamInvitations.id, invitation.id));
 
-    // Redirect to login or team page
-    const redirectUrl = new URL(
-      '/team/' + invitation.teamId,
-      process.env.NEXT_PUBLIC_APP_URL,
-    );
-    return Response.redirect(redirectUrl);
+    // Redirect to success page
+    const successUrl = new URL('/invitation/success', request.url);
+    successUrl.searchParams.set('teamName', invitation.team.name);
+    successUrl.searchParams.set('teamId', invitation.teamId);
+    return NextResponse.redirect(successUrl);
   } catch (error) {
     console.error('Error accepting invitation:', error);
     return createErrorResponse('Internal Server Error', 500);
@@ -125,10 +132,16 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user || user.email !== invitation.email) {
-      return createErrorResponse(
-        'This invitation is not for your account',
-        403,
+      // Redirect to error page with specific message for email mismatch
+      const errorUrl = new URL('/invitation/error', request.url);
+      errorUrl.searchParams.set('error', 'Email Mismatch');
+      errorUrl.searchParams.set(
+        'description',
+        `This invitation is for ${invitation.email}. Please sign in with the correct Google account or contact the person who invited you.`,
       );
+      errorUrl.searchParams.set('actionText', 'Try Again');
+      errorUrl.searchParams.set('actionHref', `/invitation/${token}`);
+      return NextResponse.redirect(errorUrl);
     }
 
     // Check if user is already a member
@@ -140,7 +153,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingMembership) {
-      return createErrorResponse('You are already a member of this team', 409);
+      return createResponse({
+        message: 'You are already a member of this team',
+        team: invitation.team,
+      });
     }
 
     // Add user to team

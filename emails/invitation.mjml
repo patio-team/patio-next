@@ -51,16 +51,15 @@
 
       <mj-section padding-top="24px">
         <mj-column>
-          <mj-button href="#{inviteUrl}">
-            Aceptar invitación
-          </mj-button>
+          <mj-button href="#{inviteUrl}"> Aceptar invitación </mj-button>
         </mj-column>
       </mj-section>
 
       <mj-section padding-top="20px">
         <mj-column>
           <mj-text padding-top="16px">
-            Si no puedes hacer clic en el enlace, copia y pega esta URL en tu navegador:
+            Si no puedes hacer clic en el enlace, copia y pega esta URL en tu
+            navegador:
           </mj-text>
 
           <mj-text

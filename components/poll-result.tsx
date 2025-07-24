@@ -94,7 +94,7 @@ export default async function PollResults({
         </div>
 
         {/* Right side - Participation */}
-        <div className="ml-auto flex flex-col items-start">
+        <div className="flex flex-col items-start">
           <div className="text-base font-medium text-[#948FB7]">
             {formattedDate}
           </div>
