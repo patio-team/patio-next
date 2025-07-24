@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import PageHeader from '@/components/layout/page-header';
 import { db } from '@/db';
-import { teamMembers } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { teamMembers, moodEntries, teams, PollDaysType } from '@/db/schema';
+import { eq, desc } from 'drizzle-orm';
 import { NoTeams } from '@/components/no-teams';
 import { getLastValidDate } from '@/lib/utils';
 
@@ -17,29 +17,57 @@ export default async function Home() {
     redirect('/login');
   }
 
-  const userTeams = await db.query.teamMembers.findMany({
-    where: eq(teamMembers.userId, session.user.id),
-    with: {
-      team: true,
-    },
-  });
+  let targetTeam: {
+    pollDays: PollDaysType;
+    id: string;
+  } | null = null;
 
-  if (!userTeams.length) {
-    return (
-      <div>
-        <PageHeader
-          user={session.user}
-          userTeams={userTeams}
-          lastValidDate=""
-        />
-        <NoTeams />
-      </div>
-    );
+  // Find the team where the user last voted (made a mood entry)
+  const lastVotedEntry = await db
+    .select({
+      teamId: moodEntries.teamId,
+      pollDays: teams.pollDays,
+    })
+    .from(moodEntries)
+    .where(eq(moodEntries.userId, session.user.id))
+    .leftJoin(teams, eq(moodEntries.teamId, teams.id))
+    .orderBy(desc(moodEntries.createdAt))
+    .limit(1);
+
+  if (lastVotedEntry.length && lastVotedEntry[0].pollDays) {
+    targetTeam = {
+      pollDays: lastVotedEntry[0].pollDays,
+      id: lastVotedEntry[0].teamId,
+    };
+  } else {
+    const userTeams = await db.query.teamMembers.findMany({
+      where: eq(teamMembers.userId, session.user.id),
+      with: {
+        team: true,
+      },
+      limit: 1,
+      orderBy: desc(teamMembers.joinedAt),
+    });
+
+    if (userTeams.length) {
+      targetTeam = {
+        pollDays: userTeams[0].team.pollDays,
+        id: userTeams[0].team.id,
+      };
+    } else {
+      return (
+        <div>
+          <PageHeader
+            user={session.user}
+            userTeams={userTeams}
+            lastValidDate=""
+          />
+          <NoTeams />
+        </div>
+      );
+    }
   }
 
-  const firstTeam = userTeams[0].team;
-
-  const date = getLastValidDate(firstTeam.pollDays).toFormat('yyyy-MM-dd');
-
-  redirect(`/team/${firstTeam.id}/${date}`);
+  const date = getLastValidDate(targetTeam.pollDays).toFormat('yyyy-MM-dd');
+  redirect(`/team/${targetTeam.id}/${date}`);
 }
