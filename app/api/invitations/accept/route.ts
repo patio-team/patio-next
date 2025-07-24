@@ -73,8 +73,10 @@ export async function GET(request: NextRequest) {
       .where(eq(teamInvitations.id, invitation.id));
 
     // Redirect to login or team page
-    const redirectUrl =
-      process.env.NEXT_PUBLIC_APP_URL + 'team/' + invitation.teamId;
+    const redirectUrl = new URL(
+      '/team/' + invitation.teamId,
+      process.env.NEXT_PUBLIC_APP_URL,
+    );
     return Response.redirect(redirectUrl);
   } catch (error) {
     console.error('Error accepting invitation:', error);
