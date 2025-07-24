@@ -36,9 +36,9 @@ export default async function MoodEntries({
     <>
       {/* Main Content */}
       <div className="px-4 py-8 md:px-16">
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
+        <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
           {/* Left Section - Chart and Header */}
-          <div className="space-y-6 xl:col-span-2">
+          <div className="space-y-6">
             {/* Title and Settings */}
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row">
               <div>
@@ -94,10 +94,12 @@ export default async function MoodEntries({
 
             {/* Chart Container */}
             <Suspense fallback={<LoadingSpinner />}>
-              <Chart
-                teamId={userTeam.team.id}
-                day={date}
-              />
+              <div className="pt-4">
+                <Chart
+                  teamId={userTeam.team.id}
+                  day={date}
+                />
+              </div>
             </Suspense>
 
             {lastValidDate > dateTime && (
