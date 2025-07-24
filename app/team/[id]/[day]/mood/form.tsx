@@ -95,7 +95,7 @@ export default function MoodForm({
             <h1 className="font-merriweather text-primary mb-2 text-3xl font-normal">
               {currentEntry ? 'Update your mood' : 'Share your mood'}
             </h1>
-            <p className="text-[#948FB7]">{formattedDate}</p>
+            <p className="text-gray-500">{formattedDate}</p>
           </div>
 
           <form

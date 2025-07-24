@@ -90,6 +90,8 @@
 
   --animate-jump-dot: jump-dot 0.8s ease-in-out infinite;
 
+  --color-gray-500: #948fb7;
+
   @keyframes jump-dot {
     0%,
     100% {

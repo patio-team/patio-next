@@ -45,7 +45,7 @@ export default async function MoodEntries({
                 <h1 className="font-merriweather text-primary text-2xl font-normal md:text-3xl">
                   {userTeam.team.name}
                 </h1>
-                <p className="mt-1 text-sm text-[#948FB7]">
+                <p className="mt-1 text-sm text-gray-500">
                   {/* Polls on Mondays, Tuesdays, Wednesdays, Thursdays and Fridays  */}
                   Polls on {getPollDaysString(userTeam.team.pollDays)}
                 </p>
@@ -59,7 +59,7 @@ export default async function MoodEntries({
                   </TeamMembersModal>
                   <LeaveTeamButton teamId={userTeam.team.id} />
                 </div>
-                <p className="mt-4 text-sm text-[#948FB7]">
+                <p className="mt-4 text-sm text-gray-500">
                   {/* Polls on Mondays, Tuesdays, Wednesdays, Thursdays and Fridays  */}
                   Polls on {getPollDaysString(userTeam.team.pollDays)}
                 </p>

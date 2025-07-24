@@ -17,7 +17,7 @@ export default async function NewTeamPage() {
       {/* Main content */}
       <div className="mx-auto max-w-4xl px-6 py-16 sm:px-16">
         {/* Title */}
-        <h1 className="font-merriweather mb-8 text-[32px] leading-[42px] font-normal text-[#34314C]">
+        <h1 className="font-merriweather text-primary mb-8 text-[32px] leading-[42px] font-normal">
           New team
         </h1>
 

@@ -14,7 +14,7 @@ export default function InvitationNotFound() {
         <div className="mb-6 text-6xl">❌</div>
 
         {/* Error Message */}
-        <h1 className="font-merriweather mb-4 text-2xl text-[#34314C]">
+        <h1 className="font-merriweather text-primary mb-4 text-2xl">
           Invitation Not Found
         </h1>
 

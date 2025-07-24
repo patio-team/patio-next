@@ -22,7 +22,7 @@ export default function InvitationPage({ invitation }: InvitationPageProps) {
         </div>
 
         {/* Tagline */}
-        <p className="font-merriweather mb-8 text-center text-xl leading-relaxed text-[#34314C] xl:text-2xl">
+        <p className="font-merriweather text-primary mb-8 text-center text-xl leading-relaxed xl:text-2xl">
           The bottom-up temperature check tool made by teams for teams
         </p>
 
@@ -44,7 +44,7 @@ export default function InvitationPage({ invitation }: InvitationPageProps) {
           {/* Invitation Details */}
           <div className="mb-8 rounded-lg border border-blue-100 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 text-center">
             <div className="mb-4 text-4xl">🎉</div>
-            <h2 className="font-merriweather mb-3 text-xl text-[#34314C]">
+            <h2 className="font-merriweather text-primary mb-3 text-xl">
               You&apos;re invited!
             </h2>
             <p className="mb-2 text-gray-700">
@@ -59,7 +59,7 @@ export default function InvitationPage({ invitation }: InvitationPageProps) {
           </div>
 
           {/* Form Title */}
-          <h1 className="font-merriweather mb-8 text-center text-2xl text-[#34314C] lg:mb-12 lg:text-[32px] lg:leading-[42px]">
+          <h1 className="font-merriweather text-primary mb-8 text-center text-2xl lg:mb-12 lg:text-[32px] lg:leading-[42px]">
             Sign in to join the team
           </h1>
 

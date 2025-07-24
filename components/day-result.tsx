@@ -57,7 +57,7 @@ export async function DayResult({
                 />
               </svg>
               <div
-                className="text-sm text-[#948FB7]"
+                className="text-sm text-gray-500"
                 dangerouslySetInnerHTML={{ __html: entry.comment }}></div>
             </div>
           )}

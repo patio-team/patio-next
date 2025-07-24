@@ -52,7 +52,7 @@ export default function GeneralTab({
               ? 'Downloading...'
               : 'Download Mood Entries CSV'}
           </Button>
-          <p className="text-sm text-[#948FB7]">
+          <p className="text-sm text-gray-500">
             Download all mood entries for this team as a CSV file
           </p>
         </div>

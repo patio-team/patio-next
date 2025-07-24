@@ -22,7 +22,7 @@ export default async function InvitationSuccessPage({
         <div className="mb-6 text-6xl">🎉</div>
 
         {/* Success Message */}
-        <h1 className="font-merriweather mb-4 text-2xl text-[#34314C]">
+        <h1 className="font-merriweather text-primary mb-4 text-2xl">
           Welcome to {teamName}!
         </h1>
 

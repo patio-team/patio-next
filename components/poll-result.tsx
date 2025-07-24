@@ -71,7 +71,7 @@ export default async function PollResults({
       <div className="mb-6 flex flex-col items-start gap-6 lg:flex-row lg:items-start">
         {/* Left side - Score */}
         <div className="relative flex flex-col items-start">
-          <h2 className="font-merriweather text-2xl font-normal text-[#34314C]">
+          <h2 className="font-merriweather text-primary text-2xl font-normal">
             Last poll result
           </h2>
           <div className="relative mt-10 mb-4 flex items-center">
@@ -79,14 +79,14 @@ export default async function PollResults({
             <div className="absolute top-1/2 left-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-[#98DDAB]"></div>
             {/* Large score text */}
             <div className="relative z-10">
-              <span className="text-[96px] leading-[42px] font-light text-[#34314C]">
+              <span className="text-primary text-[96px] leading-[42px] font-light">
                 {dayScore.averageScore.toFixed(1).replace('.', ',')}
               </span>
             </div>
           </div>
 
           {!!entries.length && percentageHistoricalAverage !== 0 && (
-            <div className="mt-2 text-base text-[#948FB7]">
+            <div className="mt-2 text-base text-gray-500">
               {Math.round(percentageHistoricalAverage)}%{' '}
               {percentageHistoricalAverage < 0 ? 'below' : 'above'} average
             </div>
@@ -95,17 +95,17 @@ export default async function PollResults({
 
         {/* Right side - Participation */}
         <div className="flex flex-col items-start">
-          <div className="text-base font-medium text-[#948FB7]">
+          <div className="text-base font-medium text-gray-500">
             {formattedDate}
           </div>
 
-          <div className="font-merriweather mt-8 mb-2 text-base text-[#948FB7]">
+          <div className="font-merriweather mt-8 mb-2 text-base text-gray-500">
             Participation
           </div>
-          <div className="mb-1 text-[32px] leading-[36px] font-light text-[#34314C]">
+          <div className="text-primary mb-1 text-[32px] leading-[36px] font-light">
             {entries.length}/{stats.totalMembers}
           </div>
-          <div className="text-base text-[#948FB7]">
+          <div className="text-base text-gray-500">
             Usually {stats.totalMembers} people participate
           </div>
 

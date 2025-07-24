@@ -50,7 +50,7 @@ export default function LeaveTeamButton({ teamId }: LeaveTeamButtonProps) {
     <>
       <button
         type="button"
-        className="cursor-pointer text-sm font-medium text-[#3FA2F7]"
+        className="text-link cursor-pointer text-sm font-medium"
         onClick={handleLeaveClick}>
         Leave team
       </button>

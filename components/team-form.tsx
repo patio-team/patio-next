@@ -137,7 +137,7 @@ export default function TeamForm({
 
       {/* Poll days section */}
       <div className="space-y-6">
-        <h2 className="text-base leading-[22px] font-medium text-[#34314C]">
+        <h2 className="text-primary text-base leading-[22px] font-medium">
           On what day do you want polls?
         </h2>
 

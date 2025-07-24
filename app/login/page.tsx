@@ -29,7 +29,7 @@ export default async function LoginPage({
         </div>
 
         {/* Tagline */}
-        <p className="font-merriweather mb-8 text-center text-xl leading-relaxed text-[#34314C] xl:text-2xl">
+        <p className="font-merriweather text-primary mb-8 text-center text-xl leading-relaxed xl:text-2xl">
           The bottom-up temperature check tool made by teams for teams
         </p>
 
@@ -61,7 +61,7 @@ export default async function LoginPage({
           )}
 
           {/* Form Title */}
-          <h1 className="font-merriweather mb-8 text-center text-2xl text-[#34314C] lg:mb-12 lg:text-[32px] lg:leading-[42px]">
+          <h1 className="font-merriweather text-primary mb-8 text-center text-2xl lg:mb-12 lg:text-[32px] lg:leading-[42px]">
             {invitationToken ? 'Sign in to join the team' : 'Sign in to patio'}
           </h1>
 

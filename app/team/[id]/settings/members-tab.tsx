@@ -155,7 +155,7 @@ export default function MembersTab({
             <span className="font-merriweather text-primary text-base leading-[22px]">
               Members:
             </span>
-            <span className="text-base leading-[22px] font-medium text-[#948FB7]">
+            <span className="text-base leading-[22px] font-medium text-gray-500">
               {optimisticTeam.members.length}
             </span>
           </div>
@@ -182,7 +182,7 @@ export default function MembersTab({
                     <h4 className="font-merriweather text-primary text-base leading-[22px]">
                       {member.user.name}
                     </h4>
-                    <p className="text-sm leading-[20px] font-medium text-[#948FB7]">
+                    <p className="text-sm leading-[20px] font-medium text-gray-500">
                       {member.user.email}
                     </p>
                   </div>
@@ -218,7 +218,7 @@ export default function MembersTab({
             <span className="font-merriweather text-primary text-base leading-[22px]">
               Waiting:
             </span>
-            <span className="text-base leading-[22px] font-medium text-[#948FB7]">
+            <span className="text-base leading-[22px] font-medium text-gray-500">
               {optimisticTeam.invitations.length}
             </span>
           </div>

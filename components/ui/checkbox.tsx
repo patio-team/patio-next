@@ -53,7 +53,7 @@ export function Checkbox({ checked, label, onClick }: CheckboxProps) {
       <div className="flex-shrink-0">
         {checked ? <CheckIcon /> : <EmptyCheckIcon />}
       </div>
-      <span className="text-base leading-[22px] tracking-[0.1px] text-[#34314C]">
+      <span className="text-primary text-base leading-[22px] tracking-[0.1px]">
         {label}
       </span>
     </button>

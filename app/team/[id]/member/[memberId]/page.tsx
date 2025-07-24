@@ -66,13 +66,13 @@ export default function MemberProfilePage() {
           <h2 className="font-merriweather text-primary mb-2 text-xl">
             Member Not Found
           </h2>
-          <p className="mb-4 text-[#948FB7]">
+          <p className="mb-4 text-gray-500">
             The member you&apos;re looking for doesn&apos;t exist or you
             don&apos;t have permission to view their profile.
           </p>
           <Link
             href={`/team/${teamId}${dateParam}`}
-            className="text-[#3FA2F7] underline hover:text-[#2563eb]">
+            className="text-link hover:text-link-hover underline">
             Go back to teams
           </Link>
         </div>
@@ -101,7 +101,7 @@ export default function MemberProfilePage() {
         {/* Back Button */}
         <Link
           href={`/team/${teamId}${dateParam}`}
-          className="mb-6 inline-flex items-center text-sm text-[#3FA2F7] hover:text-[#2563eb]">
+          className="text-link hover:text-link-hover mb-6 inline-flex items-center text-sm">
           <svg
             className="mr-1 h-4 w-4"
             fill="none"
@@ -138,14 +138,14 @@ export default function MemberProfilePage() {
               <h1 className="font-merriweather text-primary text-2xl font-normal md:text-3xl">
                 {member.user.name}
               </h1>
-              <p className="mt-1 text-[#948FB7]">{member.user.email}</p>
+              <p className="mt-1 text-gray-500">{member.user.email}</p>
               <div className="mt-3 flex items-center space-x-4">
-                <span className="text-sm text-[#948FB7] capitalize">
+                <span className="text-sm text-gray-500 capitalize">
                   {member.role} • Joined{' '}
                   {getUTCTime(member.joinedAt).toFormat('MMMM yyyy')}
                 </span>
                 {allMoodEntries.length > 0 && (
-                  <span className="text-sm text-[#948FB7]">
+                  <span className="text-sm text-gray-500">
                     {allMoodEntries.length} mood entr
                     {allMoodEntries.length === 1 ? 'y' : 'ies'}
                   </span>
@@ -164,7 +164,7 @@ export default function MemberProfilePage() {
           {allMoodEntries.length === 0 ? (
             <div className="py-12 text-center">
               <div className="mb-4 text-4xl">📊</div>
-              <p className="text-[#948FB7]">
+              <p className="text-gray-500">
                 {user?.id === memberId
                   ? "You haven't submitted any mood entries yet."
                   : `${member.user.name} hasn't submitted any mood entries yet.`}
@@ -190,7 +190,7 @@ export default function MemberProfilePage() {
                       <h3 className="font-medium text-gray-900">
                         {formatDateForDisplay(entry.entryDate)}
                       </h3>
-                      <span className="text-sm text-[#948FB7]">
+                      <span className="text-sm text-gray-500">
                         {formatRelativeDate(entry.entryDate)}
                       </span>
                     </div>
@@ -204,10 +204,10 @@ export default function MemberProfilePage() {
                     )}
 
                     <div className="mt-2 flex items-center justify-between">
-                      <span className="text-xs text-[#948FB7] capitalize">
+                      <span className="text-xs text-gray-500 capitalize">
                         {entry.visibility} entry
                       </span>
-                      <span className="text-xs text-[#948FB7]">
+                      <span className="text-xs text-gray-500">
                         Rating: {entry.rating}/5
                       </span>
                     </div>
