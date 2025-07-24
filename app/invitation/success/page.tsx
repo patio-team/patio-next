@@ -37,12 +37,6 @@ export default async function InvitationSuccessPage({
             className="inline-block rounded bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700">
             Go to Team Dashboard
           </Link>
-
-          <Link
-            href="/"
-            className="inline-block rounded bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700">
-            Go to Dashboard
-          </Link>
         </div>
       </div>
     </div>

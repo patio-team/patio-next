@@ -51,7 +51,7 @@ export default function GoogleSignInButton({
     <button
       onClick={handleGoogleSignIn}
       disabled={isLoading}
-      className={`relative mx-auto mb-6 flex h-[39px] w-full max-w-[322px] items-center justify-center rounded border border-[#C4C4C4] bg-white transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}>
+      className={`relative mx-auto mb-6 flex h-[39px] w-full max-w-[322px] cursor-pointer items-center justify-center rounded border border-[#C4C4C4] bg-white transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}>
       <svg
         className="absolute left-4 h-[18px] w-[18px]"
         viewBox="0 0 18 18"
