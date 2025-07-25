@@ -7,14 +7,14 @@ An application for teams to track their mood and well-being.
 ### Prerequisites
 
 - PostgreSQL installed and running
-- Node.js 22+ and pnpm
+- Node.js 22 and pnpm
 
 ### Setup
 
 1. **Clone the repository and install dependencies**:
 
 ```bash
-git clone <repo-url>
+git clone git@github.com:patio-team/patio-next.git
 cd patio
 pnpm install
 ```
@@ -51,38 +51,25 @@ pnpm db:push
 pnpm dev
 ```
 
-### Database Scripts
+## Email System
 
-- `pnpm db:generate` - Generates migration files based on schema changes
-- `pnpm db:migrate` - Applies pending migrations to the database
-- `pnpm db:push` - Directly syncs the schema (ideal for development)
-- `pnpm db:studio` - Opens Drizzle Studio to explore the database
+Patio includes an email system for team invitations and daily mood tracking reminders.
 
-## Database Schema
+### Email Templates
 
-### Main Tables
+Email templates are built using MJML and compiled to HTML:
 
-- **users**: User information, notification settings
-- **teams**: Teams with unique invitation codes
-- **team_members**: User-team relationship with roles (member/admin)
-- **mood_entries**: Mood entries with ratings and comments
-- **team_invitations**: Email invitations with security tokens
+- `emails/invitation.mjml` - Team invitation email template
+- `emails/reminder.mjml` - Daily mood tracking reminder email template
 
-## Development
+### Email Scripts
 
-The project uses:
+- `pnpm compile:emails` - Compiles MJML email templates to HTML
+- `pnpm send-reminders` - Sends daily mood tracking reminders to team members
 
-- **Next.js 15** with App Router
-- **Drizzle ORM** for database
-- **TypeScript** for static typing
-- **Tailwind CSS** for styling
-- **Better Auth** for authentication
-- **Nodemailer** for sending emails
-
-To explore the database during development:
+**Manual execution:**
 
 ```bash
-pnpm db:studio
+# Send reminders manually
+pnpm send-reminders
 ```
-
-This will open Drizzle Studio in your browser to inspect and edit data.
